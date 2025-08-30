@@ -130,10 +130,7 @@ body {
   transition: background-color 300ms ease, color 300ms ease;
 }
 
-html.cursor-none,
-html.cursor-none * {
-  cursor: none !important;
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   .animate-flip-upper,

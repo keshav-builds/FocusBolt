@@ -23,7 +23,6 @@ export default function RootLayout({
         <Suspense fallback={<div>Loading...</div>}>
           <AppProviders>{children}</AppProviders>
         </Suspense>
-        {/* <Analytics /> */}
       </body>
     </html>
   )

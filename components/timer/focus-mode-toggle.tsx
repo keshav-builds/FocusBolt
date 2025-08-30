@@ -1,23 +1,37 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { useEffect } from "react"
-import { usePomodoro } from "./pomodoro-provider"
+import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import { usePomodoro } from "./pomodoro-provider";
 
 export function FocusModeToggle() {
-  const { focusMode, setFocusMode } = usePomodoro()
+  const { focusMode, setFocusMode } = usePomodoro();
 
   useEffect(() => {
-    const root = document.documentElement
-    if (focusMode) {
-      const el = document.documentElement as any
-      if (el.requestFullscreen) el.requestFullscreen().catch(() => {})
-      root.classList.add("cursor-none")
-    } else {
-      if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
-      root.classList.remove("cursor-none")
+    const root = document.documentElement;
+
+    // Listen for fullscreen change event
+    function onFullscreenChange() {
+      // Update focusMode state to false if no fullscreen
+      if (!document.fullscreenElement) {
+        setFocusMode(false);
+      }
     }
-  }, [focusMode])
+
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+
+    // Request or exit fullscreen when focusMode changes
+    if (focusMode) {
+      if (root.requestFullscreen) root.requestFullscreen().catch(() => {});
+    } else {
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    }
+
+    // Cleanup listener on unmount
+    return () => {
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+    };
+  }, [focusMode, setFocusMode]);
 
   return (
     <Button
@@ -27,5 +41,5 @@ export function FocusModeToggle() {
     >
       {focusMode ? "Exit Focus" : "Focus Mode"}
     </Button>
-  )
+  );
 }

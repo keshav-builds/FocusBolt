@@ -1,146 +1,229 @@
-"use client"
-
-import { useEffect, useMemo, useRef, useState } from "react"
-import { cn } from "@/lib/utils"
+"use client";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
-  seconds: number
-  ariaLabel?: string
-}
+  seconds: number;
+  ariaLabel?: string;
+};
 
 export function FlipClock({ seconds, ariaLabel }: Props) {
-  const mins = Math.floor(seconds / 60)
-  const secs = seconds % 60
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
 
-  const digits = useMemo(() => {
-    const mm = mins.toString().padStart(2, "0").split("")
-    const ss = secs.toString().padStart(2, "0").split("")
-    return [mm[0], mm[1], ":", ss[0], ss[1]]
-  }, [mins, secs])
+  const digits = [
+    ...mins.toString().padStart(2, "0"),
+    ":",
+    ...secs.toString().padStart(2, "0"),
+  ];
 
   return (
-    <div aria-label={ariaLabel} role="timer" className="flex items-center gap-2 rounded-md bg-muted/50 p-3">
+    <div
+      aria-label={ariaLabel}
+      role="timer"
+      style={{
+        display: "flex",
+        gap: 24,
+        background: "#111",
+        padding: "40px 56px",
+        borderRadius: 24,
+        justifyContent: "center",
+        userSelect: "none",
+      }}
+    >
       {digits.map((d, i) =>
         d === ":" ? (
-          <div key={i} className="mx-1 select-none text-4xl font-semibold md:text-6xl">
+          <span
+            key={i}
+            style={{
+              fontSize: 90,
+              fontWeight: 700,
+              color: "#222",
+              margin: "0 16px",
+              lineHeight: 1,
+              userSelect: "none",
+            }}
+          >
             :
-          </div>
+          </span>
         ) : (
           <FlipDigit key={i} value={d} />
-        ),
+        )
       )}
     </div>
-  )
+  );
 }
 
 function FlipDigit({ value }: { value: string }) {
-  const [prev, setPrev] = useState(value)
-  const [flipping, setFlipping] = useState(false)
-  const timeoutRef = useRef<number | null>(null)
+  const [current, setCurrent] = useState(value);
+  const [flipping, setFlipping] = useState(false);
+  const prevValue = useRef(value);
 
   useEffect(() => {
-    if (value !== prev) {
-      setFlipping(true)
-      if (timeoutRef.current) window.clearTimeout(timeoutRef.current)
-      timeoutRef.current = window.setTimeout(() => {
-        setPrev(value)
-        setFlipping(false)
-      }, 420) as unknown as number
+    if (value !== prevValue.current) {
+      setFlipping(true);
+      const timer = setTimeout(() => {
+        setCurrent(value);
+        setFlipping(false);
+        prevValue.current = value;
+      }, 600);
+      return () => clearTimeout(timer);
     }
-    return () => {
-      if (timeoutRef.current) window.clearTimeout(timeoutRef.current)
-    }
-  }, [value, prev])
+  }, [value]);
 
   return (
-    <div className="relative h-16 w-12 select-none md:h-24 md:w-16 lg:h-28 lg:w-20" aria-hidden>
-      <div className="digit-root absolute inset-0 overflow-hidden rounded-md bg-background text-3xl font-bold shadow-sm ring-1 ring-border md:text-5xl">
-        {/* Static halves always show current value (single split look) */}
-        <div className="flex h-1/2 items-end justify-center border-b border-border/50">
-          <span className="pb-0.5 leading-none">{value}</span>
-        </div>
-        <div className="flex h-1/2 items-start justify-center">
-          <span className="pt-0.5 leading-none">{value}</span>
-        </div>
+    <div className="flip-digit">
+      {/* Horizontal dividing line */}
+      <div className="divider-line" />
 
-        {/* Animated flaps: both render current value to avoid flashing previous digit */}
-        <div className={cn("flip-upper", flipping && "animate-flip-upper")}>
-          <span>{value}</span>
-        </div>
-        <div className={cn("flip-lower", flipping && "animate-flip-lower")}>
-          <span>{value}</span>
-        </div>
+      {/* Top half static */}
+      <div className="half top">
+        <span>{flipping ? prevValue.current : current}</span>
       </div>
 
+      {/* Bottom half static */}
+      <div className="half bottom">
+        <span>{current}</span>
+      </div>
+
+      {/* Flip animation overlay top half only */}
+      {flipping && (
+        <div className="flip-leaf">
+          <div className="flip-leaf-inner">
+            <div className="face front">
+              <span>{prevValue.current}</span>
+            </div>
+            <div className="face back">
+              <span>{current}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
-        .digit-root {
-          perspective: 900px;
-          will-change: transform;
+        .flip-digit {
+          position: relative;
+          width: 116px;
+          height: 164px;
+          perspective: 320px;
+          display: inline-block;
+          user-select: none;
         }
-        .flip-upper,
-        .flip-lower {
+        .divider-line {
+          position: absolute;
+          left: 12px;
+          right: 12px;
+          top: 50%;
+          height: 2px;
+          background: linear-gradient(90deg, #444 0%, #999 50%, #444 100%);
+          z-index: 10;
+          border-radius: 1px;
+          pointer-events: none;
+          box-shadow: 0 1px 2px rgba(255, 255, 255, 0.1);
+          transform: translateY(-1px);
+        }
+        .half {
           position: absolute;
           left: 0;
-          right: 0;
+          width: 100%;
+         height: calc(50% + 1px);
+          overflow: hidden;
+          background: #232323;
+          display: flex;
+          justify-content: center;
+          z-index: 1;
+        }
+        .half.top {
+          top: 0;
+          align-items: flex-end;
+          border-radius: 18px 18px 0 0;
+        }
+        .half.bottom {
+          bottom: 0;
+          align-items: flex-start;
+          border-radius: 0 0 18px 18px;
+        }
+        .half span {
+          display: block;
+          width: 100%;
+          font-size: 120px;
+          line-height: 82px;
+          color: #eaeaea;
+          font-weight: 700;
+          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+          text-align: center;
+          font-variant-numeric: tabular-nums;
+          user-select: none;
+        }
+        .half.top span {
+          clip-path: inset(0 0 50% 0);
+        }
+        .half.bottom span {
+          clip-path: inset(50% 0 0 0);
+        }
+
+        /* Flip animation leaf */
+        .flip-leaf {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 50%;
+          perspective: 320px;
+          z-index: 5;
+          user-select: none;
+        }
+        .flip-leaf-inner {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          transform-style: preserve-3d;
+          transform-origin: bottom;
+          animation: flipDown 0.6s forwards cubic-bezier(0.77, 0, 0.175, 1);
+          /* ensure smooth animation */
+        }
+        .face {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          left: 0;
+          top: 0;
+          background: #232323;
+          border-radius: 18px 18px 0 0;
+          display: flex;
+          justify-content: center;
+          align-items: flex-end;
           overflow: hidden;
           backface-visibility: hidden;
-          transform-style: preserve-3d;
-          background: hsl(var(--background));
+          user-select: none;
         }
-        .flip-upper {
-          top: 0;
-          height: 50%;
-          border-bottom: 1px solid hsl(var(--border) / 0.5);
-          display: flex;
-          align-items: flex-end;
-          justify-content: center;
-          transform-origin: center bottom;
-          box-shadow: 0 1px 0 hsl(var(--border) / 0.6) inset;
-        }
-        .flip-lower {
-          bottom: 0;
-          height: 50%;
-          display: flex;
-          align-items: flex-start;
-          justify-content: center;
-          transform-origin: center top;
-          box-shadow: 0 -1px 0 hsl(var(--border) / 0.6) inset;
-        }
-        .flip-upper span,
-        .flip-lower span {
+        .face.front span,
+        .face.back span {
+          font-size: 120px;
           font-weight: 700;
-          font-size: 1.875rem;
-          line-height: 1;
+          color: #eaeaea;
+          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+          text-align: center;
+          font-variant-numeric: tabular-nums;
+          line-height: 82px;
+          width: 100%;
+          display: block;
+          clip-path: inset(0 0 50% 0);
+          user-select: none;
+          user-drag: none;
         }
-        @media (min-width: 768px) {
-          .flip-upper span,
-          .flip-lower span {
-            font-size: 3rem;
-          }
+        .face.back {
+          transform: rotateX(-180deg);
         }
+
         @keyframes flipDown {
           0% {
-            transform: rotateX(0);
-          }
-          100% {
-            transform: rotateX(-90deg);
-          }
-        }
-        @keyframes flipUp {
-          0% {
-            transform: rotateX(90deg);
-          }
-          100% {
             transform: rotateX(0deg);
           }
-        }
-        .animate-flip-upper {
-          animation: flipDown 0.22s ease-in forwards;
-        }
-        .animate-flip-lower {
-          animation: flipUp 0.22s ease-out 0.12s forwards;
+          100% {
+            transform: rotateX(-180deg);
+          }
         }
       `}</style>
     </div>
-  )
+  );
 }
