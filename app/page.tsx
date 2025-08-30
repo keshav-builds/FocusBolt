@@ -1,20 +1,20 @@
-"use client"
-
-import { ModeToggle } from "@/components/mode-toggle"
-import { SettingsSheet } from "@/components/settings/settings-sheet"
-import { FocusModeToggle } from "@/components/timer/focus-mode-toggle"
-import { SessionQuote } from "@/components/timer/session-quote"
-import { ProgressChart } from "@/components/progress/progress-chart"
-import { FlipClock } from "@/components/timer/flip-clock"
-import { usePomodoro } from "@/components/timer/pomodoro-provider"
-import { CurrentTime } from "@/components/time/current-time"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
-import { useEffect, useMemo } from "react"
-import { RegisterSW } from "@/components/register-sw"
+"use client";
+import React, { useState, useEffect, useMemo } from "react";
+import { ModeToggle } from "@/components/mode-toggle";
+import { SettingsSheet } from "@/components/settings/settings-sheet";
+import { FocusModeToggle } from "@/components/timer/focus-mode-toggle";
+import { SessionQuote } from "@/components/timer/session-quote";
+import { ProgressChart } from "@/components/progress/progress-chart";
+import { FlipClock } from "@/components/timer/flip-clock";
+import { usePomodoro } from "@/components/timer/pomodoro-provider";
+import { CurrentTime } from "@/components/time/current-time";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { RegisterSW } from "@/components/register-sw";
+import { LoaderThree } from "@/components/ui/loader";
 
 function AppBody() {
   const {
@@ -34,25 +34,25 @@ function AppBody() {
     setFocusMode,
     autoPauseOnBlur,
     autoResumeOnFocus,
-  } = usePomodoro()
+  } = usePomodoro();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement)?.tagName === "INPUT") return
+      if ((e.target as HTMLElement)?.tagName === "INPUT") return;
       if (e.code === "Space") {
-        e.preventDefault()
-        isRunning ? pause() : start()
+        e.preventDefault();
+        isRunning ? pause() : start();
       } else if (e.key.toLowerCase() === "r") {
-        reset()
+        reset();
       } else if (e.key.toLowerCase() === "s") {
-        skip()
+        skip();
       } else if (e.key.toLowerCase() === "f") {
-        setFocusMode(!focusMode)
+        setFocusMode(!focusMode);
       }
-    }
-    window.addEventListener("keydown", onKey)
-    return () => window.removeEventListener("keydown", onKey)
-  }, [isRunning, pause, start, reset, skip, focusMode, setFocusMode])
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isRunning, pause, start, reset, skip, focusMode, setFocusMode]);
 
   const tabs = useMemo(
     () => [
@@ -60,17 +60,29 @@ function AppBody() {
       { value: "short", label: "Short Break" },
       { value: "long", label: "Long Break" },
     ],
-    [],
-  )
+    []
+  );
 
   return (
     <main className="min-h-dvh bg-background text-foreground transition-colors duration-300">
       <RegisterSW />
-      <div className={cn("mx-auto flex min-h-dvh max-w-4xl flex-col p-4 md:p-8", focusMode && "max-w-3xl")}>
+      <div
+        className={cn(
+          "mx-auto flex min-h-dvh max-w-4xl flex-col p-4 md:p-8",
+          focusMode && "max-w-3xl"
+        )}
+      >
         <header className={cn("flex items-center justify-between gap-2")}>
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-md bg-primary/10" aria-hidden />
-            <h1 className="text-pretty text-xl font-semibold md:text-2xl">Study Timer & Focus Booster</h1>
+            <img
+              src="/favicon.ico"
+              alt=""
+              aria-hidden="true"
+              className="h-8 w-8 rounded-md bg-primary/10 object-contain"
+            />
+            <h1 className="text-pretty text-xl font-semibold md:text-2xl">
+              Focus Bolt
+            </h1>
           </div>
           <div className="flex items-center gap-2">
             <FocusModeToggle />
@@ -84,7 +96,10 @@ function AppBody() {
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-balance text-lg">Pomodoro</CardTitle>
-                <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)}>
+                <Tabs
+                  value={viewMode}
+                  onValueChange={(v) => setViewMode(v as any)}
+                >
                   <TabsList className="grid grid-cols-3">
                     {tabs.map((t) => (
                       <TabsTrigger
@@ -102,7 +117,10 @@ function AppBody() {
               </div>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-6">
-              <FlipClock seconds={remaining} ariaLabel={`${modeLabel(mode)} time remaining`} />
+              <FlipClock
+                seconds={remaining}
+                ariaLabel={`${modeLabel(mode)} time remaining`}
+              />
               <CurrentTime className="text-xs text-muted-foreground" />
               <div className="flex items-center justify-center gap-3">
                 {isRunning ? (
@@ -122,8 +140,12 @@ function AppBody() {
                 </Button>
               </div>
               <div className="text-center text-xs text-muted-foreground">
-                {autoPauseOnBlur ? "Auto-pause when tab hidden. " : "Auto-pause off. "}
-                {autoResumeOnFocus ? "Auto-resume on return." : "Manual resume on return."}
+                {autoPauseOnBlur
+                  ? "Auto-pause when tab hidden. "
+                  : "Auto-pause off. "}
+                {autoResumeOnFocus
+                  ? "Auto-resume on return."
+                  : "Manual resume on return."}
               </div>
             </CardContent>
           </Card>
@@ -131,7 +153,12 @@ function AppBody() {
 
         <Separator className="my-8" />
 
-        <section className={cn("grid gap-6 md:grid-cols-2", focusMode && "opacity-40 pointer-events-none")}>
+        <section
+          className={cn(
+            "grid gap-6 md:grid-cols-2",
+            focusMode && "opacity-40 pointer-events-none"
+          )}
+        >
           <Card className="border-border/60">
             <CardHeader>
               <CardTitle className="text-lg">Today&apos;s Progress</CardTitle>
@@ -145,9 +172,18 @@ function AppBody() {
               <CardTitle className="text-lg">Tips</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-muted-foreground">
-              <p>Press Space to start/pause, R to reset, S to skip, F for Focus Mode.</p>
-              <p>Enable notifications in Settings to get alerts even if the tab is in the background.</p>
-              <p>Customize durations, long break interval, and behavior in Settings.</p>
+              <p>
+                Press Space to start/pause, R to reset, S to skip, F for Focus
+                Mode.
+              </p>
+              <p>
+                Enable notifications in Settings to get alerts even if the tab
+                is in the background.
+              </p>
+              <p>
+                Customize durations, long break interval, and behavior in
+                Settings.
+              </p>
             </CardContent>
           </Card>
         </section>
@@ -155,16 +191,42 @@ function AppBody() {
         <SessionQuote />
       </div>
     </main>
-  )
+  );
 }
 
 function modeLabel(mode: "work" | "short" | "long") {
-  if (mode === "work") return "Work"
-  if (mode === "short") return "Short Break"
-  return "Long Break"
+  if (mode === "work") return "Work";
+  if (mode === "short") return "Short Break";
+  return "Long Break";
 }
 
 export default function Page() {
-  // Providers are already applied in app/layout.tsx (AppProviders)
-  return <AppBody />
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100dvh",
+          width: "100vw",
+          overflow: "hidden",
+        }}
+      >
+        <LoaderThree />
+      </div>
+    );
+  }
+
+  return <AppBody />;
 }

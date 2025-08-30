@@ -1,5 +1,5 @@
 {
-  "name": "my-v0-project",
+  "name": "focus-bolt",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -47,16 +47,17 @@
     "geist": "latest",
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
+    "motion": "^12.23.12",
     "next": "15.2.4",
     "next-themes": "latest",
-    "react": "^19",
+    "react": "^18.2.0",
     "react-day-picker": "9.8.0",
-    "react-dom": "^19",
+    "react-dom": "^18.2.0",
     "react-hook-form": "^7.60.0",
     "react-resizable-panels": "^2.1.7",
     "recharts": "latest",
     "sonner": "^1.7.4",
-    "tailwind-merge": "^2.5.5",
+    "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.9",
     "zod": "3.25.67"

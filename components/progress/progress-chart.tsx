@@ -32,7 +32,7 @@ export function ProgressChart() {
             <XAxis dataKey="label" />
             <YAxis allowDecimals={false} />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <Bar dataKey="sessions" fill="var(--color-sessions)" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="sessions" fill="#FFD700" radius={[6, 6, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </ChartContainer>
