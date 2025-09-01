@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
+// FlipClock component
 type Props = {
-  seconds: number;
+  seconds: number;      // total seconds remaining
   ariaLabel?: string;
 };
 
@@ -24,10 +25,12 @@ export function FlipClock({ seconds, ariaLabel }: Props) {
         display: "flex",
         gap: 24,
         background: "#111",
-        padding: "40px 56px",
-        borderRadius: 24,
+        padding: "48px 0",
+        borderRadius: 32,
         justifyContent: "center",
+        alignItems: "center",
         userSelect: "none",
+        boxShadow: "0 6px 56px #000d",
       }}
     >
       {digits.map((d, i) =>
@@ -35,11 +38,13 @@ export function FlipClock({ seconds, ariaLabel }: Props) {
           <span
             key={i}
             style={{
-              fontSize: 90,
-              fontWeight: 700,
-              color: "#222",
-              margin: "0 16px",
-              lineHeight: 1,
+              fontSize: 170,
+              fontWeight: 600,
+              color: "#232323",
+              margin: "0 18px",
+              alignSelf: "center",
+              lineHeight: 0.8,
+              textShadow: "0 4px 24px #0007",
               userSelect: "none",
             }}
           >
@@ -53,6 +58,7 @@ export function FlipClock({ seconds, ariaLabel }: Props) {
   );
 }
 
+// Single Flip Digit component
 function FlipDigit({ value }: { value: string }) {
   const [current, setCurrent] = useState(value);
   const [flipping, setFlipping] = useState(false);
@@ -72,20 +78,15 @@ function FlipDigit({ value }: { value: string }) {
 
   return (
     <div className="flip-digit">
-      {/* Horizontal dividing line */}
       <div className="divider-line" />
 
-      {/* Top half static */}
       <div className="half top">
         <span>{flipping ? prevValue.current : current}</span>
       </div>
-
-      {/* Bottom half static */}
       <div className="half bottom">
         <span>{current}</span>
       </div>
 
-      {/* Flip animation overlay top half only */}
       {flipping && (
         <div className="flip-leaf">
           <div className="flip-leaf-inner">
@@ -102,84 +103,79 @@ function FlipDigit({ value }: { value: string }) {
       <style jsx>{`
         .flip-digit {
           position: relative;
-          width: 116px;
-          height: 164px;
-          perspective: 320px;
+          width: 130px;
+          height: 220px;
+          background: linear-gradient(180deg, #2b2b2b 0%, #181818 100%);
+          border-radius: 18px;
+          margin: 0 5px;
+          box-shadow: 0 4px 24px #000a, 0 2px 16px #112a;
           display: inline-block;
-          user-select: none;
+          overflow: hidden;
         }
         .divider-line {
           position: absolute;
-          left: 12px;
-          right: 12px;
+          left: 0;
+          right: 0;
           top: 50%;
           height: 2px;
-          background: linear-gradient(90deg, #444 0%, #999 50%, #444 100%);
+          background: linear-gradient(90deg, #444 0%, #fff6 50%, #444 100%);
           z-index: 10;
-          border-radius: 1px;
-          pointer-events: none;
-          box-shadow: 0 1px 2px rgba(255, 255, 255, 0.1);
-          transform: translateY(-1px);
+          opacity: 0.7;
         }
         .half {
           position: absolute;
           left: 0;
           width: 100%;
-         height: calc(50% + 1px);
+          height: 50%;
           overflow: hidden;
-          background: #232323;
           display: flex;
           justify-content: center;
-          z-index: 1;
+          align-items: center;
+          z-index: 2;
+          background: transparent;
         }
         .half.top {
           top: 0;
-          align-items: flex-end;
           border-radius: 18px 18px 0 0;
         }
         .half.bottom {
           bottom: 0;
-          align-items: flex-start;
           border-radius: 0 0 18px 18px;
         }
         .half span {
-          display: block;
-          width: 100%;
-          font-size: 120px;
-          line-height: 82px;
-          color: #eaeaea;
-          font-weight: 700;
+          font-size: 170px;
+          font-weight: 600;
+          color: #fff;
           font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-          text-align: center;
           font-variant-numeric: tabular-nums;
+          line-height: 1.1;
+          letter-spacing: -2px;
+          text-shadow: 0 4px 12px #0008;
           user-select: none;
         }
         .half.top span {
-          clip-path: inset(0 0 50% 0);
+          filter: brightness(1.16) drop-shadow(0 1px 0 #fff4);
         }
         .half.bottom span {
-          clip-path: inset(50% 0 0 0);
+          filter: brightness(0.8);
         }
-
-        /* Flip animation leaf */
         .flip-leaf {
           position: absolute;
-          top: 0;
           left: 0;
+          right: 0;
+          top: 0;
           width: 100%;
           height: 50%;
-          perspective: 320px;
           z-index: 5;
-          user-select: none;
+          perspective: 500px;
         }
         .flip-leaf-inner {
-          position: relative;
           width: 100%;
           height: 100%;
+          position: relative;
           transform-style: preserve-3d;
           transform-origin: bottom;
-          animation: flipDown 0.6s forwards cubic-bezier(0.77, 0, 0.175, 1);
-          /* ensure smooth animation */
+          animation: flipDown 1s forwards cubic-bezier(0.23, 1, 0.32, 1);
         }
         .face {
           position: absolute;
@@ -187,29 +183,25 @@ function FlipDigit({ value }: { value: string }) {
           height: 100%;
           left: 0;
           top: 0;
-          background: #232323;
-          border-radius: 18px 18px 0 0;
           display: flex;
           justify-content: center;
           align-items: flex-end;
+          background: linear-gradient(180deg, #232323, #181818 100%);
+          border-radius: 18px 18px 0 0;
           overflow: hidden;
           backface-visibility: hidden;
-          user-select: none;
         }
         .face.front span,
         .face.back span {
-          font-size: 120px;
-          font-weight: 700;
-          color: #eaeaea;
+          font-size: 170px;
+          font-weight: 600;
+          color: #fff;
           font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-          text-align: center;
-          font-variant-numeric: tabular-nums;
-          line-height: 82px;
+          line-height: 1.1;
+          letter-spacing: -2px;
+          filter: brightness(1.1);
           width: 100%;
-          display: block;
-          clip-path: inset(0 0 50% 0);
-          user-select: none;
-          user-drag: none;
+          text-align: center;
         }
         .face.back {
           transform: rotateX(-180deg);
