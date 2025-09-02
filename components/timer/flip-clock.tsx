@@ -1,218 +1,266 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-// FlipClock component
 type Props = {
-  seconds: number;      // total seconds remaining
+  seconds: number;
   ariaLabel?: string;
+  theme?: "light" | "dark";
 };
 
-export function FlipClock({ seconds, ariaLabel }: Props) {
+export function FlipClock({ seconds, ariaLabel, theme = "dark" }: Props) {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
 
-  const digits = [
-    ...mins.toString().padStart(2, "0"),
-    ":",
-    ...secs.toString().padStart(2, "0"),
-  ];
+  const formatTime = (time: number) => time.toString().padStart(2, "0");
 
   return (
-    <div
-      aria-label={ariaLabel}
-      role="timer"
-      style={{
-        display: "flex",
-        gap: 24,
-        background: "#111",
-        padding: "48px 0",
-        borderRadius: 32,
-        justifyContent: "center",
-        alignItems: "center",
-        userSelect: "none",
-        boxShadow: "0 6px 56px #000d",
-      }}
-    >
-      {digits.map((d, i) =>
-        d === ":" ? (
-          <span
-            key={i}
-            style={{
-              fontSize: 170,
-              fontWeight: 600,
-              color: "#232323",
-              margin: "0 18px",
-              alignSelf: "center",
-              lineHeight: 0.8,
-              textShadow: "0 4px 24px #0007",
-              userSelect: "none",
-            }}
-          >
-            :
-          </span>
-        ) : (
-          <FlipDigit key={i} value={d} />
-        )
-      )}
+    <div aria-label={ariaLabel} role="timer" className={`flip-clock ${theme}`}>
+      <FlipDigit value={formatTime(mins)[0]} theme={theme} />
+      <FlipDigit value={formatTime(mins)[1]} theme={theme} />
+      <div className="separator">:</div>
+      <FlipDigit value={formatTime(secs)[0]} theme={theme} />
+      <FlipDigit value={formatTime(secs)[1]} theme={theme} />
+
+      <style jsx>{`
+        .flip-clock {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 40px;
+          border-radius: 20px;
+          user-select: none;
+          font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .flip-clock.dark {
+          background: #1a1a1a;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .flip-clock.light {
+          background: #f5f5f5;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .separator {
+          font-size: 120px;
+          font-weight: 300;
+          margin: 0 16px;
+          line-height: 0.8;
+          color: ${theme === "dark" ? "#666" : "#999"};
+        }
+      `}</style>
     </div>
   );
 }
 
-// Single Flip Digit component
-function FlipDigit({ value }: { value: string }) {
-  const [current, setCurrent] = useState(value);
-  const [flipping, setFlipping] = useState(false);
+function FlipDigit({ value, theme }: { value: string; theme: "light" | "dark" }) {
+  const [currentValue, setCurrentValue] = useState(value);
+  const [isFlipping, setIsFlipping] = useState(false);
   const prevValue = useRef(value);
 
   useEffect(() => {
     if (value !== prevValue.current) {
-      setFlipping(true);
+      setIsFlipping(true);
+      
       const timer = setTimeout(() => {
-        setCurrent(value);
-        setFlipping(false);
+        setCurrentValue(value);
+        setIsFlipping(false);
         prevValue.current = value;
-      }, 600);
+      }, 250); // Fixed timing to match CSS animation
+
       return () => clearTimeout(timer);
     }
-  }, [value]);
+  }, [value]); // Removed currentValue from dependencies - it was causing unnecessary re-renders
+
+  const digitHalfStyle = `
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    overflow: hidden;
+    border-radius: 8px;
+    background: ${
+      theme === "dark"
+        ? "linear-gradient(180deg, #333 0%, #222 100%)"
+        : "linear-gradient(180deg, #fff 0%, #f0f0f0 100%)"
+    };
+    border: ${theme === "dark" ? "1px solid #444" : "1px solid #ddd"};
+  `;
+
+  const flipCardStyle = `
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    overflow: hidden;
+    border-radius: 8px;
+    background: ${
+      theme === "dark"
+        ? "linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%)"
+        : "linear-gradient(180deg, #ffffff 0%, #e8e8e8 100%)"
+    };
+    border: ${theme === "dark" ? "1px solid #555" : "1px solid #bbb"};
+  `;
 
   return (
-    <div className="flip-digit">
-      <div className="divider-line" />
-
-      <div className="half top">
-        <span>{flipping ? prevValue.current : current}</span>
-      </div>
-      <div className="half bottom">
-        <span>{current}</span>
+    <div className={`flip-digit-container ${theme}`}>
+      {/* Top Half */}
+      <div className="digit-half top-half">
+        <div className="digit-content">
+          <span>{currentValue}</span>
+        </div>
       </div>
 
-      {flipping && (
-        <div className="flip-leaf">
-          <div className="flip-leaf-inner">
-            <div className="face front">
+      {/* Bottom Half */}
+      <div className="digit-half bottom-half">
+        <div className="digit-content">
+          <span>{currentValue}</span>
+        </div>
+      </div>
+
+      {/* Flip Animation */}
+      {isFlipping && (
+        <>
+          <div className="flip-card top-flip">
+            <div className="digit-content">
               <span>{prevValue.current}</span>
             </div>
-            <div className="face back">
-              <span>{current}</span>
+          </div>
+
+          <div className="flip-card bottom-flip">
+            <div className="digit-content">
+              <span>{value}</span>
             </div>
           </div>
-        </div>
+        </>
       )}
 
+      {/* Center divider */}
+      <div className="divider" />
+
       <style jsx>{`
-        .flip-digit {
+        .flip-digit-container {
           position: relative;
-          width: 130px;
-          height: 220px;
-          background: linear-gradient(180deg, #2b2b2b 0%, #181818 100%);
-          border-radius: 18px;
-          margin: 0 5px;
-          box-shadow: 0 4px 24px #000a, 0 2px 16px #112a;
-          display: inline-block;
-          overflow: hidden;
-        }
-        .divider-line {
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 50%;
-          height: 2px;
-          background: linear-gradient(90deg, #444 0%, #fff6 50%, #444 100%);
-          z-index: 10;
-          opacity: 0.7;
-        }
-        .half {
-          position: absolute;
-          left: 0;
-          width: 100%;
-          height: 50%;
-          overflow: hidden;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 2;
-          background: transparent;
-        }
-        .half.top {
-          top: 0;
-          border-radius: 18px 18px 0 0;
-        }
-        .half.bottom {
-          bottom: 0;
-          border-radius: 0 0 18px 18px;
-        }
-        .half span {
-          font-size: 170px;
-          font-weight: 600;
-          color: #fff;
-          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-          font-variant-numeric: tabular-nums;
-          line-height: 1.1;
-          letter-spacing: -2px;
-          text-shadow: 0 4px 12px #0008;
-          user-select: none;
-        }
-        .half.top span {
-          filter: brightness(1.16) drop-shadow(0 1px 0 #fff4);
-        }
-        .half.bottom span {
-          filter: brightness(0.8);
-        }
-        .flip-leaf {
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 0;
-          width: 100%;
-          height: 50%;
-          z-index: 5;
-          perspective: 500px;
-        }
-        .flip-leaf-inner {
-          width: 100%;
-          height: 100%;
-          position: relative;
-          transform-style: preserve-3d;
-          transform-origin: bottom;
-          animation: flipDown 1s forwards cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .face {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          left: 0;
-          top: 0;
-          display: flex;
-          justify-content: center;
-          align-items: flex-end;
-          background: linear-gradient(180deg, #232323, #181818 100%);
-          border-radius: 18px 18px 0 0;
-          overflow: hidden;
-          backface-visibility: hidden;
-        }
-        .face.front span,
-        .face.back span {
-          font-size: 170px;
-          font-weight: 600;
-          color: #fff;
-          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-          line-height: 1.1;
-          letter-spacing: -2px;
-          filter: brightness(1.1);
-          width: 100%;
-          text-align: center;
-        }
-        .face.back {
-          transform: rotateX(-180deg);
+          width: 100px;
+          height: 140px;
+          perspective: 1000px;
         }
 
-        @keyframes flipDown {
+        .digit-half {
+          ${digitHalfStyle}
+        }
+
+        .top-half {
+          top: 0;
+          border-bottom: none;
+          border-radius: 8px 8px 0 0;
+        }
+
+        .bottom-half {
+          bottom: 0;
+          border-top: none;
+          border-radius: 0 0 8px 8px;
+        }
+
+        .digit-content {
+          position: absolute;
+          width: 100%;
+          height: 200%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          
+        }
+
+        .top-half .digit-content {
+          top: 0;
+        }
+
+        .bottom-half .digit-content {
+          top: -100%;
+        }
+
+        .digit-content span {
+          font-size: 100px;
+          font-weight: 700;
+          line-height: 1;
+          font-variant-numeric: tabular-nums;
+          color: ${theme === "dark" ? "#fff" : "#333"};
+          text-shadow: ${
+            theme === "dark"
+              ? "0 2px 4px rgba(0, 0, 0, 0.8)"
+              : "0 1px 2px rgba(0, 0, 0, 0.2)"
+          };
+        }
+
+        .divider {
+          position: absolute;
+          top: 50%;
+          left: -2px;
+          right: -2px;
+          height: 2px;
+          background: ${theme === "dark" ? "#111" : "#ccc"};
+          transform: translateY(-50%);
+          z-index: 5;
+          border-radius: 1px;
+        }
+
+        .flip-card {
+          ${flipCardStyle}
+        }
+
+        .top-flip {
+          top: 0;
+          border-bottom: none;
+          border-radius: 8px 8px 0 0;
+          transform-origin: center bottom;
+          animation: flipDown 0.25s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+          z-index: 10;
+          box-shadow: ${
+            theme === "dark"
+              ? "0 4px 8px rgba(0, 0, 0, 0.6)"
+              : "0 3px 6px rgba(0, 0, 0, 0.2)"
+          };
+        }
+
+        .top-flip .digit-content {
+          top: 0;
+        }
+
+        .bottom-flip {
+          bottom: 0;
+          border-top: none;
+          border-radius: 0 0 8px 8px;
+          transform: rotateX(90deg);
+          transform-origin: center top;
+          animation: flipUp 0.25s cubic-bezier(0.4, 0.0, 0.2, 1) 0.25s forwards;
+          z-index: 9;
+          box-shadow: ${
+            theme === "dark"
+              ? "0 -2px 4px rgba(0, 0, 0, 0.4)"
+              : "0 -2px 3px rgba(0, 0, 0, 0.15)"
+          };
+        }
+
+        .bottom-flip .digit-content {
+          top: -100%;
+        }
+
+   @keyframes flipDown {
           0% {
             transform: rotateX(0deg);
           }
           100% {
-            transform: rotateX(-180deg);
+            transform: rotateX(-90deg);
+          }
+        }
+
+        @keyframes flipUp {
+          0% {
+            transform: rotateX(90deg);
+          }
+          100% {
+            transform: rotateX(0deg);
           }
         }
       `}</style>
