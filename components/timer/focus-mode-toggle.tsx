@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { usePomodoro } from "./pomodoro-provider";
@@ -8,8 +7,9 @@ export function FocusModeToggle() {
   const { focusMode, setFocusMode } = usePomodoro();
 
   useEffect(() => {
-    const root = document.documentElement;
-
+    // Target the specific Pomodoro section instead of the whole document
+    const targetElement = document.getElementById('pomodoro-focus-section');
+    
     // Listen for fullscreen change event
     function onFullscreenChange() {
       // Update focusMode state to false if no fullscreen
@@ -22,9 +22,17 @@ export function FocusModeToggle() {
 
     // Request or exit fullscreen when focusMode changes
     if (focusMode) {
-      if (root.requestFullscreen) root.requestFullscreen().catch(() => {});
+      if (targetElement && targetElement.requestFullscreen) {
+        targetElement.requestFullscreen().catch(() => {
+          console.log("Fullscreen request failed");
+        });
+      }
     } else {
-      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {
+          console.log("Exit fullscreen failed");
+        });
+      }
     }
 
     // Cleanup listener on unmount

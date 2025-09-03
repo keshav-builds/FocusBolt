@@ -95,7 +95,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
 
   const durationFor = useCallback((mode: Mode) => settings.durations[mode], [settings.durations])
 
-  // Recompute remaining when durations change (clamp to new duration)
+  // Recompute remaining when durations change ( new duration)
   useEffect(() => {
     setState((prev) => {
       const max = durationFor(prev.mode)

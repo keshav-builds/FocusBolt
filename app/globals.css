@@ -115,6 +115,21 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+.fullscreen-mode:fullscreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 3rem;
+}
+
+.fullscreen-mode:fullscreen .flip-clock {
+  transform: scale(1.2);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

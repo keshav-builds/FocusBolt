@@ -15,11 +15,12 @@ export function FlipClock({
   theme,
   animationDuration = 600,
 }: Props) {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
+  const safeSeconds = Math.max(0, seconds);
+  const mins = Math.floor(safeSeconds / 60);
+  const secs = safeSeconds % 60;
 
   const formatTime = useCallback(
-    (time: number) => time.toString().padStart(2, "0"),
+    (time: number) => Math.max(0, time).toString().padStart(2, "0"),
     []
   );
 
@@ -102,9 +103,20 @@ function FlipDigit({
 
   const executeFlip = useCallback(
     (newValue: string) => {
-      if (isAnimating.current || newValue === prevValue.current) return;
+      // Skip if same value
+      if (newValue === prevValue.current) return;
 
-      clearAllTimeouts();
+      // If currently animating, queue this update
+      if (isAnimating.current) {
+        // Force immediate update to prevent skipping
+        clearAllTimeouts();
+        setCurrentValue(newValue);
+        prevValue.current = newValue;
+        setIsFlipping(false);
+        isAnimating.current = false;
+        return;
+      }
+
       isAnimating.current = true;
       setIsFlipping(true);
 

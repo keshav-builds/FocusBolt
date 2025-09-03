@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import { ModeToggle } from "@/components/mode-toggle";
 import { SettingsSheet } from "@/components/settings/settings-sheet";
 import { FocusModeToggle } from "@/components/timer/focus-mode-toggle";
 import { SessionQuote } from "@/components/timer/session-quote";
@@ -15,9 +14,9 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { RegisterSW } from "@/components/register-sw";
 import { LoaderThree } from "@/components/ui/loader";
-import { ColorPicker } from '@/components/ColorPicker';
-import { colorThemes } from '@/config/themes';
-import { ColorTheme } from '@/lib/theme';
+import { ColorPicker } from "@/components/ColorPicker";
+import { colorThemes } from "@/config/themes";
+import { ColorTheme } from "@/lib/theme";
 
 function AppBody() {
   const {
@@ -41,10 +40,10 @@ function AppBody() {
 
   // Color theme state with localStorage persistence
   const [currentTheme, setCurrentTheme] = useState<ColorTheme>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('focusBoltTheme');
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("focusBoltTheme");
       if (saved) {
-        const savedTheme = colorThemes.find(t => t.id === saved);
+        const savedTheme = colorThemes.find((t) => t.id === saved);
         if (savedTheme) return savedTheme;
       }
     }
@@ -53,17 +52,35 @@ function AppBody() {
 
   // Persist theme selection
   useEffect(() => {
-    localStorage.setItem('focusBoltTheme', currentTheme.id);
+    localStorage.setItem("focusBoltTheme", currentTheme.id);
   }, [currentTheme]);
 
   // Apply theme to document root for global styling
   useEffect(() => {
-    document.documentElement.style.setProperty('--theme-background', currentTheme.background);
-    document.documentElement.style.setProperty('--theme-card-background', currentTheme.cardBackground);
-    document.documentElement.style.setProperty('--theme-card-border', currentTheme.cardBorder);
-    document.documentElement.style.setProperty('--theme-digit-color', currentTheme.digitColor);
-    document.documentElement.style.setProperty('--theme-separator-color', currentTheme.separatorColor);
-    document.documentElement.style.setProperty('--theme-shadow', currentTheme.shadow);
+    document.documentElement.style.setProperty(
+      "--theme-background",
+      currentTheme.background
+    );
+    document.documentElement.style.setProperty(
+      "--theme-card-background",
+      currentTheme.cardBackground
+    );
+    document.documentElement.style.setProperty(
+      "--theme-card-border",
+      currentTheme.cardBorder
+    );
+    document.documentElement.style.setProperty(
+      "--theme-digit-color",
+      currentTheme.digitColor
+    );
+    document.documentElement.style.setProperty(
+      "--theme-separator-color",
+      currentTheme.separatorColor
+    );
+    document.documentElement.style.setProperty(
+      "--theme-shadow",
+      currentTheme.shadow
+    );
   }, [currentTheme]);
 
   useEffect(() => {
@@ -80,14 +97,25 @@ function AppBody() {
         setFocusMode(!focusMode);
       } else if (e.key.toLowerCase() === "c") {
         // Quick color theme cycling with 'C' key
-        const currentIndex = colorThemes.findIndex(t => t.id === currentTheme.id);
+        const currentIndex = colorThemes.findIndex(
+          (t) => t.id === currentTheme.id
+        );
         const nextIndex = (currentIndex + 1) % colorThemes.length;
         setCurrentTheme(colorThemes[nextIndex]);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [isRunning, pause, start, reset, skip, focusMode, setFocusMode, currentTheme]);
+  }, [
+    isRunning,
+    pause,
+    start,
+    reset,
+    skip,
+    focusMode,
+    setFocusMode,
+    currentTheme,
+  ]);
 
   const tabs = useMemo(
     () => [
@@ -99,11 +127,11 @@ function AppBody() {
   );
 
   return (
-    <main 
+    <main
       className="min-h-dvh text-foreground transition-all duration-500 ease-in-out"
-      style={{ 
+      style={{
         background: currentTheme.background,
-        color: currentTheme.digitColor
+        color: currentTheme.digitColor,
       }}
     >
       <RegisterSW />
@@ -114,88 +142,94 @@ function AppBody() {
         )}
       >
         <header className={cn("flex items-center justify-between gap-2")}>
-  <div className="flex items-center gap-3">
-    <img
-      src="/favicon.ico"
-      alt=""
-      aria-hidden="true"
-      className="h-8 w-8 rounded-md object-contain"
-      style={{ 
-        backgroundColor: `${currentTheme.cardBorder}20`,
-        filter: currentTheme.category.includes('dark') ? 'invert(1)' : 'none'
-      }}
-    />
-    <h1 
-      className="text-pretty text-xl font-semibold md:text-2xl transition-colors duration-300"
-      style={{ color: currentTheme.digitColor }}
-    >
-      Focus Bolt
-    </h1>
-  </div>
-  <div className="flex items-center gap-2">
-    <FocusModeToggle />
-    {/* Replace ModeToggle with ColorPicker */}
-    <ColorPicker 
-      currentTheme={currentTheme}
-      onThemeChange={setCurrentTheme}
-      variant="header"
-    />
-    <SettingsSheet open={settingsOpen} onOpenChange={setSettingsOpen} />
-  </div>
-</header>
-
+          <div className="flex items-center gap-3">
+            <img
+              src="/favicon.ico"
+              alt=""
+              aria-hidden="true"
+              className="h-8 w-8 rounded-md object-contain"
+              style={{
+                backgroundColor: `${currentTheme.cardBorder}20`,
+                filter: currentTheme.category.includes("dark")
+                  ? "invert(1)"
+                  : "none",
+              }}
+            />
+            <h1
+              className="text-pretty text-xl font-semibold md:text-2xl transition-colors duration-300"
+              style={{ color: currentTheme.digitColor }}
+            >
+              Focus Bolt
+            </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <FocusModeToggle />
+            {/* ColorPicker */}
+            <ColorPicker
+              currentTheme={currentTheme}
+              onThemeChange={setCurrentTheme}
+              variant="header"
+            />
+            <SettingsSheet open={settingsOpen} onOpenChange={setSettingsOpen} />
+          </div>
+        </header>
 
         <section className={cn("mt-6")}>
-          <Card 
-            className="border transition-all duration-300"
-            style={{ 
+          <Card
+            id="pomodoro-focus-section"
+            className={cn(
+              "border transition-all duration-300",
+              focusMode && "fullscreen-mode"
+            )}
+            style={{
               backgroundColor: currentTheme.background,
               borderColor: currentTheme.cardBorder,
-              boxShadow: currentTheme.shadow
+              boxShadow: currentTheme.shadow,
             }}
           >
             <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle 
-                  className="text-balance text-lg transition-colors duration-300"
+              <div className="flex items-center justify-between gap-4">
+                <CardTitle
+                  className="text-balance text-lg flex-shrink-0 "
                   style={{ color: currentTheme.digitColor }}
                 >
                   Pomodoro
                 </CardTitle>
-                <Tabs
-  value={viewMode}
-  onValueChange={(v) => setViewMode(v as any)}
->
-  <TabsList 
-    className="grid grid-cols-3"
-    themeStyle={{
-      backgroundColor: `${currentTheme.cardBorder}20`,
-      border: `1px solid ${currentTheme.cardBorder}`
-    }}
-  >
-    {tabs.map((t) => (
-      <TabsTrigger
-        key={t.value}
-        value={t.value}
-        onClick={() => switchMode(t.value as any)}
-        className="text-sm data-[state=active]:shadow-sm"
-        isActive={viewMode === t.value}
-        themeStyle={{
-          color: `${currentTheme.digitColor}80`
-        }}
-        activeThemeStyle={{
-          backgroundColor: currentTheme.background,
-          color: currentTheme.digitColor,
-          boxShadow: `0 1px 3px ${currentTheme.cardBorder}40`
-        }}
-        aria-label={`Switch to ${t.label}`}
-      >
-        {t.label}
-      </TabsTrigger>
-    ))}
-  </TabsList>
-</Tabs>
-
+                <div className="flex-shrink-0">
+                  <Tabs
+                    value={viewMode}
+                    onValueChange={(v) => setViewMode(v as any)}
+                  >
+                    <TabsList
+                      className="grid grid-cols-3"
+                      themeStyle={{
+                        backgroundColor: `${currentTheme.cardBorder}20`,
+                        border: `1px solid ${currentTheme.cardBorder}`,
+                      }}
+                    >
+                      {tabs.map((t) => (
+                        <TabsTrigger
+                          key={t.value}
+                          value={t.value}
+                          onClick={() => switchMode(t.value as any)}
+                          className="text-sm data-[state=active]:shadow-sm"
+                          isActive={viewMode === t.value}
+                          themeStyle={{
+                            color: `${currentTheme.digitColor}80`,
+                          }}
+                          activeThemeStyle={{
+                            backgroundColor: currentTheme.background,
+                            color: currentTheme.digitColor,
+                            boxShadow: `0 1px 3px ${currentTheme.cardBorder}40`,
+                          }}
+                          aria-label={`Switch to ${t.label}`}
+                        >
+                          {t.label}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                  </Tabs>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-6">
@@ -204,64 +238,64 @@ function AppBody() {
                 theme={currentTheme}
                 ariaLabel={`${modeLabel(mode)} time remaining`}
               />
-             <div 
-  className="text-xs transition-colors duration-300" 
-  style={{ color: currentTheme.separatorColor, opacity: 0.8 }}
->
-  <CurrentTime />
-</div>
+              <div
+                className="text-xs transition-colors duration-300"
+                style={{ color: currentTheme.separatorColor, opacity: 0.8 }}
+              >
+                <CurrentTime />
+              </div>
               <div className="flex items-center justify-center gap-3">
                 {isRunning ? (
-                  <Button 
-                    size="lg" 
-                    onClick={pause} 
+                  <Button
+                    size="lg"
+                    onClick={pause}
                     className="px-6 transition-all duration-200"
                     style={{
                       backgroundColor: currentTheme.digitColor,
                       color: currentTheme.background,
-                      border: `1px solid ${currentTheme.cardBorder}`
+                      border: `1px solid ${currentTheme.cardBorder}`,
                     }}
                   >
                     Pause
                   </Button>
                 ) : (
-                  <Button 
-                    size="lg" 
-                    onClick={start} 
+                  <Button
+                    size="lg"
+                    onClick={start}
                     className="px-6 transition-all duration-200"
                     style={{
                       backgroundColor: currentTheme.digitColor,
                       color: currentTheme.background,
-                      border: `1px solid ${currentTheme.cardBorder}`
+                      border: `1px solid ${currentTheme.cardBorder}`,
                     }}
                   >
                     Start
                   </Button>
                 )}
-                <Button 
-                  variant="secondary" 
+                <Button
+                  variant="secondary"
                   onClick={reset}
                   className="transition-all duration-200"
                   style={{
                     backgroundColor: `${currentTheme.cardBorder}20`,
                     color: currentTheme.digitColor,
-                    border: `1px solid ${currentTheme.cardBorder}`
+                    border: `1px solid ${currentTheme.cardBorder}`,
                   }}
                 >
                   Reset
                 </Button>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   onClick={skip}
                   className="transition-all duration-200"
                   style={{
-                    color: currentTheme.separatorColor
+                    color: currentTheme.separatorColor,
                   }}
                 >
                   Skip
                 </Button>
               </div>
-              <div 
+              <div
                 className="text-center text-xs transition-colors duration-300"
                 style={{ color: `${currentTheme.separatorColor}60` }}
               >
@@ -277,8 +311,8 @@ function AppBody() {
           </Card>
         </section>
 
-        <Separator 
-          className="my-8 transition-colors duration-300" 
+        <Separator
+          className="my-8 transition-colors duration-300"
           style={{ backgroundColor: `${currentTheme.cardBorder}40` }}
         />
 
@@ -288,16 +322,16 @@ function AppBody() {
             focusMode && "opacity-40 pointer-events-none"
           )}
         >
-          <Card 
+          <Card
             className="border transition-all duration-300"
-            style={{ 
+            style={{
               backgroundColor: currentTheme.background,
               borderColor: currentTheme.cardBorder,
-              boxShadow: `0 4px 12px ${currentTheme.cardBorder}20`
+              boxShadow: `0 4px 12px ${currentTheme.cardBorder}20`,
             }}
           >
             <CardHeader>
-              <CardTitle 
+              <CardTitle
                 className="text-lg transition-colors duration-300"
                 style={{ color: currentTheme.digitColor }}
               >
@@ -308,28 +342,29 @@ function AppBody() {
               <ProgressChart />
             </CardContent>
           </Card>
-          <Card 
+          <Card
             className="border transition-all duration-300"
-            style={{ 
+            style={{
               backgroundColor: currentTheme.background,
               borderColor: currentTheme.cardBorder,
-              boxShadow: `0 4px 12px ${currentTheme.cardBorder}20`
+              boxShadow: `0 4px 12px ${currentTheme.cardBorder}20`,
             }}
           >
             <CardHeader>
-              <CardTitle 
+              <CardTitle
                 className="text-lg transition-colors duration-300"
                 style={{ color: currentTheme.digitColor }}
               >
                 Tips
               </CardTitle>
             </CardHeader>
-            <CardContent 
+            <CardContent
               className="space-y-3 text-sm transition-colors duration-300"
               style={{ color: `${currentTheme.separatorColor}80` }}
             >
               <p>
-                Press Space to start/pause, R to reset, S to skip, F for Focus Mode.
+                Press Space to start/pause, R to reset, S to skip, F for Focus
+                Mode.
               </p>
               <p>
                 Press C to cycle through color themes, or use the color picker.
@@ -348,8 +383,6 @@ function AppBody() {
 
         <SessionQuote />
       </div>
-
-     
     </main>
   );
 }

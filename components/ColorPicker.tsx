@@ -41,7 +41,7 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
         Theme
       </Button>
 
-      {/* Color Picker Panel - Now Dynamic! */}
+      {/* Color Picker Panel */}
       {isOpen && (
         <>
           <div 
@@ -93,7 +93,7 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
               ))}
             </div>
 
-            {/* Theme Grid - Dynamic Colors */}
+            {/* Theme Grid  */}
             <div className="p-4 grid grid-cols-2 gap-3 max-h-80 overflow-y-auto">
               {filteredThemes.map((theme) => (
                 <button
@@ -126,8 +126,7 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
                 </button>
               ))}
             </div>
-
-        
+      
           </div>
         </>
       )}

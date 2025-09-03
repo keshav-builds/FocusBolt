@@ -1,4 +1,3 @@
-// progress.ts - Enhanced with change detection and error handling
 type ProgressEvent = {
   type: "work"
   seconds: number
@@ -17,7 +16,7 @@ export function addProgressEvent(evt: ProgressEvent) {
   data.push({ ...evt, at: evt.at ?? Date.now() })
   saveAll(data)
   
-  // Dispatch custom event for real-time updates
+  //  event for real-time updates
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('progressUpdate'))
   }
