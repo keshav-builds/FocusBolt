@@ -25,7 +25,7 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
     : "fixed bottom-100 right-30";
 
   return (
-    <div className={containerClass}>
+    <div className={containerClass} >
       {/* Toggle Button */}
       <Button
         variant="outline"

@@ -34,9 +34,9 @@ const DEFAULT_SETTINGS: Settings = {
   durations: { work: 25 * 60, short: 5 * 60, long: 15 * 60 },
   longInterval: 4,
   autoStartNext: true,
-  autoPauseOnBlur: true,
+  autoPauseOnBlur: false,
   autoResumeOnFocus: true,
-  notifications: true,
+  notifications: false,
   timeFormat: "24h",
 }
 

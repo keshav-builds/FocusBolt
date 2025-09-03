@@ -1,53 +1,48 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
-import { usePomodoro } from "./pomodoro-provider";
+'use client';
 
-export function FocusModeToggle() {
+import {  EnterFullScreenIcon,
+  ExitFullScreenIcon, } from '@radix-ui/react-icons';
+import { useEffect } from 'react';
+import { usePomodoro } from './pomodoro-provider';
+import { ColorTheme } from '@/lib/theme';
+import { cn } from '@/lib/utils';
+interface Props {
+  currentTheme: ColorTheme;
+}
+
+export function FocusToggleIcon({ currentTheme }: Props) {
   const { focusMode, setFocusMode } = usePomodoro();
 
+ 
   useEffect(() => {
-    // Target the specific Pomodoro section instead of the whole document
-    const targetElement = document.getElementById('pomodoro-focus-section');
-    
-    // Listen for fullscreen change event
-    function onFullscreenChange() {
-      // Update focusMode state to false if no fullscreen
-      if (!document.fullscreenElement) {
-        setFocusMode(false);
-      }
-    }
-
-    document.addEventListener("fullscreenchange", onFullscreenChange);
-
-    // Request or exit fullscreen when focusMode changes
-    if (focusMode) {
-      if (targetElement && targetElement.requestFullscreen) {
-        targetElement.requestFullscreen().catch(() => {
-          console.log("Fullscreen request failed");
-        });
-      }
-    } else {
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {
-          console.log("Exit fullscreen failed");
-        });
-      }
-    }
-
-    // Cleanup listener on unmount
-    return () => {
-      document.removeEventListener("fullscreenchange", onFullscreenChange);
+    const onFsChange = () => {
+      if (!document.fullscreenElement) setFocusMode(false);
     };
+    document.addEventListener('fullscreenchange', onFsChange);
+
+    const target = document.getElementById('pomodoro-focus-section');
+    if (focusMode) {
+      target?.requestFullscreen().catch(() => {});
+    } else if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
   }, [focusMode, setFocusMode]);
 
   return (
-    <Button
-      variant={focusMode ? "secondary" : "outline"}
+    <button
+      aria-label={focusMode ? 'Exit focus mode' : 'Enter focus mode'}
       onClick={() => setFocusMode(!focusMode)}
-      title="Toggle Focus Mode (F)"
+      className={cn(
+        'absolute bottom-4 right-4 rounded-md p-2 transition-colors outline-0',
+        'shadow-sm hover:shadow',
+      )}
+      style={{
+        backgroundColor: currentTheme.digitColor,
+        color: currentTheme.background,
+      }}
     >
-      {focusMode ? "Exit Focus" : "Focus Mode"}
-    </Button>
+      {focusMode ?  <ExitFullScreenIcon width={20} height={20} /> : <EnterFullScreenIcon width={20} height={20} />}
+    </button>
   );
 }
