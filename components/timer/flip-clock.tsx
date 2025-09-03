@@ -1,17 +1,18 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { ColorTheme } from '../../lib/theme';
 
 type Props = {
   seconds: number;
   ariaLabel?: string;
-  theme?: "light" | "dark";
+  theme: ColorTheme;
   animationDuration?: number;
 };
 
 export function FlipClock({
   seconds,
   ariaLabel,
-  theme = "dark",
+  theme,
   animationDuration = 600,
 }: Props) {
   const mins = Math.floor(seconds / 60);
@@ -23,7 +24,7 @@ export function FlipClock({
   );
 
   return (
-    <div aria-label={ariaLabel} role="timer" className={`flip-clock ${theme}`}>
+    <div aria-label={ariaLabel} role="timer" className="flip-clock">
       <FlipDigit
         value={formatTime(mins)[0]}
         theme={theme}
@@ -63,16 +64,8 @@ export function FlipClock({
             -apple-system, BlinkMacSystemFont, sans-serif;
           font-variant-numeric: tabular-nums;
           font-weight: 700;
-        }
-
-        .flip-clock.dark {
-          background: #1a1a1a;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .flip-clock.light {
-          background: #f5f5f5;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+          background: ${theme.background};
+          box-shadow: ${theme.shadow};
         }
 
         .separator {
@@ -80,7 +73,7 @@ export function FlipClock({
           font-weight: 300;
           margin: 0 16px;
           line-height: 0.8;
-          color: ${theme === "dark" ? "#666" : "#999"};
+          color: ${theme.separatorColor};
         }
       `}</style>
     </div>
@@ -93,7 +86,7 @@ function FlipDigit({
   animationDuration = 600,
 }: {
   value: string;
-  theme: "light" | "dark";
+  theme: ColorTheme;
   animationDuration: number;
 }) {
   const [currentValue, setCurrentValue] = useState(value);
@@ -102,13 +95,11 @@ function FlipDigit({
   const timeouts = useRef<NodeJS.Timeout[]>([]);
   const isAnimating = useRef(false);
 
-  // Clear all timeouts
   const clearAllTimeouts = useCallback(() => {
     timeouts.current.forEach(clearTimeout);
     timeouts.current = [];
   }, []);
 
-  // Execute flip animation
   const executeFlip = useCallback(
     (newValue: string) => {
       if (isAnimating.current || newValue === prevValue.current) return;
@@ -117,12 +108,10 @@ function FlipDigit({
       isAnimating.current = true;
       setIsFlipping(true);
 
-      // Update value at midpoint
       timeouts.current.push(
         setTimeout(() => setCurrentValue(newValue), animationDuration / 2)
       );
 
-      // Complete animation
       timeouts.current.push(
         setTimeout(() => {
           setIsFlipping(false);
@@ -134,18 +123,15 @@ function FlipDigit({
     [animationDuration, clearAllTimeouts]
   );
 
-  // Handle value changes
   useEffect(() => {
     executeFlip(value);
   }, [value, executeFlip]);
 
-  // Initialize
   useEffect(() => {
     setCurrentValue(value);
     prevValue.current = value;
   }, []);
 
-  // Cleanup
   useEffect(() => {
     return () => {
       clearAllTimeouts();
@@ -157,7 +143,6 @@ function FlipDigit({
 
   return (
     <div className="flip-digit-container">
-      {/* Static base */}
       <div className="digit-half top-base">
         <div className="digit-content">
           <span className="digit-text">{currentValue}</span>
@@ -170,7 +155,6 @@ function FlipDigit({
         </div>
       </div>
 
-      {/* Animation overlay */}
       {isFlipping && (
         <div className="flip-overlay">
           <div className="flip-card top-card">
@@ -202,10 +186,8 @@ function FlipDigit({
           width: 100%;
           height: 50%;
           overflow: hidden;
-          background: ${theme === "dark"
-            ? "linear-gradient(180deg, #333 0%, #222 100%)"
-            : "linear-gradient(180deg, #fff 0%, #f0f0f0 100%)"};
-          border: ${theme === "dark" ? "1px solid #444" : "1px solid #ddd"};
+          background: ${theme.cardBackground};
+          border: 1px solid ${theme.cardBorder};
         }
 
         .top-base {
@@ -237,10 +219,8 @@ function FlipDigit({
           height: 50%;
           overflow: hidden;
           backface-visibility: hidden;
-          background: ${theme === "dark"
-            ? "linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%)"
-            : "linear-gradient(180deg, #ffffff 0%, #e8e8e8 100%)"};
-          border: ${theme === "dark" ? "1px solid #555" : "1px solid #bbb"};
+          background: ${theme.cardBackground};
+          border: 1px solid ${theme.cardBorder};
         }
 
         .top-card {
@@ -250,9 +230,7 @@ function FlipDigit({
           transform-origin: center bottom;
           animation: topFlipDown ${halfDuration}ms ease-in forwards;
           z-index: 20;
-          box-shadow: ${theme === "dark"
-            ? "0 4px 8px rgba(0, 0, 0, 0.6)"
-            : "0 3px 6px rgba(0, 0, 0, 0.2)"};
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .bottom-card {
@@ -261,12 +239,9 @@ function FlipDigit({
           border-radius: 0 0 8px 8px;
           transform-origin: center top;
           transform: rotateX(90deg);
-          animation: bottomFlipUp ${halfDuration}ms ease-out ${halfDuration}ms
-            forwards;
+          animation: bottomFlipUp ${halfDuration}ms ease-out ${halfDuration}ms forwards;
           z-index: 10;
-          box-shadow: ${theme === "dark"
-            ? "0 -2px 4px rgba(0, 0, 0, 0.4)"
-            : "0 -2px 3px rgba(0, 0, 0, 0.15)"};
+          box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .digit-content {
@@ -293,10 +268,8 @@ function FlipDigit({
           font-weight: 700;
           line-height: 1;
           font-variant-numeric: tabular-nums;
-          color: ${theme === "dark" ? "#fff" : "#333"};
-          text-shadow: ${theme === "dark"
-            ? "0 2px 4px rgba(0, 0, 0, 0.8)"
-            : "0 1px 2px rgba(0, 0, 0, 0.2)"};
+          color: ${theme.digitColor};
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .divider {
@@ -305,28 +278,20 @@ function FlipDigit({
           left: -2px;
           right: -2px;
           height: 2px;
-          background: ${theme === "dark" ? "#111" : "#ccc"};
+          background: rgba(0, 0, 0, 0.1);
           transform: translateY(-50%);
           z-index: 25;
           border-radius: 1px;
         }
 
         @keyframes topFlipDown {
-          0% {
-            transform: rotateX(0deg);
-          }
-          100% {
-            transform: rotateX(-90deg);
-          }
+          0% { transform: rotateX(0deg); }
+          100% { transform: rotateX(-90deg); }
         }
 
         @keyframes bottomFlipUp {
-          0% {
-            transform: rotateX(90deg);
-          }
-          100% {
-            transform: rotateX(0deg);
-          }
+          0% { transform: rotateX(90deg); }
+          100% { transform: rotateX(0deg); }
         }
       `}</style>
     </div>

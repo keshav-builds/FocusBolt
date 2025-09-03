@@ -15,6 +15,9 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { RegisterSW } from "@/components/register-sw";
 import { LoaderThree } from "@/components/ui/loader";
+import { ColorPicker } from '@/components/ColorPicker';
+import { colorThemes } from '@/config/themes';
+import { ColorTheme } from '@/lib/theme';
 
 function AppBody() {
   const {
@@ -36,6 +39,33 @@ function AppBody() {
     autoResumeOnFocus,
   } = usePomodoro();
 
+  // Color theme state with localStorage persistence
+  const [currentTheme, setCurrentTheme] = useState<ColorTheme>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('focusBoltTheme');
+      if (saved) {
+        const savedTheme = colorThemes.find(t => t.id === saved);
+        if (savedTheme) return savedTheme;
+      }
+    }
+    return colorThemes[0]; // Default to first theme
+  });
+
+  // Persist theme selection
+  useEffect(() => {
+    localStorage.setItem('focusBoltTheme', currentTheme.id);
+  }, [currentTheme]);
+
+  // Apply theme to document root for global styling
+  useEffect(() => {
+    document.documentElement.style.setProperty('--theme-background', currentTheme.background);
+    document.documentElement.style.setProperty('--theme-card-background', currentTheme.cardBackground);
+    document.documentElement.style.setProperty('--theme-card-border', currentTheme.cardBorder);
+    document.documentElement.style.setProperty('--theme-digit-color', currentTheme.digitColor);
+    document.documentElement.style.setProperty('--theme-separator-color', currentTheme.separatorColor);
+    document.documentElement.style.setProperty('--theme-shadow', currentTheme.shadow);
+  }, [currentTheme]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement)?.tagName === "INPUT") return;
@@ -48,11 +78,16 @@ function AppBody() {
         skip();
       } else if (e.key.toLowerCase() === "f") {
         setFocusMode(!focusMode);
+      } else if (e.key.toLowerCase() === "c") {
+        // Quick color theme cycling with 'C' key
+        const currentIndex = colorThemes.findIndex(t => t.id === currentTheme.id);
+        const nextIndex = (currentIndex + 1) % colorThemes.length;
+        setCurrentTheme(colorThemes[nextIndex]);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [isRunning, pause, start, reset, skip, focusMode, setFocusMode]);
+  }, [isRunning, pause, start, reset, skip, focusMode, setFocusMode, currentTheme]);
 
   const tabs = useMemo(
     () => [
@@ -64,7 +99,13 @@ function AppBody() {
   );
 
   return (
-    <main className="min-h-dvh bg-background text-foreground transition-colors duration-300">
+    <main 
+      className="min-h-dvh text-foreground transition-all duration-500 ease-in-out"
+      style={{ 
+        background: currentTheme.background,
+        color: currentTheme.digitColor
+      }}
+    >
       <RegisterSW />
       <div
         className={cn(
@@ -73,108 +114,225 @@ function AppBody() {
         )}
       >
         <header className={cn("flex items-center justify-between gap-2")}>
-          <div className="flex items-center gap-3">
-            <img
-              src="/favicon.ico"
-              alt=""
-              aria-hidden="true"
-              className="h-8 w-8 rounded-md bg-primary/10 object-contain"
-            />
-            <h1 className="text-pretty text-xl font-semibold md:text-2xl">
-              Focus Bolt
-            </h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <FocusModeToggle />
-            <ModeToggle />
-            <SettingsSheet open={settingsOpen} onOpenChange={setSettingsOpen} />
-          </div>
-        </header>
+  <div className="flex items-center gap-3">
+    <img
+      src="/favicon.ico"
+      alt=""
+      aria-hidden="true"
+      className="h-8 w-8 rounded-md object-contain"
+      style={{ 
+        backgroundColor: `${currentTheme.cardBorder}20`,
+        filter: currentTheme.category.includes('dark') ? 'invert(1)' : 'none'
+      }}
+    />
+    <h1 
+      className="text-pretty text-xl font-semibold md:text-2xl transition-colors duration-300"
+      style={{ color: currentTheme.digitColor }}
+    >
+      Focus Bolt
+    </h1>
+  </div>
+  <div className="flex items-center gap-2">
+    <FocusModeToggle />
+    {/* Replace ModeToggle with ColorPicker */}
+    <ColorPicker 
+      currentTheme={currentTheme}
+      onThemeChange={setCurrentTheme}
+      variant="header"
+    />
+    <SettingsSheet open={settingsOpen} onOpenChange={setSettingsOpen} />
+  </div>
+</header>
+
 
         <section className={cn("mt-6")}>
-          <Card className="border-border/60">
+          <Card 
+            className="border transition-all duration-300"
+            style={{ 
+              backgroundColor: currentTheme.background,
+              borderColor: currentTheme.cardBorder,
+              boxShadow: currentTheme.shadow
+            }}
+          >
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-balance text-lg">Pomodoro</CardTitle>
-                <Tabs
-                  value={viewMode}
-                  onValueChange={(v) => setViewMode(v as any)}
+                <CardTitle 
+                  className="text-balance text-lg transition-colors duration-300"
+                  style={{ color: currentTheme.digitColor }}
                 >
-                  <TabsList className="grid grid-cols-3">
-                    {tabs.map((t) => (
-                      <TabsTrigger
-                        key={t.value}
-                        value={t.value}
-                        onClick={() => switchMode(t.value as any)}
-                        className="text-sm"
-                        aria-label={`Switch to ${t.label}`}
-                      >
-                        {t.label}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </Tabs>
+                  Pomodoro
+                </CardTitle>
+                <Tabs
+  value={viewMode}
+  onValueChange={(v) => setViewMode(v as any)}
+>
+  <TabsList 
+    className="grid grid-cols-3"
+    themeStyle={{
+      backgroundColor: `${currentTheme.cardBorder}20`,
+      border: `1px solid ${currentTheme.cardBorder}`
+    }}
+  >
+    {tabs.map((t) => (
+      <TabsTrigger
+        key={t.value}
+        value={t.value}
+        onClick={() => switchMode(t.value as any)}
+        className="text-sm data-[state=active]:shadow-sm"
+        isActive={viewMode === t.value}
+        themeStyle={{
+          color: `${currentTheme.digitColor}80`
+        }}
+        activeThemeStyle={{
+          backgroundColor: currentTheme.background,
+          color: currentTheme.digitColor,
+          boxShadow: `0 1px 3px ${currentTheme.cardBorder}40`
+        }}
+        aria-label={`Switch to ${t.label}`}
+      >
+        {t.label}
+      </TabsTrigger>
+    ))}
+  </TabsList>
+</Tabs>
+
               </div>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-6">
               <FlipClock
                 seconds={remaining}
+                theme={currentTheme}
                 ariaLabel={`${modeLabel(mode)} time remaining`}
               />
-              <CurrentTime className="text-xs text-muted-foreground" />
+             <div 
+  className="text-xs transition-colors duration-300" 
+  style={{ color: currentTheme.separatorColor, opacity: 0.8 }}
+>
+  <CurrentTime />
+</div>
               <div className="flex items-center justify-center gap-3">
                 {isRunning ? (
-                  <Button size="lg" onClick={pause} className="px-6">
+                  <Button 
+                    size="lg" 
+                    onClick={pause} 
+                    className="px-6 transition-all duration-200"
+                    style={{
+                      backgroundColor: currentTheme.digitColor,
+                      color: currentTheme.background,
+                      border: `1px solid ${currentTheme.cardBorder}`
+                    }}
+                  >
                     Pause
                   </Button>
                 ) : (
-                  <Button size="lg" onClick={start} className="px-6">
+                  <Button 
+                    size="lg" 
+                    onClick={start} 
+                    className="px-6 transition-all duration-200"
+                    style={{
+                      backgroundColor: currentTheme.digitColor,
+                      color: currentTheme.background,
+                      border: `1px solid ${currentTheme.cardBorder}`
+                    }}
+                  >
                     Start
                   </Button>
                 )}
-                <Button variant="secondary" onClick={reset}>
+                <Button 
+                  variant="secondary" 
+                  onClick={reset}
+                  className="transition-all duration-200"
+                  style={{
+                    backgroundColor: `${currentTheme.cardBorder}20`,
+                    color: currentTheme.digitColor,
+                    border: `1px solid ${currentTheme.cardBorder}`
+                  }}
+                >
                   Reset
                 </Button>
-                <Button variant="ghost" onClick={skip}>
+                <Button 
+                  variant="ghost" 
+                  onClick={skip}
+                  className="transition-all duration-200"
+                  style={{
+                    color: currentTheme.separatorColor
+                  }}
+                >
                   Skip
                 </Button>
               </div>
-              <div className="text-center text-xs text-muted-foreground">
+              <div 
+                className="text-center text-xs transition-colors duration-300"
+                style={{ color: `${currentTheme.separatorColor}60` }}
+              >
                 {autoPauseOnBlur
                   ? "Auto-pause when tab hidden. "
                   : "Auto-pause off. "}
                 {autoResumeOnFocus
-                  ? "Auto-resume on return."
-                  : "Manual resume on return."}
+                  ? "Auto-resume on return. "
+                  : "Manual resume on return. "}
+                <span className="opacity-70">Press C to cycle themes.</span>
               </div>
             </CardContent>
           </Card>
         </section>
 
-        <Separator className="my-8" />
+        <Separator 
+          className="my-8 transition-colors duration-300" 
+          style={{ backgroundColor: `${currentTheme.cardBorder}40` }}
+        />
 
         <section
           className={cn(
-            "grid gap-6 md:grid-cols-2",
+            "grid gap-6 md:grid-cols-2 transition-all duration-300",
             focusMode && "opacity-40 pointer-events-none"
           )}
         >
-          <Card className="border-border/60">
+          <Card 
+            className="border transition-all duration-300"
+            style={{ 
+              backgroundColor: currentTheme.background,
+              borderColor: currentTheme.cardBorder,
+              boxShadow: `0 4px 12px ${currentTheme.cardBorder}20`
+            }}
+          >
             <CardHeader>
-              <CardTitle className="text-lg">Today&apos;s Progress</CardTitle>
+              <CardTitle 
+                className="text-lg transition-colors duration-300"
+                style={{ color: currentTheme.digitColor }}
+              >
+                Today&apos;s Progress
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ProgressChart />
             </CardContent>
           </Card>
-          <Card className="border-border/60">
+          <Card 
+            className="border transition-all duration-300"
+            style={{ 
+              backgroundColor: currentTheme.background,
+              borderColor: currentTheme.cardBorder,
+              boxShadow: `0 4px 12px ${currentTheme.cardBorder}20`
+            }}
+          >
             <CardHeader>
-              <CardTitle className="text-lg">Tips</CardTitle>
+              <CardTitle 
+                className="text-lg transition-colors duration-300"
+                style={{ color: currentTheme.digitColor }}
+              >
+                Tips
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-muted-foreground">
+            <CardContent 
+              className="space-y-3 text-sm transition-colors duration-300"
+              style={{ color: `${currentTheme.separatorColor}80` }}
+            >
               <p>
-                Press Space to start/pause, R to reset, S to skip, F for Focus
-                Mode.
+                Press Space to start/pause, R to reset, S to skip, F for Focus Mode.
+              </p>
+              <p>
+                Press C to cycle through color themes, or use the color picker.
               </p>
               <p>
                 Enable notifications in Settings to get alerts even if the tab
@@ -190,6 +348,8 @@ function AppBody() {
 
         <SessionQuote />
       </div>
+
+     
     </main>
   );
 }
