@@ -219,12 +219,24 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     [durationFor, safeNotify, setState, settings.longInterval, settings.autoStartNext],
   )
 
-  const start = useCallback(() => {
-    setState((prev) => {
-      const base = prev.remaining > 0 ? prev.remaining : durationFor(prev.mode)
-      return { ...prev, isRunning: true, remaining: base, epochMs: Date.now() }
-    })
-  }, [durationFor, setState])
+ const start = useCallback(() => {
+  setState((prev) => {
+    const fullDuration = durationFor(prev.mode)
+    const remaining = prev.remaining > 0 ? prev.remaining : fullDuration
+    
+    // Adjust epochMs to account for already elapsed time
+    const alreadyElapsed = fullDuration - remaining
+    const adjustedEpochMs = Date.now() - (alreadyElapsed * 1000)
+    
+    return { 
+      ...prev, 
+      isRunning: true, 
+      remaining, 
+      epochMs: adjustedEpochMs 
+    }
+  })
+}, [durationFor, setState])
+
 
   const pause = useCallback(() => {
     setState((prev) => ({ ...prev, isRunning: false, epochMs: null }))

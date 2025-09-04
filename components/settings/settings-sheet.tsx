@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { Button } from '@/components/ui/button';
+import * as React from "react";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -10,26 +10,25 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+} from "@/components/ui/sheet";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { usePomodoro } from '@/components/timer/pomodoro-provider';
-import { ensurePermission } from '@/lib/notifications';
-import { ColorTheme } from '@/lib/theme';
-
+} from "@/components/ui/select";
+import { usePomodoro } from "@/components/timer/pomodoro-provider";
+import { ensurePermission } from "@/lib/notifications";
+import { ColorTheme } from "@/lib/theme";
 
 interface SettingsSheetProps {
   open?: boolean;
   onOpenChange?: (b: boolean) => void;
-  currentTheme: ColorTheme;                // ← new prop
+  currentTheme: ColorTheme; // ← new prop
 }
 
 export function SettingsSheet({
@@ -37,7 +36,6 @@ export function SettingsSheet({
   onOpenChange,
   currentTheme,
 }: SettingsSheetProps) {
-
   const {
     durations,
     setDurations,
@@ -55,29 +53,26 @@ export function SettingsSheet({
     setTimeFormat,
   } = usePomodoro();
 
-
-  const [work,    setWork]    = React.useState(Math.round(durations.work  / 60));
-  const [shortB,  setShortB]  = React.useState(Math.round(durations.short / 60));
-  const [longB,   setLongB]   = React.useState(Math.round(durations.long  / 60));
+  const [work, setWork] = React.useState(Math.round(durations.work / 60));
+  const [shortB, setShortB] = React.useState(Math.round(durations.short / 60));
+  const [longB, setLongB] = React.useState(Math.round(durations.long / 60));
   const [longInt, setLongInt] = React.useState(longInterval);
 
-
   React.useEffect(() => {
-    setWork(Math.round(durations.work  / 60));
+    setWork(Math.round(durations.work / 60));
     setShortB(Math.round(durations.short / 60));
-    setLongB(Math.round(durations.long  / 60));
+    setLongB(Math.round(durations.long / 60));
   }, [durations]);
 
   React.useEffect(() => {
     setLongInt(longInterval);
   }, [longInterval]);
 
-
   const save = () => {
     setDurations({
-      work:  clampMins(work)   * 60,
+      work: clampMins(work) * 60,
       short: clampMins(shortB) * 60,
-      long:  clampMins(longB)  * 60,
+      long: clampMins(longB) * 60,
     });
     setLongInterval(Math.max(2, Math.min(12, longInt)));
     onOpenChange?.(false);
@@ -95,8 +90,8 @@ export function SettingsSheet({
           variant="outline"
           style={{
             backgroundColor: currentTheme.background,
-            color:           currentTheme.digitColor,
-            border:          `1px solid ${currentTheme.cardBorder}`,
+            color: currentTheme.digitColor,
+            border: `1px solid ${currentTheme.cardBorder}`,
           }}
         >
           Settings
@@ -108,9 +103,9 @@ export function SettingsSheet({
         className="w-[420px] max-w-full"
         style={{
           backgroundColor: currentTheme.background,
-          borderLeft:      `1px solid ${currentTheme.cardBorder}`,
-          color:           currentTheme.digitColor,
-          boxShadow:       currentTheme.shadow,
+          borderLeft: `1px solid ${currentTheme.cardBorder}`,
+          color: currentTheme.digitColor,
+          boxShadow: currentTheme.shadow,
         }}
       >
         <SheetHeader>
@@ -118,7 +113,6 @@ export function SettingsSheet({
           <SheetDescription>Customize sessions and behavior</SheetDescription>
         </SheetHeader>
 
-       
         <div className="mt-6 space-y-6 px-4">
           {/* durations */}
           <fieldset className="grid grid-cols-3 items-center gap-4">
@@ -174,7 +168,7 @@ export function SettingsSheet({
             <div className="col-span-2">
               <Select
                 value={timeFormat}
-                onValueChange={(v) => setTimeFormat(v as '12h' | '24h')}
+                onValueChange={(v) => setTimeFormat(v as "12h" | "24h")}
               >
                 <SelectTrigger id="clock" aria-label="Clock format">
                   <SelectValue placeholder="Select format" />
@@ -218,18 +212,7 @@ export function SettingsSheet({
             </div>
 
             {/* Auto-resume */}
-            <div className="flex items-center justify-between">
-              <div>
-                <Label>Auto-resume on return</Label>
-                <p className="text-xs text-muted-foreground">
-                  Resume when the tab becomes visible
-                </p>
-              </div>
-              <Switch
-                checked={autoResumeOnFocus}
-                onCheckedChange={setAutoResumeOnFocus}
-              />
-            </div>
+            {/* not required */}
 
             {/* Notifications */}
             <div className="flex items-center justify-between">
@@ -252,8 +235,8 @@ export function SettingsSheet({
                   onClick={requestNotif}
                   style={{
                     backgroundColor: currentTheme.background,
-                    color:           currentTheme.digitColor,
-                    border:          `1px solid ${currentTheme.cardBorder}`,
+                    color: currentTheme.digitColor,
+                    border: `1px solid ${currentTheme.cardBorder}`,
                   }}
                 >
                   Enable
@@ -268,8 +251,8 @@ export function SettingsSheet({
             onClick={save}
             style={{
               backgroundColor: currentTheme.digitColor,
-              color:           currentTheme.background,
-              border:          `1px solid ${currentTheme.cardBorder}`,
+              color: currentTheme.background,
+              border: `1px solid ${currentTheme.cardBorder}`,
             }}
           >
             Save
@@ -279,7 +262,6 @@ export function SettingsSheet({
     </Sheet>
   );
 }
-
 
 function clampMins(n: number) {
   if (Number.isNaN(n)) return 1;
