@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { SettingsSheet } from "@/components/settings/settings-sheet";
 import { FocusToggleIcon } from '@/components/timer/focus-mode-toggle';
-import { SessionQuote } from "@/components/timer/session-quote";
+import { SessionQuote } from "@/components/timer/quote";
 import { ProgressChart } from "@/components/progress/progress-chart";
 import { FlipClock } from "@/components/timer/flip-clock";
 import { usePomodoro } from "@/components/timer/pomodoro-provider";
@@ -183,10 +183,10 @@ function AppBody() {
               boxShadow: currentTheme.shadow,
             }}
           >
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between gap-4">
+            <CardHeader className="pb-2 card-header">
+              <div className="flex items-center justify-between gap-4 ">
                 <CardTitle
-                  className="text-balance text-lg flex-shrink-0 "
+                  className="text-balance text-lg"
                   style={{ color: currentTheme.digitColor }}
                 >
                   Pomodoro
@@ -380,7 +380,8 @@ function AppBody() {
           </Card>
         </section>
 
-        <SessionQuote />
+           {/* Add rotating quotes at the bottom */}
+      <SessionQuote currentTheme={currentTheme} />
       </div>
     </main>
   );

@@ -90,12 +90,13 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useLocalStorage<Settings>("pomodoro:settings", DEFAULT_SETTINGS)
   const [state, setState] = useLocalStorage<PersistedState>("pomodoro:state", DEFAULT_STATE)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
   const visibility = useVisibility()
   const intervalRef = useRef<number | null>(null)
 
   const durationFor = useCallback((mode: Mode) => settings.durations[mode], [settings.durations])
 
-  // Recompute remaining when durations change ( new duration)
+  // Recompute remaining when durations change (new duration)
   useEffect(() => {
     setState((prev) => {
       const max = durationFor(prev.mode)
@@ -103,7 +104,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     })
   }, [durationFor, setState])
 
-  // Restore after browser reopen if a session was running
+  // Restore after browser reopen if a session was running - but don't auto-start
   useEffect(() => {
     setState((prev) => {
       if (prev.epochMs && prev.isRunning) {
@@ -111,11 +112,11 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
         const total = durationFor(prev.mode)
         const left = Math.max(0, total - elapsed)
         if (left === 0) {
-          // finalize immediately
+          // Session completed while away - finalize immediately
           queueMicrotask(() => onComplete(prev.mode))
           return { ...prev, isRunning: false, epochMs: null, remaining: 0 }
         }
-        // keep paused; visibility effect can auto-resume if enabled
+        // Keep paused on page load - user must manually resume
         return { ...prev, remaining: left, isRunning: false, epochMs: null }
       }
       return prev
@@ -130,14 +131,16 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       const total = durationFor(prev.mode)
       const nextRemaining = Math.max(0, total - elapsed)
       if (nextRemaining === 0) {
-        window.clearInterval(intervalRef.current ?? undefined)
-        intervalRef.current = null
+        if (intervalRef.current) {
+          window.clearInterval(intervalRef.current)
+          intervalRef.current = null
+        }
         queueMicrotask(() => onComplete(prev.mode))
         return { ...prev, isRunning: false, remaining: 0, epochMs: null }
       }
       return { ...prev, remaining: nextRemaining }
     })
-  }, [durationFor])
+  }, [setState, durationFor])
 
   useEffect(() => {
     if (state.isRunning && intervalRef.current == null) {
@@ -151,25 +154,36 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.isRunning, tick])
 
-  // Visibility-based auto pause/resume
+  // Visibility-based auto pause/resume - prevent auto-start on initial page load
   useEffect(() => {
-    if (visibility === "hidden" && settings.autoPauseOnBlur) {
+    // Skip auto-resume on initial page load
+    if (isInitialLoad) {
+      setIsInitialLoad(false)
+      return
+    }
+
+    if (visibility === "hidden" && settings.autoPauseOnBlur && state.isRunning) {
       setState((s) => ({ ...s, isRunning: false, epochMs: null }))
-    } else if (visibility === "visible" && settings.autoResumeOnFocus) {
+    } else if (visibility === "visible" && settings.autoResumeOnFocus && !state.isRunning) {
       setState((s) => {
-        if (s.remaining > 0) {
+        // Only auto-resume if there's time remaining and it was previously running
+        if (s.remaining > 0 && s.epochMs !== null) {
           return { ...s, isRunning: true, epochMs: Date.now() }
         }
         return s
       })
     }
-  }, [visibility, settings.autoPauseOnBlur, settings.autoResumeOnFocus, setState])
+  }, [visibility, settings.autoPauseOnBlur, settings.autoResumeOnFocus, setState, isInitialLoad, state.isRunning])
 
   const safeNotify = useCallback(
     async (title: string, body: string, options?: NotificationOptions) => {
       if (!settings.notifications) return
-      const granted = await ensurePermission()
-      if (granted) notify(title, { requireInteraction: true, silent: false, ...options, body })
+      try {
+        const granted = await ensurePermission()
+        if (granted) notify(title, { requireInteraction: true, silent: false, ...options, body })
+      } catch (error) {
+        console.warn("Notification failed:", error)
+      }
     },
     [settings.notifications],
   )
@@ -212,31 +226,28 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
         }
       })
 
-      try {
-        window.localStorage.setItem("pomodoro:quote:show", "1")
-      } catch {}
+     
     },
     [durationFor, safeNotify, setState, settings.longInterval, settings.autoStartNext],
   )
 
- const start = useCallback(() => {
-  setState((prev) => {
-    const fullDuration = durationFor(prev.mode)
-    const remaining = prev.remaining > 0 ? prev.remaining : fullDuration
-    
-    // Adjust epochMs to account for already elapsed time
-    const alreadyElapsed = fullDuration - remaining
-    const adjustedEpochMs = Date.now() - (alreadyElapsed * 1000)
-    
-    return { 
-      ...prev, 
-      isRunning: true, 
-      remaining, 
-      epochMs: adjustedEpochMs 
-    }
-  })
-}, [durationFor, setState])
-
+  const start = useCallback(() => {
+    setState((prev) => {
+      const fullDuration = durationFor(prev.mode)
+      const remaining = prev.remaining > 0 ? prev.remaining : fullDuration
+      
+      // Adjust epochMs to account for already elapsed time
+      const alreadyElapsed = fullDuration - remaining
+      const adjustedEpochMs = Date.now() - (alreadyElapsed * 1000)
+      
+      return { 
+        ...prev, 
+        isRunning: true, 
+        remaining, 
+        epochMs: adjustedEpochMs 
+      }
+    })
+  }, [durationFor, setState])
 
   const pause = useCallback(() => {
     setState((prev) => ({ ...prev, isRunning: false, epochMs: null }))

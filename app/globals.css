@@ -129,6 +129,18 @@
 .fullscreen-mode:fullscreen .flip-clock {
   transform: scale(1.2);
 }
+.fullscreen-mode:fullscreen .card-header {
+  width: 100% ;
+  max-width: 800px ;
+  align-self: center ;
+   margin-bottom: 2rem;
+}
+
+.fullscreen-mode:fullscreen .card-header > div {
+  justify-content: space-between ;
+  align-items: center ;
+  width: 100% !important;
+}
 
 @layer base {
   * {

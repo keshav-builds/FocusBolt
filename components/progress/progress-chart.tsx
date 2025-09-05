@@ -5,7 +5,6 @@ import { CardDescription } from "@/components/ui/card";
 import {
   Bar,
   BarChart,
-  CartesianGrid,
   XAxis,
   YAxis,
   Tooltip,
@@ -38,12 +37,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const MemoizedBarChart = memo(({ data }: { data: DayData[] }) => (
   <ResponsiveContainer width="100%" height="100%">
     <BarChart data={data} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
-      <CartesianGrid
-        strokeDasharray="3 3"
-        stroke="#e5e7eb"
-        className="dark:stroke-gray-700"
-        vertical={false}
-      />
+    
       <XAxis
         dataKey="label"
         tick={{ fontSize: 12, fontWeight: 500 }}
