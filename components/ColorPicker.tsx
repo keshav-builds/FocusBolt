@@ -24,8 +24,23 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
     ? "absolute top-full right-0 mt-2"
     : "fixed bottom-100 right-30";
 
+  // Function to get the right background for preview
+  const getPreviewBackground = (theme: ColorTheme) => {
+    if (theme.category === 'gradient') {
+      // For gradient themes, show the actual gradient background
+      return theme.background;
+    }
+    // For other themes, use the card background
+    return theme.cardBackground;
+  };
+
+  // Function to determine if we need glass effect
+  const needsGlassEffect = (theme: ColorTheme) => {
+    return theme.category === 'gradient' && theme.cardBackground.includes('rgba');
+  };
+
   return (
-    <div className={containerClass} >
+    <div className={containerClass}>
       {/* Toggle Button */}
       <Button
         variant="outline"
@@ -53,7 +68,9 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
             style={{
               backgroundColor: currentTheme.background,
               border: `1px solid ${currentTheme.cardBorder}`,
-              boxShadow: currentTheme.shadow
+              boxShadow: currentTheme.shadow,
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)'
             }}
           >
             {/* Category Tabs - Dynamic Theming */}
@@ -93,12 +110,12 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
               ))}
             </div>
 
-            {/* Theme Grid  */}
+            {/* Theme Grid */}
             <div className="p-4 grid grid-cols-2 gap-3 max-h-80 overflow-y-auto">
               {filteredThemes.map((theme) => (
                 <button
                   key={theme.id}
-                  className={`p-3 rounded-lg transition-all duration-200 text-center border-2 hover:scale-105 ${
+                  className={`p-3 rounded-lg transition-all duration-200 text-center border-2 hover:scale-105 relative overflow-hidden ${
                     currentTheme.id === theme.id 
                       ? 'ring-2 ring-offset-2' 
                       : 'hover:shadow-md'
@@ -108,25 +125,43 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
                     setIsOpen(false);
                   }}
                   style={{
-                    background: theme.cardBackground,
+                    background: getPreviewBackground(theme),
                     borderColor: currentTheme.id === theme.id ? theme.digitColor : theme.cardBorder,
                     color: theme.digitColor,
                     ...(currentTheme.id === theme.id && {
                       ringColor: theme.digitColor,
                       ringOffsetColor: currentTheme.background
+                    }),
+                    ...(needsGlassEffect(theme) && {
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)'
                     })
                   }}
                 >
-                  <div className="mb-2">
-                    <span className="text-2xl font-bold">8</span>
-                  </div>
-                  <div className="text-xs font-medium opacity-80">
-                    {theme.name}
+                  {/* Glass overlay for gradient themes */}
+                  {theme.category === 'gradient' && (
+                    <div 
+                      className="absolute inset-0"
+                      style={{
+                        backgroundColor: theme.cardBackground,
+                        backdropFilter: 'blur(5px)',
+                        WebkitBackdropFilter: 'blur(5px)'
+                      }}
+                    />
+                  )}
+                  
+                  {/* Content */}
+                  <div className="relative z-10">
+                    <div className="mb-2">
+                      <span className="text-2xl font-bold">Aa</span>
+                    </div>
+                    <div className="text-xs font-medium opacity-90">
+                      {theme.name}
+                    </div>
                   </div>
                 </button>
               ))}
             </div>
-      
           </div>
         </>
       )}

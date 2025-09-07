@@ -51,8 +51,8 @@ export function SessionQuote({ currentTheme }: { currentTheme: any }) {
           &ldquo;{quote.text}&rdquo;
         </p>
         <p
-          className="mt-1 text-lg opacity-90"
-          style={{ color: `${currentTheme.separatorColor}80` }}
+          className="mt-1 text-lg opacity-80 "
+          
         >
           — {quote.author}
         </p>

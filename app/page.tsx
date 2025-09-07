@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
 import { SettingsSheet } from "@/components/settings/settings-sheet";
-import { FocusToggleIcon } from '@/components/timer/focus-mode-toggle';
+import { FocusToggleIcon } from "@/components/timer/focus-mode-toggle";
 import { SessionQuote } from "@/components/timer/quote";
 import { ProgressChart } from "@/components/progress/progress-chart";
 import { FlipClock } from "@/components/timer/flip-clock";
@@ -148,7 +148,6 @@ function AppBody() {
               alt=""
               aria-hidden="true"
               className="h-8 w-8 rounded-md object-contain"
-             
             />
             <h1
               className="text-pretty text-xl font-semibold md:text-2xl transition-colors duration-300"
@@ -158,14 +157,18 @@ function AppBody() {
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            
             {/* ColorPicker */}
             <ColorPicker
               currentTheme={currentTheme}
               onThemeChange={setCurrentTheme}
               variant="header"
             />
-            <SettingsSheet  currentTheme={currentTheme} open={settingsOpen} onOpenChange={setSettingsOpen}  />
+            <SettingsSheet
+              currentTheme={currentTheme}
+              open={settingsOpen}
+              onOpenChange={setSettingsOpen}
+              
+            />
           </div>
         </header>
 
@@ -173,12 +176,12 @@ function AppBody() {
           <Card
             id="pomodoro-focus-section"
             className={cn(
-               'relative',
+              "relative",
               "border transition-all duration-300",
               focusMode && "fullscreen-mode"
             )}
             style={{
-              backgroundColor: currentTheme.background,
+                 background: currentTheme.cardBackground,
               borderColor: currentTheme.cardBorder,
               boxShadow: currentTheme.shadow,
             }}
@@ -291,7 +294,7 @@ function AppBody() {
                   Skip
                 </Button>
               </div>
-             
+
               <div
                 className="text-center text-xs transition-colors duration-300"
                 style={{ color: `${currentTheme.separatorColor}60` }}
@@ -303,10 +306,9 @@ function AppBody() {
                   ? "Auto-resume on return. "
                   : "Manual resume on return. "}
                 <span className="opacity-70">Press C to cycle themes.</span>
-               
               </div>
             </CardContent>
-                <FocusToggleIcon currentTheme={currentTheme} />
+            <FocusToggleIcon currentTheme={currentTheme} />
           </Card>
         </section>
 
@@ -324,7 +326,7 @@ function AppBody() {
           <Card
             className="border transition-all duration-300"
             style={{
-              backgroundColor: currentTheme.background,
+              backgroundColor: "transparent",
               borderColor: currentTheme.cardBorder,
               boxShadow: `0 4px 12px ${currentTheme.cardBorder}20`,
             }}
@@ -344,7 +346,7 @@ function AppBody() {
           <Card
             className="border transition-all duration-300"
             style={{
-              backgroundColor: currentTheme.background,
+             backgroundColor: "transparent",
               borderColor: currentTheme.cardBorder,
               boxShadow: `0 4px 12px ${currentTheme.cardBorder}20`,
             }}
@@ -380,8 +382,8 @@ function AppBody() {
           </Card>
         </section>
 
-           {/* Add rotating quotes at the bottom */}
-      <SessionQuote currentTheme={currentTheme} />
+        {/* quotes  */}
+        <SessionQuote currentTheme={currentTheme} />
       </div>
     </main>
   );

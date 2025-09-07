@@ -7,5 +7,5 @@ export interface ColorTheme {
   digitColor: string;
   separatorColor: string;
   shadow: string;
-  category: 'light' | 'dark' | 'pastel-light' | 'pastel-dark';
+  category: 'light' | 'dark' | 'pastel-dark'| 'gradient';
 }

@@ -49,50 +49,62 @@ export const colorThemes: ColorTheme[] = [
     category: 'dark'
   },
 
-  // Soft pastels
+  // Vibrant gradients
   {
-    id: 'soft-blue',
-    name: 'Soft Blue',
-    background: '#e3f2fd',
-    cardBackground: 'linear-gradient(180deg, #bbdefb 0%, #90caf9 100%)',
-    cardBorder: '#64b5f6',
-    digitColor: '#0d47a1',
-    separatorColor: '#1565c0',
-    shadow: '0 8px 32px rgba(33, 150, 243, 0.2)',
-    category: 'pastel-light'
+    id: 'rainbow-dream',
+    name: 'Rainbow Dream',
+    background: 'linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%)',
+    cardBackground: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
+    cardBorder: 'rgba(255,255,255,0.3)',
+    digitColor: '#ffffff',
+    separatorColor: '#f0f0f0',
+    shadow: '0 8px 32px rgba(255, 107, 107, 0.4)',
+    category: 'gradient'
   },
   {
-    id: 'soft-pink',
-    name: 'Soft Pink',
-    background: '#fce4ec',
-    cardBackground: 'linear-gradient(180deg, #f8bbd9 0%, #f48fb1 100%)',
-    cardBorder: '#f06292',
-    digitColor: '#880e4f',
-    separatorColor: '#ad1457',
-    shadow: '0 8px 32px rgba(233, 30, 99, 0.2)',
-    category: 'pastel-light'
+    id: 'sunset-vibes',
+    name: 'Sunset Vibes',
+    background: 'linear-gradient(135deg, #ffeaa7 0%, #fab1a0 50%, #fd79a8 100%)',
+    cardBackground: 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)',
+    cardBorder: 'rgba(255,255,255,0.3)',
+    digitColor: '#2d3436',
+    separatorColor: '#636e72',
+    shadow: '0 8px 32px rgba(253, 121, 168, 0.3)',
+    category: 'gradient'
   },
   {
-    id: 'soft-green',
-    name: 'Soft Green',
-    background: '#e8f5e8',
-    cardBackground: 'linear-gradient(180deg, #c8e6c9 0%, #a5d6a7 100%)',
-    cardBorder: '#81c784',
-    digitColor: '#1b5e20',
-    separatorColor: '#2e7d32',
-    shadow: '0 8px 32px rgba(76, 175, 80, 0.2)',
-    category: 'pastel-light'
+    id: 'ocean-breeze',
+    name: 'Ocean Breeze',
+    background: 'linear-gradient(135deg, #74b9ff 0%, #0984e3 50%, #00b894 100%)',
+    cardBackground: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
+    cardBorder: 'rgba(255,255,255,0.25)',
+    digitColor: '#ffffff',
+    separatorColor: '#ddd',
+    shadow: '0 8px 32px rgba(116, 185, 255, 0.4)',
+    category: 'gradient'
   },
   {
-    id: 'soft-purple',
-    name: 'Soft Purple',
-    background: '#f3e5f5',
-    cardBackground: 'linear-gradient(180deg, #e1bee7 0%, #ce93d8 100%)',
-    cardBorder: '#ba68c8',
-    digitColor: '#4a148c',
-    separatorColor: '#6a1b9a',
-    shadow: '0 8px 32px rgba(156, 39, 176, 0.2)',
-    category: 'pastel-light'
+    id: 'purple-haze',
+    name: 'Purple Haze',
+    background: 'linear-gradient(135deg, #a29bfe 0%, #6c5ce7 50%, #fd79a8 100%)',
+    cardBackground: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
+    cardBorder: 'rgba(255,255,255,0.3)',
+    digitColor: '#ffffff',
+    separatorColor: '#f0f0f0',
+    shadow: '0 8px 32px rgba(162, 155, 254, 0.4)',
+    category: 'gradient'
+  },
+ 
+  {
+    id: 'fire-orange',
+    name: 'Fire Orange',
+    background: 'linear-gradient(135deg, #fdcb6e 0%, #e17055 50%, #d63031 100%)',
+    cardBackground: 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)',
+    cardBorder: 'rgba(255,255,255,0.3)',
+    digitColor: '#ffffff',
+    separatorColor: '#f0f0f0',
+    shadow: '0 8px 32px rgba(253, 203, 110, 0.4)',
+    category: 'gradient'
   },
 
   // Dark pastels
@@ -107,17 +119,7 @@ export const colorThemes: ColorTheme[] = [
     shadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
     category: 'pastel-dark'
   },
-  {
-    id: 'dark-purple',
-    name: 'Dark Purple',
-    background: '#1e1b4b',
-    cardBackground: 'linear-gradient(180deg, #581c87 0%, #7c3aed 100%)',
-    cardBorder: '#8b5cf6',
-    digitColor: '#ede9fe',
-    separatorColor: '#c4b5fd',
-    shadow: '0 8px 32px rgba(139, 92, 246, 0.3)',
-    category: 'pastel-dark'
-  },
+  
   {
     id: 'dark-emerald',
     name: 'Dark Emerald',
@@ -134,6 +136,6 @@ export const colorThemes: ColorTheme[] = [
 export const themeCategories = [
   { id: 'light', name: 'Light', icon: '☀️' },
   { id: 'dark', name: 'Dark', icon: '🌙' },
-  { id: 'pastel-light', name: 'Soft Pastels', icon: '🌸' },
+  { id: 'gradient', name: 'Gradients', icon: '🌈' },
   { id: 'pastel-dark', name: 'Dark Pastels', icon: '🌌' }
 ] as const;
