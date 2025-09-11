@@ -5,7 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 import { AppProviders } from "./providers"
 import { Suspense } from "react"
-
+import { LoaderThree } from "@/components/ui/loader";
 export const metadata: Metadata = {
   title: "FocusBolt",
   description: "Helps you stay focused and get things done.",
@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoaderThree />}>
           <AppProviders>{children}</AppProviders>
         </Suspense>
       </body>

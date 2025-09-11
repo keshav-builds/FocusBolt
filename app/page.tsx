@@ -47,7 +47,7 @@ function AppBody() {
         if (savedTheme) return savedTheme;
       }
     }
-    return colorThemes[0]; // Default to first theme
+    return colorThemes[2]; // Default to black(3rd) theme
   });
 
   // Persist theme selection
