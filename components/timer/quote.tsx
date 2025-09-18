@@ -33,7 +33,7 @@ export function SessionQuote({ currentTheme }: { currentTheme: any }) {
       <svg
         aria-hidden="true"
         viewBox="0 0 105 78"
-        className="absolute top-2 left-56 w-16 h-12 opacity-20 z-0"
+        className="absolute right-64 top-2  w-16 h-12 opacity-20 z-0"
         style={{
           fill: currentTheme.separatorColor,
         }}

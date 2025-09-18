@@ -1,12 +1,11 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { SettingsSheet } from "@/components/settings/settings-sheet";
 import { FocusToggleIcon } from "@/components/timer/focus-mode-toggle";
 import { SessionQuote } from "@/components/timer/quote";
 import { ProgressChart } from "@/components/progress/progress-chart";
 import { FlipClock } from "@/components/timer/flip-clock";
 import { usePomodoro } from "@/components/timer/pomodoro-provider";
-import { CurrentTime } from "@/components/time/current-time";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -38,85 +37,37 @@ function AppBody() {
     autoResumeOnFocus,
   } = usePomodoro();
 
-  // Color theme state with localStorage persistence
+  // Initialize theme state with lazy initializer (safe for SSR/CSR differences)
   const [currentTheme, setCurrentTheme] = useState<ColorTheme>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("focusBoltTheme");
-      if (saved) {
-        const savedTheme = colorThemes.find((t) => t.id === saved);
-        if (savedTheme) return savedTheme;
-      }
+    if (typeof window === "undefined") return colorThemes[2]; // fallback for SSR
+    const saved = localStorage.getItem("focusBoltTheme");
+    if (saved) {
+      const savedTheme = colorThemes.find((t) => t.id === saved);
+      if (savedTheme) return savedTheme;
     }
-    return colorThemes[2]; // Default to black(3rd) theme
+    return colorThemes[2];
   });
 
-  // Persist theme selection
+  // Persist theme selection in localStorage
   useEffect(() => {
-    localStorage.setItem("focusBoltTheme", currentTheme.id);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("focusBoltTheme", currentTheme.id);
+    }
   }, [currentTheme]);
 
-  // Apply theme to document root for global styling
+  // Apply theme CSS variables to document root
   useEffect(() => {
-    document.documentElement.style.setProperty(
-      "--theme-background",
-      currentTheme.background
-    );
-    document.documentElement.style.setProperty(
-      "--theme-card-background",
-      currentTheme.cardBackground
-    );
-    document.documentElement.style.setProperty(
-      "--theme-card-border",
-      currentTheme.cardBorder
-    );
-    document.documentElement.style.setProperty(
-      "--theme-digit-color",
-      currentTheme.digitColor
-    );
-    document.documentElement.style.setProperty(
-      "--theme-separator-color",
-      currentTheme.separatorColor
-    );
-    document.documentElement.style.setProperty(
-      "--theme-shadow",
-      currentTheme.shadow
-    );
+    if (typeof document === "undefined") return;
+    const root = document.documentElement.style;
+    root.setProperty("--theme-background", currentTheme.background);
+    root.setProperty("--theme-card-background", currentTheme.cardBackground);
+    root.setProperty("--theme-card-border", currentTheme.cardBorder);
+    root.setProperty("--theme-digit-color", currentTheme.digitColor);
+    root.setProperty("--theme-separator-color", currentTheme.separatorColor);
+    root.setProperty("--theme-shadow", currentTheme.shadow);
   }, [currentTheme]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement)?.tagName === "INPUT") return;
-      if (e.code === "Space") {
-        e.preventDefault();
-        isRunning ? pause() : start();
-      } else if (e.key.toLowerCase() === "r") {
-        reset();
-      } else if (e.key.toLowerCase() === "s") {
-        skip();
-      } else if (e.key.toLowerCase() === "f") {
-        setFocusMode(!focusMode);
-      } else if (e.key.toLowerCase() === "c") {
-        // Quick color theme cycling with 'C' key
-        const currentIndex = colorThemes.findIndex(
-          (t) => t.id === currentTheme.id
-        );
-        const nextIndex = (currentIndex + 1) % colorThemes.length;
-        setCurrentTheme(colorThemes[nextIndex]);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [
-    isRunning,
-    pause,
-    start,
-    reset,
-    skip,
-    focusMode,
-    setFocusMode,
-    currentTheme,
-  ]);
-
+  // Memoize tabs config to prevent re-creation on every render
   const tabs = useMemo(
     () => [
       { value: "work", label: "Work" },
@@ -125,6 +76,66 @@ function AppBody() {
     ],
     []
   );
+
+  // Memoize mode label function to avoid redeclaration
+  const modeLabel = useCallback(
+    (mode: "work" | "short" | "long") => {
+      switch (mode) {
+        case "work":
+          return "Work";
+        case "short":
+          return "Short Break";
+        case "long":
+          return "Long Break";
+      }
+    },
+    []
+  );
+
+  // Keyboard event handler wrapped with useCallback and stable deps for performance
+  const onKey = useCallback(
+    (e: KeyboardEvent) => {
+      // Ignore key presses if focus is on input to prevent unintended triggers
+      if ((e.target as HTMLElement)?.tagName === "INPUT") return;
+
+      switch (e.code) {
+        case "Space":
+          e.preventDefault();
+          if (isRunning) pause();
+          else start();
+          break;
+        default:
+          switch (e.key.toLowerCase()) {
+            case "r":
+              reset();
+              break;
+            case "s":
+              skip();
+              break;
+            case "f":
+            setFocusMode(!focusMode);
+              break;
+            case "c": {
+              const currentIndex = colorThemes.findIndex(
+                (t) => t.id === currentTheme.id
+              );
+              const nextIndex = (currentIndex + 1) % colorThemes.length;
+              setCurrentTheme(colorThemes[nextIndex]);
+              break;
+            }
+          }
+      }
+    },
+    [isRunning, pause, start, reset, skip, setFocusMode, currentTheme]
+  );
+
+  // Register and clean up keyboard event listener once
+  useEffect(() => {
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [onKey]);
 
   return (
     <main
@@ -157,7 +168,6 @@ function AppBody() {
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            {/* ColorPicker */}
             <ColorPicker
               currentTheme={currentTheme}
               onThemeChange={setCurrentTheme}
@@ -167,12 +177,11 @@ function AppBody() {
               currentTheme={currentTheme}
               open={settingsOpen}
               onOpenChange={setSettingsOpen}
-              
             />
           </div>
         </header>
 
-        <section className={cn("mt-6")}>
+        <section className="mt-6">
           <Card
             id="pomodoro-focus-section"
             className={cn(
@@ -181,13 +190,14 @@ function AppBody() {
               focusMode && "fullscreen-mode"
             )}
             style={{
-                 background: currentTheme.cardBackground,
+              background: currentTheme.cardBackground,
               borderColor: currentTheme.cardBorder,
               boxShadow: currentTheme.shadow,
+              minHeight: "600px",
             }}
           >
             <CardHeader className="pb-2 card-header">
-              <div className="flex items-center justify-between gap-4 ">
+              <div className="flex items-center justify-between gap-4">
                 <CardTitle
                   className="text-balance text-lg"
                   style={{ color: currentTheme.digitColor }}
@@ -197,7 +207,10 @@ function AppBody() {
                 <div className="flex-shrink-0">
                   <Tabs
                     value={viewMode}
-                    onValueChange={(v) => setViewMode(v as any)}
+                    onValueChange={(v) => {
+                      setViewMode(v as any);
+                      switchMode(v as any);
+                    }}
                   >
                     <TabsList
                       className="grid grid-cols-3"
@@ -210,7 +223,6 @@ function AppBody() {
                         <TabsTrigger
                           key={t.value}
                           value={t.value}
-                          onClick={() => switchMode(t.value as any)}
                           className="text-sm data-[state=active]:shadow-sm"
                           isActive={viewMode === t.value}
                           themeStyle={{
@@ -241,7 +253,11 @@ function AppBody() {
                 className="text-xs transition-colors duration-300"
                 style={{ color: currentTheme.separatorColor, opacity: 0.8 }}
               >
-                <CurrentTime />
+               
+                {/* {quote} */}
+
+                  <SessionQuote currentTheme={currentTheme} />
+                  
               </div>
               <div className="flex items-center justify-center gap-3">
                 {isRunning ? (
@@ -312,12 +328,9 @@ function AppBody() {
           </Card>
         </section>
 
-        <Separator
-          className="my-8 transition-colors duration-300"
-          style={{ backgroundColor: `${currentTheme.cardBorder}40` }}
-        />
+    
 
-        <section
+        {/* <section
           className={cn(
             "grid gap-6 md:grid-cols-2 transition-all duration-300",
             focusMode && "opacity-40 pointer-events-none"
@@ -346,7 +359,7 @@ function AppBody() {
           <Card
             className="border transition-all duration-300"
             style={{
-             backgroundColor: "transparent",
+              backgroundColor: "transparent",
               borderColor: currentTheme.cardBorder,
               boxShadow: `0 4px 12px ${currentTheme.cardBorder}20`,
             }}
@@ -367,32 +380,22 @@ function AppBody() {
                 Press Space to start/pause, R to reset, S to skip, F for Focus
                 Mode.
               </p>
+              <p>Press C to cycle through color themes, or use the color picker.</p>
               <p>
-                Press C to cycle through color themes, or use the color picker.
+                Enable notifications in Settings to get alerts even if the tab is
+                in the background.
               </p>
               <p>
-                Enable notifications in Settings to get alerts even if the tab
-                is in the background.
-              </p>
-              <p>
-                Customize durations, long break interval, and behavior in
-                Settings.
+                Customize durations, long break interval, and behavior in Settings.
               </p>
             </CardContent>
           </Card>
-        </section>
+        </section> */}
 
-        {/* quotes  */}
-        <SessionQuote currentTheme={currentTheme} />
+      
       </div>
     </main>
   );
-}
-
-function modeLabel(mode: "work" | "short" | "long") {
-  if (mode === "work") return "Work";
-  if (mode === "short") return "Short Break";
-  return "Long Break";
 }
 
 export default function Page() {
@@ -402,7 +405,6 @@ export default function Page() {
     const timer = setTimeout(() => {
       setLoading(false);
     }, 2000);
-
     return () => clearTimeout(timer);
   }, []);
 
