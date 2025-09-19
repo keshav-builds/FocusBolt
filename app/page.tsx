@@ -56,16 +56,33 @@ function AppBody() {
   }, [currentTheme]);
 
   // Apply theme CSS variables to document root
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    const root = document.documentElement.style;
+ useEffect(() => {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement.style;
+  
+  // Handle background with image overlay
+  if (currentTheme.backgroundImage && currentTheme.backgroundOverlay) {
+    root.setProperty("--theme-background", `
+      linear-gradient(${currentTheme.backgroundOverlay}, ${currentTheme.backgroundOverlay}),
+      url('${currentTheme.backgroundImage}')
+    `);
+    root.setProperty("--theme-background-size", "cover");
+    root.setProperty("--theme-background-position", "center");
+    root.setProperty("--theme-background-attachment", "fixed");
+  } else {
     root.setProperty("--theme-background", currentTheme.background);
-    root.setProperty("--theme-card-background", currentTheme.cardBackground);
-    root.setProperty("--theme-card-border", currentTheme.cardBorder);
-    root.setProperty("--theme-digit-color", currentTheme.digitColor);
-    root.setProperty("--theme-separator-color", currentTheme.separatorColor);
-    root.setProperty("--theme-shadow", currentTheme.shadow);
-  }, [currentTheme]);
+    root.setProperty("--theme-background-size", "auto");
+    root.setProperty("--theme-background-position", "initial");
+    root.setProperty("--theme-background-attachment", "initial");
+  }
+  
+  root.setProperty("--theme-card-background", currentTheme.cardBackground);
+  root.setProperty("--theme-card-border", currentTheme.cardBorder);
+  root.setProperty("--theme-digit-color", currentTheme.digitColor);
+  root.setProperty("--theme-separator-color", currentTheme.separatorColor);
+  root.setProperty("--theme-shadow", currentTheme.shadow);
+}, [currentTheme]);
+
 
   // Memoize tabs config to prevent re-creation on every render
   const tabs = useMemo(
@@ -78,19 +95,16 @@ function AppBody() {
   );
 
   // Memoize mode label function to avoid redeclaration
-  const modeLabel = useCallback(
-    (mode: "work" | "short" | "long") => {
-      switch (mode) {
-        case "work":
-          return "Work";
-        case "short":
-          return "Short Break";
-        case "long":
-          return "Long Break";
-      }
-    },
-    []
-  );
+  const modeLabel = useCallback((mode: "work" | "short" | "long") => {
+    switch (mode) {
+      case "work":
+        return "Work";
+      case "short":
+        return "Short Break";
+      case "long":
+        return "Long Break";
+    }
+  }, []);
 
   // Keyboard event handler wrapped with useCallback and stable deps for performance
   const onKey = useCallback(
@@ -113,7 +127,7 @@ function AppBody() {
               skip();
               break;
             case "f":
-            setFocusMode(!focusMode);
+              setFocusMode(!focusMode);
               break;
             case "c": {
               const currentIndex = colorThemes.findIndex(
@@ -138,13 +152,24 @@ function AppBody() {
   }, [onKey]);
 
   return (
-    <main
-      className="min-h-dvh text-foreground transition-all duration-500 ease-in-out"
-      style={{
-        background: currentTheme.background,
-        color: currentTheme.digitColor,
-      }}
-    >
+<main
+  className="min-h-dvh text-foreground transition-all duration-500 ease-in-out"
+  style={{
+    // Replace 'background' shorthand with individual properties
+    backgroundColor: currentTheme.backgroundImage ? 'transparent' : currentTheme.background,
+    backgroundImage: currentTheme.backgroundImage 
+      ? (currentTheme.backgroundOverlay 
+          ? `linear-gradient(${currentTheme.backgroundOverlay}, ${currentTheme.backgroundOverlay}), url('${currentTheme.backgroundImage}')`
+          : `url('${currentTheme.backgroundImage}')`)
+      : 'none',
+    backgroundSize: currentTheme.backgroundImage ? 'cover' : 'auto',
+    backgroundPosition: currentTheme.backgroundImage ? 'center' : 'initial',
+    backgroundAttachment: currentTheme.backgroundImage ? 'fixed' : 'initial',
+    backgroundRepeat: currentTheme.backgroundImage ? 'no-repeat' : 'initial',
+    color: currentTheme.digitColor,
+  }}
+>
+
       <RegisterSW />
       <div
         className={cn(
@@ -190,9 +215,9 @@ function AppBody() {
               focusMode && "fullscreen-mode"
             )}
             style={{
-              background: currentTheme.cardBackground,
-              borderColor: currentTheme.cardBorder,
-              boxShadow: currentTheme.shadow,
+              background: "transparent",
+              border: "none",
+              boxShadow: "none",
               minHeight: "600px",
             }}
           >
@@ -229,7 +254,6 @@ function AppBody() {
                             color: `${currentTheme.digitColor}80`,
                           }}
                           activeThemeStyle={{
-                            backgroundColor: currentTheme.background,
                             color: currentTheme.digitColor,
                             boxShadow: `0 1px 3px ${currentTheme.cardBorder}40`,
                           }}
@@ -253,11 +277,9 @@ function AppBody() {
                 className="text-xs transition-colors duration-300"
                 style={{ color: currentTheme.separatorColor, opacity: 0.8 }}
               >
-               
                 {/* {quote} */}
 
-                  <SessionQuote currentTheme={currentTheme} />
-                  
+                <SessionQuote currentTheme={currentTheme} />
               </div>
               <div className="flex items-center justify-center gap-3">
                 {isRunning ? (
@@ -266,8 +288,8 @@ function AppBody() {
                     onClick={pause}
                     className="px-6 transition-all duration-200"
                     style={{
-                      backgroundColor: currentTheme.digitColor,
-                      color: currentTheme.background,
+                      background: "transparent",
+                      color: currentTheme.digitColor,
                       border: `1px solid ${currentTheme.cardBorder}`,
                     }}
                   >
@@ -279,8 +301,8 @@ function AppBody() {
                     onClick={start}
                     className="px-6 transition-all duration-200"
                     style={{
-                      backgroundColor: currentTheme.digitColor,
-                      color: currentTheme.background,
+                      background: "transparent",
+                      color: currentTheme.digitColor,
                       border: `1px solid ${currentTheme.cardBorder}`,
                     }}
                   >
@@ -292,7 +314,7 @@ function AppBody() {
                   onClick={reset}
                   className="transition-all duration-200"
                   style={{
-                    backgroundColor: `${currentTheme.cardBorder}20`,
+                    background: "transparent",
                     color: currentTheme.digitColor,
                     border: `1px solid ${currentTheme.cardBorder}`,
                   }}
@@ -310,7 +332,7 @@ function AppBody() {
                   Skip
                 </Button>
               </div>
-
+              <FocusToggleIcon currentTheme={currentTheme} />
               <div
                 className="text-center text-xs transition-colors duration-300"
                 style={{ color: `${currentTheme.separatorColor}60` }}
@@ -324,11 +346,8 @@ function AppBody() {
                 <span className="opacity-70">Press C to cycle themes.</span>
               </div>
             </CardContent>
-            <FocusToggleIcon currentTheme={currentTheme} />
           </Card>
         </section>
-
-    
 
         {/* <section
           className={cn(
@@ -391,8 +410,6 @@ function AppBody() {
             </CardContent>
           </Card>
         </section> */}
-
-      
       </div>
     </main>
   );

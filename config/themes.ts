@@ -1,6 +1,34 @@
 import { ColorTheme } from '../lib/theme';
 
 export const colorThemes: ColorTheme[] = [
+  //images
+
+  {
+  id: 'Car Bg',
+  name: 'Car Bg',
+  background: '#ffffff',
+  backgroundImage: '/images/backgrounds/carWallpaper.jpg',
+  backgroundOverlay: 'rgba(255, 255, 255, 0.05)', // White overlay for light theme
+  cardBackground: 'rgba(255, 255, 255, 0.9)',
+  cardBorder: 'rgba(0, 0, 0, 0.1)',
+  digitColor: '#1f2937',
+  separatorColor: '#6b7280',
+  shadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
+  category: 'image'
+},
+  {
+  id: 'Anime bg',
+  name: 'Anime bg',
+  background: '#ffffff',
+  backgroundImage: '/images/backgrounds/Anime.png',
+  backgroundOverlay: 'rgba(255, 255, 255, 0.05)', // White overlay for light theme
+  cardBackground: 'rgba(255, 255, 255, 0.9)',
+  cardBorder: 'rgba(0, 0, 0, 0.1)',
+  digitColor: '#1f2937',
+  separatorColor: '#6b7280',
+  shadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
+  category: 'image'
+},
   // Light themes
   {
     id: 'pure-white',
@@ -52,13 +80,19 @@ export const colorThemes: ColorTheme[] = [
   // Vibrant gradients
   {
     id: 'rainbow-dream',
-    name: 'Rainbow Dream',
-    background: 'linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%)',
+    name: 'Dual Dream',
+    background: `
+      linear-gradient(to right, rgba(229,231,235,0.8) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(229,231,235,0.8) 1px, transparent 1px),
+      radial-gradient(circle 500px at 20% 100%, rgba(139,92,246,0.3), transparent),
+      radial-gradient(circle 500px at 100% 80%, rgba(59,130,246,0.3), transparent),
+      #ffffff
+    `,
     cardBackground: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
-    cardBorder: 'rgba(255,255,255,0.3)',
-    digitColor: '#ffffff',
-    separatorColor: '#f0f0f0',
-    shadow: '0 8px 32px rgba(255, 107, 107, 0.4)',
+    cardBorder: 'rgba(139,92,246,0.2)',
+    digitColor: '#1f2937',
+    separatorColor: '#6b7280',
+    shadow: '0 8px 32px rgba(139, 92, 246, 0.2)',
     category: 'gradient'
   },
   {
@@ -137,5 +171,6 @@ export const themeCategories = [
   { id: 'light', name: 'Light', icon: '☀️' },
   { id: 'dark', name: 'Dark', icon: '🌙' },
   { id: 'gradient', name: 'Gradients', icon: '🌈' },
-  { id: 'pastel-dark', name: 'Dark Pastels', icon: '🌌' }
+  { id: 'pastel-dark', name: 'Dark Pastels', icon: '🌌' },
+  { id: 'image', name: 'Images', icon: '🖼️' }
 ] as const;

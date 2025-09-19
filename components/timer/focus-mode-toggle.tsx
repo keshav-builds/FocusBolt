@@ -34,15 +34,16 @@ export function FocusToggleIcon({ currentTheme }: Props) {
       aria-label={focusMode ? 'Exit focus mode' : 'Enter focus mode'}
       onClick={() => setFocusMode(!focusMode)}
       className={cn(
-        'absolute bottom-4 right-4 rounded-md p-2 transition-colors outline-0',
+        'absolute bottom-24 right-8 rounded-md p-2 transition-colors outline-0',
         'shadow-sm hover:shadow',
       )}
       style={{
-        backgroundColor: currentTheme.digitColor,
-        color: currentTheme.background,
+        
+        color: currentTheme.digitColor,
+        
       }}
     >
-      {focusMode ?  <ExitFullScreenIcon width={20} height={20} /> : <EnterFullScreenIcon width={20} height={20} />}
+      {focusMode ?  <ExitFullScreenIcon width={25} height={25} /> : <EnterFullScreenIcon width={25} height={25} />}
     </button>
   );
 }

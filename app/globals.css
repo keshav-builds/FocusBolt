@@ -80,13 +80,26 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
+
+
 main:fullscreen {
-  background: var(--theme-background) !important;
+  background-color: var(--theme-background-color, transparent) !important;
+  background-image: var(--theme-background-image, none) !important;
+  background-size: var(--theme-background-size, auto) !important;
+  background-position: var(--theme-background-position, initial) !important;
+  background-attachment: var(--theme-background-attachment, initial) !important;
+  background-repeat: var(--theme-background-repeat, initial) !important;
 }
 
 ::backdrop {
-  background: var(--theme-background) !important;
+  background-color: var(--theme-background-color, transparent) !important;
+  background-image: var(--theme-background-image, none) !important;
+  background-size: var(--theme-background-size, auto) !important;
+  background-position: var(--theme-background-position, initial) !important;
+  background-attachment: var(--theme-background-attachment, initial) !important;
+  background-repeat: var(--theme-background-repeat, initial) !important;
 }
+
 .fullscreen-mode:fullscreen {
   display: flex;
   flex-direction: column;
@@ -96,21 +109,24 @@ main:fullscreen {
   border: none !important;
   border-radius: 0 !important;
   padding: 3rem;
+  /* Inherit background from main */
+  background: inherit !important;
 }
 
 .fullscreen-mode:fullscreen .flip-clock {
   transform: scale(1.2);
 }
+
 .fullscreen-mode:fullscreen .card-header {
-  width: 100% ;
-  max-width: 800px ;
-  align-self: center ;
-   margin-bottom: 2rem;
+  width: 100%;
+  max-width: 800px;
+  align-self: center;
+  margin-bottom: 2rem;
 }
 
 .fullscreen-mode:fullscreen .card-header > div {
-  justify-content: space-between ;
-  align-items: center ;
+  justify-content: space-between;
+  align-items: center;
   width: 100% !important;
 }
 

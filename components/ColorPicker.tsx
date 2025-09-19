@@ -26,6 +26,10 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
 
   // Function to get the right background for preview
   const getPreviewBackground = (theme: ColorTheme) => {
+    // Add image theme support
+    if (theme.category === 'image' && theme.backgroundImage) {
+      return `url('${theme.backgroundImage}')`;
+    }
     if (theme.category === 'gradient') {
       // For gradient themes, show the actual gradient background
       return theme.background;
@@ -47,7 +51,7 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
         onClick={() => setIsOpen(!isOpen)}
         className="px-3"
         style={{
-          backgroundColor: currentTheme.background,
+          backgroundColor: "transparent",
           borderColor: currentTheme.cardBorder,
           color: currentTheme.digitColor
         }}
@@ -115,7 +119,7 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
               {filteredThemes.map((theme) => (
                 <button
                   key={theme.id}
-                  className={`p-3 rounded-lg transition-all duration-200 text-center border-2 hover:scale-105 relative overflow-hidden ${
+                  className={`h-16 rounded-lg transition-all duration-200 text-center border-2 hover:scale-105 relative overflow-hidden ${
                     currentTheme.id === theme.id 
                       ? 'ring-2 ring-offset-2' 
                       : 'hover:shadow-md'
@@ -126,6 +130,12 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
                   }}
                   style={{
                     background: getPreviewBackground(theme),
+                    // Add backgroundSize for image themes
+                    ...(theme.category === 'image' && theme.backgroundImage && {
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat'
+                    }),
                     borderColor: currentTheme.id === theme.id ? theme.digitColor : theme.cardBorder,
                     color: theme.digitColor,
                     ...(currentTheme.id === theme.id && {
@@ -150,15 +160,17 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
                     />
                   )}
                   
-                  {/* Content */}
-                  <div className="relative z-10">
-                    <div className="mb-2">
-                      <span className="text-2xl font-bold">Aa</span>
+                  {/* Content - Only show for non-image themes */}
+                  {theme.category !== 'image' && (
+                    <div className="relative z-10">
+                      <div className="mb-2">
+                        <span className="text-2xl font-bold">Aa</span>
+                      </div>
+                      <div className="text-xs font-medium opacity-90">
+                        {theme.name}
+                      </div>
                     </div>
-                    <div className="text-xs font-medium opacity-90">
-                      {theme.name}
-                    </div>
-                  </div>
+                  )}
                 </button>
               ))}
             </div>

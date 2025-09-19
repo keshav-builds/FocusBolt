@@ -89,7 +89,7 @@ export function SettingsSheet({
         <Button
           variant="outline"
           style={{
-            backgroundColor: currentTheme.background,
+            background: "transparent",
             color: currentTheme.digitColor,
             border: `1px solid ${currentTheme.cardBorder}`,
           }}

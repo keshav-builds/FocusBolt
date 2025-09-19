@@ -65,7 +65,7 @@ export function FlipClock({
             -apple-system, BlinkMacSystemFont, sans-serif;
           font-variant-numeric: tabular-nums;
           font-weight: 700;
-          background: ${theme.background};
+          // background: ${theme.background};
           box-shadow: ${theme.shadow};
         }
 

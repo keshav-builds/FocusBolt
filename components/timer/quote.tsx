@@ -25,7 +25,7 @@ export function SessionQuote({ currentTheme }: { currentTheme: any }) {
 
   return (
     <div
-      className="mt-8 rounded-lg p-4 text-center transition-all duration-500 relative"
+      className="mt-4 rounded-lg p-4 text-center transition-all duration-500 relative"
       style={{
         color: currentTheme.separatorColor,
       }}
@@ -33,7 +33,7 @@ export function SessionQuote({ currentTheme }: { currentTheme: any }) {
       <svg
         aria-hidden="true"
         viewBox="0 0 105 78"
-        className="absolute right-64 top-2  w-16 h-12 opacity-20 z-0"
+        className="absolute right-72 top-2  w-16 h-12 opacity-20 z-0"
         style={{
           fill: currentTheme.separatorColor,
         }}
