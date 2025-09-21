@@ -15,19 +15,7 @@ export const colorThemes: ColorTheme[] = [
     shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
     category: "image",
   },
-  {
-    id: "Window_XP",
-    name: "Window_XP",
-    background: "#ffffff",
-    backgroundImage: "/images/backgrounds/windows_XP.png",
-    backgroundOverlay: "rgba(255, 255, 255, 0.05)",
-    cardBackground: "rgba(255, 255, 255, 0.9)",
-    cardBorder: "rgba(0, 0, 0, 0.1)",
-    digitColor: "#1f2937",
-    separatorColor: "#6b7280",
-    shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
-    category: "image",
-  },
+
   {
     id: "Car Bg",
     name: "Car Bg",

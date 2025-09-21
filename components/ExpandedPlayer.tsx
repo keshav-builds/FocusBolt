@@ -22,206 +22,282 @@ interface ExpandedPlayerProps {
   currentTheme: ColorTheme;
   playlists: Playlist[];
   currentTrack: Track | null;
-  isPlaying: boolean;
-  currentTime: number;
-  duration: number;
-  volume: number;
   onSelectTrack: (track: Track) => void;
-  onSeek: (time: number) => void;
-  onVolumeChange: (volume: number) => void;
-  onNext: () => void;
-  onPrevious: () => void;
+  onClose: () => void;
 }
 
 export function ExpandedPlayer({
   isExpanded,
+  currentTheme,
   playlists,
   currentTrack,
-  isPlaying,
-  currentTime,
-  duration,
-  volume,
   onSelectTrack,
-  onSeek,
-  onVolumeChange,
-  onNext,
-  onPrevious,
+  onClose,
 }: ExpandedPlayerProps) {
   if (!isExpanded) return null;
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const handleSeekClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
-    onSeek(percent * duration);
-  };
+  const isImageTheme = currentTheme.backgroundImage;
 
   return (
-    <div className="fixed bottom-20 left-0 w-full bg-black bg-opacity-90 backdrop-blur-xl text-white z-40 border-t border-gray-700 max-h-96 overflow-hidden">
-      <div className="max-w-5xl mx-auto p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold">Now Playing</h2>
-          <div className="flex items-center space-x-2 text-gray-400">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-            </svg>
-            <span className="text-sm">Queue</span>
-          </div>
-        </div>
-
-        {/* Now Playing Section */}
-        {currentTrack && (
-          <div className="bg-gray-900 rounded-xl p-6 mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-gray-700 rounded-xl flex items-center justify-center">
-                  <span className="text-2xl">🎵</span>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white">{currentTrack.title}</h3>
-                  <p className="text-gray-400">{currentTrack.artist}</p>
-                </div>
-              </div>
-              
-              {/* Controls */}
-              <div className="flex items-center space-x-3">
-                <button
-                  onClick={onPrevious}
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
-                  </svg>
-                </button>
-                <button className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
-                  {isPlaying ? (
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  )}
-                </button>
-                <button
-                  onClick={onNext}
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            
-            {/* Progress Bar */}
-            <div className="space-y-2">
+    <>
+      {/* Very Subtle Backdrop - keeps background visible */}
+      <div 
+        className="fixed inset-0 z-40 backdrop-blur-[2px]"
+        style={{
+          backgroundColor: isImageTheme 
+            ? 'rgba(0, 0, 0, 0.15)' // Very light overlay for image themes
+            : 'rgba(0, 0, 0, 0.25)'  // Slightly darker for solid themes
+        }}
+        onClick={onClose}
+      />
+      
+      {/* Popup Modal */}
+      <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+        <div 
+          className="rounded-3xl shadow-2xl overflow-hidden max-w-2xl w-full max-h-[80vh] border animate-in zoom-in-95 duration-300"
+          style={{
+            background: isImageTheme 
+              ? 'rgba(0, 0, 0, 0.55)' 
+              : currentTheme.cardBackground,
+            borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.25)' : currentTheme.cardBorder,
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            boxShadow: isImageTheme 
+              ? '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15)' 
+              : `0 25px 50px -12px ${currentTheme.cardBorder}40`,
+          }}
+        >
+          {/* Header */}
+          <div 
+            className="flex items-center justify-between px-6 py-5 border-b"
+            style={{
+              borderBottomColor: isImageTheme ? 'rgba(255, 255, 255, 0.15)' : currentTheme.cardBorder,
+              background: isImageTheme 
+                ? 'rgba(0, 0, 0, 0.2)' // Even lighter header background
+                : 'transparent',
+            }}
+          >
+            <div className="flex items-center space-x-3">
               <div 
-                className="w-full h-1.5 bg-gray-700 rounded-full cursor-pointer overflow-hidden"
-                onClick={handleSeekClick}
+                className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                style={{
+                  backgroundColor: isImageTheme 
+                    ? 'rgba(255, 255, 255, 0.15)' 
+                    : `${currentTheme.cardBorder}40`,
+                  border: `1px solid ${isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder}`,
+                }}
               >
-                <div 
-                  className="h-full bg-white rounded-full transition-all duration-100"
-                  style={{ width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' }}
-                />
+                <span className="text-2xl">🎵</span>
               </div>
-              <div className="flex justify-between text-xs text-gray-400">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
+              <div>
+                <h2 
+                  className="text-xl font-bold"
+                  style={{ 
+                    color: isImageTheme 
+                      ? 'rgba(255, 255, 255, 0.95)' 
+                      : currentTheme.digitColor 
+                  }}
+                >
+                  Music Library
+                </h2>
+                <p 
+                  className="text-sm"
+                  style={{ 
+                    color: isImageTheme 
+                      ? 'rgba(255, 255, 255, 0.8)' 
+                      : currentTheme.separatorColor 
+                  }}
+                >
+                  Choose your focus soundtrack
+                </p>
               </div>
             </div>
-            
-            {/* Volume Control */}
-            <div className="flex items-center space-x-3 mt-4">
-              <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full transition-all duration-200 hover:scale-110 border"
+              style={{
+                color: isImageTheme 
+                  ? 'rgba(255, 255, 255, 0.9)' 
+                  : currentTheme.separatorColor,
+                backgroundColor: isImageTheme 
+                  ? 'rgba(255, 255, 255, 0.1)' 
+                  : 'transparent',
+                borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder,
+              }}
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
               </svg>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={volume}
-                onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
-                className="flex-1 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                style={{
-                  background: `linear-gradient(to right, #fff 0%, #fff ${volume * 100}%, #374151 ${volume * 100}%, #374151 100%)`
-                }}
-              />
+            </button>
+          </div>
+
+          {/* Playlists Content */}
+          <div 
+            className="p-6 overflow-y-auto max-h-[60vh] custom-scrollbar"
+            style={{
+              background: isImageTheme 
+                ? 'rgba(0, 0, 0, 0.1)' // Very light background for content area
+                : 'transparent',
+            }}
+          >
+            <div className="space-y-8">
+              {playlists.map((playlist) => (
+                <div key={playlist.id}>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 
+                      className="text-lg font-semibold flex items-center space-x-3"
+                      style={{ 
+                        color: isImageTheme 
+                          ? 'rgba(255, 255, 255, 0.95)' 
+                          : currentTheme.digitColor 
+                      }}
+                    >
+                      <span>{playlist.name}</span>
+                    </h4>
+                    <span 
+                      className="text-sm px-3 py-1 rounded-full"
+                      style={{ 
+                        color: isImageTheme 
+                          ? 'rgba(255, 255, 255, 0.85)' 
+                          : currentTheme.separatorColor,
+                        backgroundColor: isImageTheme 
+                          ? 'rgba(255, 255, 255, 0.15)' 
+                          : `${currentTheme.cardBorder}30`,
+                        border: `1px solid ${isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder}`,
+                      }}
+                    >
+                      {playlist.tracks.length} tracks
+                    </span>
+                  </div>
+                  
+                  <div className="grid gap-3">
+                    {playlist.tracks.map((track, index) => (
+                      <button
+                        key={track.id}
+                        onClick={() => onSelectTrack(track)}
+                        className={`w-full text-left p-4 rounded-2xl transition-all duration-200 hover:scale-[1.02] group border ${
+                          currentTrack?.id === track.id ? 'ring-2' : ''
+                        }`}
+                        style={{
+                          backgroundColor: currentTrack?.id === track.id 
+                            ? (isImageTheme ? 'rgba(255, 255, 255, 0.2)' : `${currentTheme.digitColor}15`)
+                            : (isImageTheme ? 'rgba(255, 255, 255, 0.08)' : `${currentTheme.background}20`),
+                          borderColor: currentTrack?.id === track.id 
+                            ? (isImageTheme ? 'rgba(255, 255, 255, 0.5)' : currentTheme.digitColor)
+                            : (isImageTheme ? 'rgba(255, 255, 255, 0.2)' : currentTheme.cardBorder),
+                          ...(currentTrack?.id === track.id && {
+                            ringColor: isImageTheme 
+                              ? 'rgba(255, 255, 255, 0.4)' 
+                              : currentTheme.digitColor + '40',
+                          })
+                        }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4 min-w-0 flex-1">
+                            <div 
+                              className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border"
+                              style={{
+                                backgroundColor: currentTrack?.id === track.id 
+                                  ? (isImageTheme ? 'rgba(255, 255, 255, 0.25)' : `${currentTheme.digitColor}20`)
+                                  : (isImageTheme ? 'rgba(255, 255, 255, 0.15)' : `${currentTheme.cardBorder}30`),
+                                borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder,
+                                color: isImageTheme 
+                                  ? 'rgba(255, 255, 255, 0.9)' 
+                                  : currentTheme.separatorColor,
+                              }}
+                            >
+                              <span className="text-xs font-mono">{index + 1}</span>
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div 
+                                className="text-base font-semibold truncate group-hover:text-opacity-90"
+                                style={{ 
+                                  color: currentTrack?.id === track.id 
+                                    ? (isImageTheme ? 'rgba(255, 255, 255, 0.95)' : currentTheme.digitColor)
+                                    : (isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor + 'DD')
+                                }}
+                              >
+                                {track.title}
+                              </div>
+                              <div 
+                                className="text-sm truncate mt-1"
+                                style={{ 
+                                  color: isImageTheme 
+                                    ? 'rgba(255, 255, 255, 0.7)' 
+                                    : currentTheme.separatorColor 
+                                }}
+                              >
+                                {track.artist}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center space-x-3">
+                            <div 
+                              className="text-sm font-mono"
+                              style={{ 
+                                color: isImageTheme 
+                                  ? 'rgba(255, 255, 255, 0.7)' 
+                                  : currentTheme.separatorColor 
+                              }}
+                            >
+                              {track.duration}
+                            </div>
+                            {currentTrack?.id === track.id && (
+                              <div 
+                                className="w-3 h-3 rounded-full animate-pulse"
+                                style={{
+                                  backgroundColor: isImageTheme 
+                                    ? 'rgba(255, 255, 255, 0.9)' 
+                                    : currentTheme.digitColor,
+                                  boxShadow: isImageTheme 
+                                    ? '0 0 8px rgba(255, 255, 255, 0.5)' 
+                                    : `0 0 8px ${currentTheme.digitColor}50`,
+                                }}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        )}
-
-        {/* Playlists Grid */}
-        <div className="space-y-6 max-h-64 overflow-y-auto custom-scrollbar">
-          {playlists.map((playlist) => (
-            <div key={playlist.id}>
-              <h4 className="text-lg font-medium text-white mb-3 flex items-center space-x-2">
-                <span>{playlist.name}</span>
-                <span className="text-xs text-gray-500 bg-gray-800 px-2 py-1 rounded-full">
-                  {playlist.tracks.length} tracks
-                </span>
-              </h4>
-              <div className="grid gap-2">
-                {playlist.tracks.map((track, index) => (
-                  <button
-                    key={track.id}
-                    onClick={() => onSelectTrack(track)}
-                    className={`w-full text-left p-3 rounded-lg transition-all duration-200 hover:bg-gray-800 group ${
-                      currentTrack?.id === track.id ? 'bg-gray-800 border border-gray-600' : 'bg-gray-900'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-2 text-gray-500 text-sm font-mono">
-                          {index + 1}
-                        </div>
-                        <div className="min-w-0">
-                          <div className={`text-sm font-medium truncate ${
-                            currentTrack?.id === track.id ? 'text-white' : 'text-gray-200 group-hover:text-white'
-                          }`}>
-                            {track.title}
-                          </div>
-                          <div className="text-xs text-gray-400 truncate">
-                            {track.artist}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {track.duration}
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
         </div>
       </div>
-      
+
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: #1f2937;
+          background: ${isImageTheme ? 'rgba(255, 255, 255, 0.1)' : currentTheme.cardBorder + '20'};
           border-radius: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #4b5563;
+          background: ${isImageTheme ? 'rgba(255, 255, 255, 0.4)' : currentTheme.cardBorder};
           border-radius: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #6b7280;
+          background: ${isImageTheme ? 'rgba(255, 255, 255, 0.6)' : currentTheme.digitColor + '80'};
+        }
+        
+        @keyframes zoom-in-95 {
+          0% { transform: scale(0.95); opacity: 0; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-in {
+          animation-fill-mode: both;
+        }
+        .zoom-in-95 {
+          animation-name: zoom-in-95;
+        }
+        .duration-300 {
+          animation-duration: 300ms;
         }
       `}</style>
-    </div>
+    </>
   );
 }

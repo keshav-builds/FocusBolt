@@ -4,10 +4,10 @@ import { SettingsSheet } from "@/components/settings/settings-sheet";
 import { FocusToggleIcon } from "@/components/timer/focus-mode-toggle";
 import { SessionQuote } from "@/components/timer/quote";
 import { ProgressChart } from "@/components/progress/progress-chart";
-import { MusicBar } from '../components/MusicBar';
-import { ExpandedPlayer } from '@/components/ExpandedPlayer';
-import { useAudioPlayer } from '@/hooks/useAudioPlayer';
-import { samplePlaylists } from '@/data/playlists';
+import { MusicBar } from "../components/MusicBar";
+import { ExpandedPlayer } from "@/components/ExpandedPlayer";
+import { useAudioPlayer } from "@/hooks/useAudioPlayer";
+import { samplePlaylists } from "@/data/playlists";
 import { FlipClock } from "@/components/timer/flip-clock";
 import { usePomodoro } from "@/components/timer/pomodoro-provider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -60,33 +60,35 @@ function AppBody() {
   }, [currentTheme]);
 
   // Apply theme CSS variables to document root
- useEffect(() => {
-  if (typeof document === "undefined") return;
-  const root = document.documentElement.style;
-  
-  // Handle background with image overlay
-  if (currentTheme.backgroundImage && currentTheme.backgroundOverlay) {
-    root.setProperty("--theme-background", `
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement.style;
+
+    // Handle background with image overlay
+    if (currentTheme.backgroundImage && currentTheme.backgroundOverlay) {
+      root.setProperty(
+        "--theme-background",
+        `
       linear-gradient(${currentTheme.backgroundOverlay}, ${currentTheme.backgroundOverlay}),
       url('${currentTheme.backgroundImage}')
-    `);
-    root.setProperty("--theme-background-size", "cover");
-    root.setProperty("--theme-background-position", "center");
-    root.setProperty("--theme-background-attachment", "fixed");
-  } else {
-    root.setProperty("--theme-background", currentTheme.background);
-    root.setProperty("--theme-background-size", "auto");
-    root.setProperty("--theme-background-position", "initial");
-    root.setProperty("--theme-background-attachment", "initial");
-  }
-  
-  root.setProperty("--theme-card-background", currentTheme.cardBackground);
-  root.setProperty("--theme-card-border", currentTheme.cardBorder);
-  root.setProperty("--theme-digit-color", currentTheme.digitColor);
-  root.setProperty("--theme-separator-color", currentTheme.separatorColor);
-  root.setProperty("--theme-shadow", currentTheme.shadow);
-}, [currentTheme]);
+    `
+      );
+      root.setProperty("--theme-background-size", "cover");
+      root.setProperty("--theme-background-position", "center");
+      root.setProperty("--theme-background-attachment", "fixed");
+    } else {
+      root.setProperty("--theme-background", currentTheme.background);
+      root.setProperty("--theme-background-size", "auto");
+      root.setProperty("--theme-background-position", "initial");
+      root.setProperty("--theme-background-attachment", "initial");
+    }
 
+    root.setProperty("--theme-card-background", currentTheme.cardBackground);
+    root.setProperty("--theme-card-border", currentTheme.cardBorder);
+    root.setProperty("--theme-digit-color", currentTheme.digitColor);
+    root.setProperty("--theme-separator-color", currentTheme.separatorColor);
+    root.setProperty("--theme-shadow", currentTheme.shadow);
+  }, [currentTheme]);
 
   // Memoize tabs config to prevent re-creation on every render
   const tabs = useMemo(
@@ -154,44 +156,44 @@ function AppBody() {
       window.removeEventListener("keydown", onKey);
     };
   }, [onKey]);
-    // Music player states
+  // Music player states
   const [isExpanded, setIsExpanded] = useState(false);
   const audioPlayer = useAudioPlayer();
 
   const handleToggleExpand = () => setIsExpanded(!isExpanded);
-  
+
   const handleSelectTrack = (track: any) => {
     // Find the playlist that contains this track
-    const playlist = samplePlaylists.find(p => p.tracks.some(t => t.id === track.id));
+    const playlist = samplePlaylists.find((p) =>
+      p.tracks.some((t) => t.id === track.id)
+    );
     if (playlist) {
       audioPlayer.playTrack(track, playlist.tracks);
     }
   };
 
   return (
-<main
-  className="min-h-dvh text-foreground transition-all duration-500 ease-in-out"
-  style={{
-    // Handle image themes
-    ...(currentTheme.backgroundImage && {
-      backgroundColor: 'transparent',
-      backgroundImage: currentTheme.backgroundOverlay 
-        ? `linear-gradient(${currentTheme.backgroundOverlay}, ${currentTheme.backgroundOverlay}), url('${currentTheme.backgroundImage}')`
-        : `url('${currentTheme.backgroundImage}')`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
-      backgroundRepeat: 'no-repeat',
-    }),
-    // Handle gradient and solid color themes
-    ...(!currentTheme.backgroundImage && {
-      background: currentTheme.background,
-    }),
-    color: currentTheme.digitColor,
-  }}
->
-
-
+    <main
+      className="min-h-dvh text-foreground transition-all duration-500 ease-in-out"
+      style={{
+        // Handle image themes
+        ...(currentTheme.backgroundImage && {
+          backgroundColor: "transparent",
+          backgroundImage: currentTheme.backgroundOverlay
+            ? `linear-gradient(${currentTheme.backgroundOverlay}, ${currentTheme.backgroundOverlay}), url('${currentTheme.backgroundImage}')`
+            : `url('${currentTheme.backgroundImage}')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+          backgroundRepeat: "no-repeat",
+        }),
+        // Handle gradient and solid color themes
+        ...(!currentTheme.backgroundImage && {
+          background: currentTheme.background,
+        }),
+        color: currentTheme.digitColor,
+      }}
+    >
       <RegisterSW />
       <div
         className={cn(
@@ -199,33 +201,6 @@ function AppBody() {
           focusMode && "max-w-3xl"
         )}
       >
-          {/* MusicBar  */}
-  <MusicBar
-  currentTrack={audioPlayer.currentTrack}
-  isPlaying={audioPlayer.isPlaying}
-  isBuffering={audioPlayer.isBuffering} // Add this
-  error={audioPlayer.error} // Add this
-  onPlayPause={audioPlayer.togglePlayPause}
-  isExpanded={isExpanded}
-  onToggleExpand={handleToggleExpand}
-/>
-
-      <ExpandedPlayer
-        isExpanded={isExpanded}
-        currentTheme={currentTheme}
-        playlists={samplePlaylists}
-        currentTrack={audioPlayer.currentTrack}
-        isPlaying={audioPlayer.isPlaying}
-        currentTime={audioPlayer.currentTime}
-        duration={audioPlayer.duration}
-        volume={audioPlayer.volume}
-        onSelectTrack={handleSelectTrack}
-        onSeek={audioPlayer.seek}
-        onVolumeChange={audioPlayer.changeVolume}
-        onNext={audioPlayer.playNext}
-        onPrevious={audioPlayer.playPrevious}
-      />
-
         <header className={cn("flex items-center justify-between gap-2")}>
           <div className="flex items-center gap-3">
             <img
@@ -360,7 +335,7 @@ function AppBody() {
                   </Button>
                 )}
                 <Button
-                size="lg"
+                  size="lg"
                   variant="secondary"
                   onClick={reset}
                   className="transition-all duration-200"
@@ -384,20 +359,38 @@ function AppBody() {
                 </Button>
               </div>
               <FocusToggleIcon currentTheme={currentTheme} />
-              <div
-                className="text-center text-xs transition-colors duration-300"
-                style={{ color: `${currentTheme.separatorColor}60` }}
-              >
-                {autoPauseOnBlur
-                  ? "Auto-pause when tab hidden. "
-                  : "Auto-pause off. "}
-                {autoResumeOnFocus
-                  ? "Auto-resume on return. "
-                  : "Manual resume on return. "}
-                <span className="opacity-70">Press C to cycle themes.</span>
-              </div>
             </CardContent>
           </Card>
+          {/* {music bar} */}
+          <div className="-mt-16 -mb-2">
+            <MusicBar
+              currentTrack={audioPlayer.currentTrack}
+              isPlaying={audioPlayer.isPlaying}
+              isBuffering={audioPlayer.isBuffering}
+              error={audioPlayer.error}
+              onPlayPause={audioPlayer.togglePlayPause}
+              onNext={audioPlayer.playNext}
+              onPrevious={audioPlayer.playPrevious}
+              currentTime={audioPlayer.currentTime}
+              duration={audioPlayer.duration}
+              volume={audioPlayer.volume}
+              onSeek={audioPlayer.seek}
+              onVolumeChange={audioPlayer.changeVolume}
+              isExpanded={isExpanded}
+              onToggleExpand={handleToggleExpand}
+              currentTheme={currentTheme}
+            />
+          </div>
+
+          {/* Expandable Player Popup */}
+          <ExpandedPlayer
+            isExpanded={isExpanded}
+            currentTheme={currentTheme}
+            playlists={samplePlaylists}
+            currentTrack={audioPlayer.currentTrack}
+            onSelectTrack={handleSelectTrack}
+            onClose={() => setIsExpanded(false)}
+          />
         </section>
 
         {/* <section
