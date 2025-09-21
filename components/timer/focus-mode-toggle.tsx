@@ -38,7 +38,7 @@ export function FocusToggleIcon({ currentTheme }: Props) {
         'shadow-sm hover:shadow',
       )}
       style={{
-        
+        background: `${currentTheme.background}90`,
         color: currentTheme.digitColor,
         
       }}

@@ -14,7 +14,15 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(currentTheme.category);
 
-  const filteredThemes = colorThemes.filter(theme => theme.category === activeCategory);
+  const getCategoriesForTab = (categoryId: string) => {
+  if (categoryId === 'light') return ['light', 'gradient'];
+  if (categoryId === 'dark') return ['dark', 'pastel-dark'];
+  return [categoryId];
+};
+
+const filteredThemes = colorThemes.filter(theme =>
+  getCategoriesForTab(activeCategory).includes(theme.category)
+);
 
   const containerClass = variant === 'header'
     ? "relative"
@@ -51,7 +59,7 @@ export function ColorPicker({ currentTheme, onThemeChange, variant = 'floating' 
         onClick={() => setIsOpen(!isOpen)}
         className="px-3"
         style={{
-          backgroundColor: "transparent",
+          background: currentTheme.background,
           borderColor: currentTheme.cardBorder,
           color: currentTheme.digitColor
         }}

@@ -4,6 +4,10 @@ import { SettingsSheet } from "@/components/settings/settings-sheet";
 import { FocusToggleIcon } from "@/components/timer/focus-mode-toggle";
 import { SessionQuote } from "@/components/timer/quote";
 import { ProgressChart } from "@/components/progress/progress-chart";
+import { MusicBar } from '../components/MusicBar';
+import { ExpandedPlayer } from '@/components/ExpandedPlayer';
+import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { samplePlaylists } from '@/data/playlists';
 import { FlipClock } from "@/components/timer/flip-clock";
 import { usePomodoro } from "@/components/timer/pomodoro-provider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -150,25 +154,43 @@ function AppBody() {
       window.removeEventListener("keydown", onKey);
     };
   }, [onKey]);
+    // Music player states
+  const [isExpanded, setIsExpanded] = useState(false);
+  const audioPlayer = useAudioPlayer();
+
+  const handleToggleExpand = () => setIsExpanded(!isExpanded);
+  
+  const handleSelectTrack = (track: any) => {
+    // Find the playlist that contains this track
+    const playlist = samplePlaylists.find(p => p.tracks.some(t => t.id === track.id));
+    if (playlist) {
+      audioPlayer.playTrack(track, playlist.tracks);
+    }
+  };
 
   return (
 <main
   className="min-h-dvh text-foreground transition-all duration-500 ease-in-out"
   style={{
-    // Replace 'background' shorthand with individual properties
-    backgroundColor: currentTheme.backgroundImage ? 'transparent' : currentTheme.background,
-    backgroundImage: currentTheme.backgroundImage 
-      ? (currentTheme.backgroundOverlay 
-          ? `linear-gradient(${currentTheme.backgroundOverlay}, ${currentTheme.backgroundOverlay}), url('${currentTheme.backgroundImage}')`
-          : `url('${currentTheme.backgroundImage}')`)
-      : 'none',
-    backgroundSize: currentTheme.backgroundImage ? 'cover' : 'auto',
-    backgroundPosition: currentTheme.backgroundImage ? 'center' : 'initial',
-    backgroundAttachment: currentTheme.backgroundImage ? 'fixed' : 'initial',
-    backgroundRepeat: currentTheme.backgroundImage ? 'no-repeat' : 'initial',
+    // Handle image themes
+    ...(currentTheme.backgroundImage && {
+      backgroundColor: 'transparent',
+      backgroundImage: currentTheme.backgroundOverlay 
+        ? `linear-gradient(${currentTheme.backgroundOverlay}, ${currentTheme.backgroundOverlay}), url('${currentTheme.backgroundImage}')`
+        : `url('${currentTheme.backgroundImage}')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      backgroundRepeat: 'no-repeat',
+    }),
+    // Handle gradient and solid color themes
+    ...(!currentTheme.backgroundImage && {
+      background: currentTheme.background,
+    }),
     color: currentTheme.digitColor,
   }}
 >
+
 
       <RegisterSW />
       <div
@@ -177,6 +199,33 @@ function AppBody() {
           focusMode && "max-w-3xl"
         )}
       >
+          {/* MusicBar  */}
+  <MusicBar
+  currentTrack={audioPlayer.currentTrack}
+  isPlaying={audioPlayer.isPlaying}
+  isBuffering={audioPlayer.isBuffering} // Add this
+  error={audioPlayer.error} // Add this
+  onPlayPause={audioPlayer.togglePlayPause}
+  isExpanded={isExpanded}
+  onToggleExpand={handleToggleExpand}
+/>
+
+      <ExpandedPlayer
+        isExpanded={isExpanded}
+        currentTheme={currentTheme}
+        playlists={samplePlaylists}
+        currentTrack={audioPlayer.currentTrack}
+        isPlaying={audioPlayer.isPlaying}
+        currentTime={audioPlayer.currentTime}
+        duration={audioPlayer.duration}
+        volume={audioPlayer.volume}
+        onSelectTrack={handleSelectTrack}
+        onSeek={audioPlayer.seek}
+        onVolumeChange={audioPlayer.changeVolume}
+        onNext={audioPlayer.playNext}
+        onPrevious={audioPlayer.playPrevious}
+      />
+
         <header className={cn("flex items-center justify-between gap-2")}>
           <div className="flex items-center gap-3">
             <img
@@ -240,7 +289,8 @@ function AppBody() {
                     <TabsList
                       className="grid grid-cols-3"
                       themeStyle={{
-                        backgroundColor: `${currentTheme.cardBorder}20`,
+                        background: `${currentTheme.background}90`,
+                        // backgroundColor: `${currentTheme.cardBorder}20`,
                         border: `1px solid ${currentTheme.cardBorder}`,
                       }}
                     >
@@ -288,7 +338,7 @@ function AppBody() {
                     onClick={pause}
                     className="px-6 transition-all duration-200"
                     style={{
-                      background: "transparent",
+                      background: currentTheme.background,
                       color: currentTheme.digitColor,
                       border: `1px solid ${currentTheme.cardBorder}`,
                     }}
@@ -301,7 +351,7 @@ function AppBody() {
                     onClick={start}
                     className="px-6 transition-all duration-200"
                     style={{
-                      background: "transparent",
+                      background: currentTheme.background,
                       color: currentTheme.digitColor,
                       border: `1px solid ${currentTheme.cardBorder}`,
                     }}
@@ -310,11 +360,12 @@ function AppBody() {
                   </Button>
                 )}
                 <Button
+                size="lg"
                   variant="secondary"
                   onClick={reset}
                   className="transition-all duration-200"
                   style={{
-                    background: "transparent",
+                    background: currentTheme.background,
                     color: currentTheme.digitColor,
                     border: `1px solid ${currentTheme.cardBorder}`,
                   }}

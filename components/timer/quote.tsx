@@ -28,6 +28,7 @@ export function SessionQuote({ currentTheme }: { currentTheme: any }) {
       className="mt-4 rounded-lg p-4 text-center transition-all duration-500 relative"
       style={{
         color: currentTheme.separatorColor,
+        // background: currentTheme.background,
       }}
     >
       <svg
