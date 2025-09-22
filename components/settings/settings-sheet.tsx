@@ -2,15 +2,6 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -28,7 +19,7 @@ import { ColorTheme } from "@/lib/theme";
 interface SettingsSheetProps {
   open?: boolean;
   onOpenChange?: (b: boolean) => void;
-  currentTheme: ColorTheme; // ← new prop
+  currentTheme: ColorTheme;
 }
 
 export function SettingsSheet({
@@ -45,8 +36,6 @@ export function SettingsSheet({
     setAutoStartNext,
     autoPauseOnBlur,
     setAutoPauseOnBlur,
-    autoResumeOnFocus,
-    setAutoResumeOnFocus,
     notifications,
     setNotifications,
     timeFormat,
@@ -82,184 +71,394 @@ export function SettingsSheet({
     if (await ensurePermission()) setNotifications(true);
   };
 
-  /* -------------------- render -------------------- */
-  return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetTrigger asChild>
-        <Button
-          variant="outline"
-          style={{
-           background: currentTheme.background,
-            color: currentTheme.digitColor,
-            border: `1px solid ${currentTheme.cardBorder}`,
-          }}
-        >
-          Settings
-        </Button>
-      </SheetTrigger>
+  const isImageTheme = currentTheme.backgroundImage;
 
-      <SheetContent
-        side="right"
-        className="w-[420px] max-w-full"
+  return (
+    <>
+      {/* Trigger Button */}
+      <Button
+        variant="outline"
+        onClick={() => onOpenChange?.(true)}
         style={{
-          backgroundColor: currentTheme.background,
-          borderLeft: `1px solid ${currentTheme.cardBorder}`,
+          background: currentTheme.background,
           color: currentTheme.digitColor,
-          boxShadow: currentTheme.shadow,
+          border: `1px solid ${currentTheme.cardBorder}`,
         }}
       >
-        <SheetHeader>
-          <SheetTitle>Settings</SheetTitle>
-          <SheetDescription>Customize sessions and behavior</SheetDescription>
-        </SheetHeader>
+        Settings
+      </Button>
 
-        <div className="mt-6 space-y-6 px-4">
-          {/* durations */}
-          <fieldset className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="work">Work (min)</Label>
-            <Input
-              id="work"
-              type="number"
-              min={1}
-              max={180}
-              value={work}
-              onChange={(e) => setWork(Number(e.target.value))}
-              className="col-span-2"
-            />
-            <Label htmlFor="short">Short break (min)</Label>
-            <Input
-              id="short"
-              type="number"
-              min={1}
-              max={60}
-              value={shortB}
-              onChange={(e) => setShortB(Number(e.target.value))}
-              className="col-span-2"
-            />
-            <Label htmlFor="long">Long break (min)</Label>
-            <Input
-              id="long"
-              type="number"
-              min={1}
-              max={120}
-              value={longB}
-              onChange={(e) => setLongB(Number(e.target.value))}
-              className="col-span-2"
-            />
-          </fieldset>
-
-          {/* long-break interval */}
-          <fieldset className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="interval">Long break every</Label>
-            <Input
-              id="interval"
-              type="number"
-              min={2}
-              max={12}
-              value={longInt}
-              onChange={(e) => setLongInt(Number(e.target.value))}
-              className="col-span-2"
-            />
-          </fieldset>
-
-          {/* clock format */}
-          <fieldset className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="clock">Clock format</Label>
-            <div className="col-span-2">
-              <Select
-                value={timeFormat}
-                onValueChange={(v) => setTimeFormat(v as "12h" | "24h")}
+      {/* Modal */}
+      {open && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 z-40 backdrop-blur-[2px]"
+            style={{
+              backgroundColor: isImageTheme ? 'rgba(0, 0, 0, 0.35)' : 'rgba(0, 0, 0, 0.25)'
+            }}
+            onClick={() => onOpenChange?.(false)}
+          />
+          
+          {/* Modal Content */}
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+            <div 
+              className="rounded-3xl shadow-2xl overflow-hidden max-w-lg w-full max-h-[85vh] border animate-in zoom-in-95 duration-300"
+              style={{
+                background: isImageTheme ? 'rgba(0, 0, 0, 0.55)' : currentTheme.background,
+                borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.25)' : `${currentTheme.cardBorder}80`,
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                boxShadow: isImageTheme 
+                  ? '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15)' 
+                  : `0 25px 50px -12px ${currentTheme.cardBorder}40`,
+              }}
+            >
+              {/* Header */}
+              <div 
+                className="flex items-center justify-between px-6 py-5 border-b"
+                style={{
+                  borderBottomColor: isImageTheme ? 'rgba(255, 255, 255, 0.15)' : currentTheme.cardBorder,
+                  background: isImageTheme ? 'rgba(0, 0, 0, 0.2)' : 'transparent',
+                }}
               >
-                <SelectTrigger id="clock" aria-label="Clock format">
-                  <SelectValue placeholder="Select format" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="24h">24-hour</SelectItem>
-                  <SelectItem value="12h">12-hour (AM/PM)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </fieldset>
-
-          {/* switches */}
-          <fieldset className="space-y-3">
-            {/* Auto-start */}
-            <div className="flex items-center justify-between">
-              <div>
-                <Label>Auto start next session</Label>
-                <p className="text-xs text-muted-foreground">
-                  Automatically begin the next work/break session
-                </p>
-              </div>
-              <Switch
-                checked={autoStartNext}
-                onCheckedChange={setAutoStartNext}
-              />
-            </div>
-
-            {/* Auto-pause */}
-            <div className="flex items-center justify-between">
-              <div>
-                <Label>Auto-pause on tab switch</Label>
-                <p className="text-xs text-muted-foreground">
-                  Pause when the tab is hidden
-                </p>
-              </div>
-              <Switch
-                checked={autoPauseOnBlur}
-                onCheckedChange={setAutoPauseOnBlur}
-              />
-            </div>
-
-            {/* Auto-resume */}
-            {/* not required */}
-
-            {/* Notifications */}
-            <div className="flex items-center justify-between">
-              <div>
-                <Label>Desktop notifications</Label>
-                <p className="text-xs text-muted-foreground">
-                  Show alerts when sessions end
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={notifications}
-                  onCheckedChange={(b) =>
-                    b ? requestNotif() : setNotifications(false)
-                  }
-                />
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={requestNotif}
+                <div className="flex items-center space-x-3">
+                  <div 
+                    className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                    style={{
+                      backgroundColor: isImageTheme ? 'rgba(255, 255, 255, 0.15)' : `${currentTheme.cardBorder}40`,
+                      border: `1px solid ${isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder}`,
+                    }}
+                  >
+                    <span className="text-2xl">⚙️</span>
+                  </div>
+                  <div>
+                    <h2 
+                      className="text-xl font-bold"
+                      style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.95)' : currentTheme.digitColor }}
+                    >
+                      Settings
+                    </h2>
+                    <p 
+                      className="text-sm"
+                      style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.8)' : currentTheme.separatorColor }}
+                    >
+                      Customize sessions and behavior
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => onOpenChange?.(false)}
+                  className="p-2 rounded-full transition-all duration-200 hover:scale-110 border"
                   style={{
-                    backgroundColor: currentTheme.background,
-                    color: currentTheme.digitColor,
-                    border: `1px solid ${currentTheme.cardBorder}`,
+                    color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.separatorColor,
+                    backgroundColor: isImageTheme ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                    borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder,
                   }}
                 >
-                  Enable
-                </Button>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Content */}
+              <div 
+                className="p-6 overflow-y-auto max-h-[60vh] space-y-6 custom-scrollbar"
+                style={{
+                  background: isImageTheme ? 'rgba(0, 0, 0, 0.1)' : 'transparent',
+                }}
+              >
+                {/* Session Durations */}
+                <div 
+                  className="p-4 rounded-2xl border"
+                  style={{
+                    backgroundColor: isImageTheme ? 'rgba(255, 255, 255, 0.08)' : `${currentTheme.background}20`,
+                    borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.2)' : currentTheme.cardBorder,
+                  }}
+                >
+                  <h3 
+                    className="text-base font-semibold mb-4"
+                    style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.95)' : currentTheme.digitColor }}
+                  >
+                    Session Durations
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label 
+                        htmlFor="work"
+                        style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor }}
+                      >
+                        Work (minutes)
+                      </Label>
+                      <input
+                        id="work"
+                        type="number"
+                        min={1}
+                        max={180}
+                        value={work}
+                        onChange={(e) => setWork(Number(e.target.value))}
+                        className="w-20 px-2 py-1 text-sm rounded-lg border"
+                        style={{
+                          backgroundColor: isImageTheme ? 'rgba(255, 255, 255, 0.1)' : currentTheme.background,
+                          color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor,
+                          borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder,
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label 
+                        htmlFor="short"
+                        style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor }}
+                      >
+                        Short break (minutes)
+                      </Label>
+                      <input
+                        id="short"
+                        type="number"
+                        min={1}
+                        max={60}
+                        value={shortB}
+                        onChange={(e) => setShortB(Number(e.target.value))}
+                        className="w-20 px-2 py-1 text-sm rounded-lg border"
+                        style={{
+                          backgroundColor: isImageTheme ? 'rgba(255, 255, 255, 0.1)' : currentTheme.background,
+                          color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor,
+                          borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder,
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label 
+                        htmlFor="long"
+                        style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor }}
+                      >
+                        Long break (minutes)
+                      </Label>
+                      <input
+                        id="long"
+                        type="number"
+                        min={1}
+                        max={120}
+                        value={longB}
+                        onChange={(e) => setLongB(Number(e.target.value))}
+                        className="w-20 px-2 py-1 text-sm rounded-lg border"
+                        style={{
+                          backgroundColor: isImageTheme ? 'rgba(255, 255, 255, 0.1)' : currentTheme.background,
+                          color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor,
+                          borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder,
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label 
+                        htmlFor="interval"
+                        style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor }}
+                      >
+                        Long break every
+                      </Label>
+                      <input
+                        id="interval"
+                        type="number"
+                        min={2}
+                        max={12}
+                        value={longInt}
+                        onChange={(e) => setLongInt(Number(e.target.value))}
+                        className="w-20 px-2 py-1 text-sm rounded-lg border"
+                        style={{
+                          backgroundColor: isImageTheme ? 'rgba(255, 255, 255, 0.1)' : currentTheme.background,
+                          color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor,
+                          borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Preferences */}
+                <div 
+                  className="p-4 rounded-2xl border"
+                  style={{
+                    backgroundColor: isImageTheme ? 'rgba(255, 255, 255, 0.08)' : `${currentTheme.background}20`,
+                    borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.2)' : currentTheme.cardBorder,
+                  }}
+                >
+                  <h3 
+                    className="text-base font-semibold mb-4"
+                    style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.95)' : currentTheme.digitColor }}
+                  >
+                    Preferences
+                  </h3>
+                  <div className="space-y-4">
+                    {/* Clock Format */}
+                    <div className="flex items-center justify-between">
+                      <Label 
+                        style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor }}
+                      >
+                        Clock format
+                      </Label>
+                      <select
+                        value={timeFormat}
+                        onChange={(e) => setTimeFormat(e.target.value as "12h" | "24h")}
+                        className="px-3 py-1 text-sm rounded-lg border"
+                        style={{
+                          backgroundColor: isImageTheme ? 'rgba(255, 255, 255, 0.1)' : currentTheme.background,
+                          color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor,
+                          borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder,
+                        }}
+                      >
+                        <option value="24h">24-hour</option>
+                        <option value="12h">12-hour (AM/PM)</option>
+                      </select>
+                    </div>
+
+                    {/* Switches */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label 
+                          style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor }}
+                        >
+                          Auto start next session
+                        </Label>
+                        <p 
+                          className="text-xs mt-1"
+                          style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.7)' : currentTheme.separatorColor }}
+                        >
+                          Automatically begin the next work/break session
+                        </p>
+                      </div>
+                      <Switch
+                        checked={autoStartNext}
+                        onCheckedChange={setAutoStartNext}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label 
+                          style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor }}
+                        >
+                          Pause when the tab is hidden
+                        </Label>
+                        <p 
+                          className="text-xs mt-1"
+                          style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.7)' : currentTheme.separatorColor }}
+                        >
+                          Pause when switching tabs
+                        </p>
+                      </div>
+                      <Switch
+                        checked={autoPauseOnBlur}
+                        onCheckedChange={setAutoPauseOnBlur}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label 
+                          style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.digitColor }}
+                        >
+                          Desktop notifications
+                        </Label>
+                        <p 
+                          className="text-xs mt-1"
+                          style={{ color: isImageTheme ? 'rgba(255, 255, 255, 0.7)' : currentTheme.separatorColor }}
+                        >
+                          Show alerts when sessions end
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={notifications}
+                          onCheckedChange={(b) => b ? requestNotif() : setNotifications(false)}
+                        />
+                   
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div 
+                className="flex justify-end gap-3 p-6 border-t"
+                style={{
+                  borderTopColor: isImageTheme ? 'rgba(255, 255, 255, 0.15)' : currentTheme.cardBorder,
+                  background: isImageTheme ? 'rgba(0, 0, 0, 0.2)' : 'transparent',
+                }}
+              >
+                <button
+                  onClick={() => onOpenChange?.(false)}
+                  className="px-4 py-2 text-sm rounded-xl border hover:opacity-80 transition-opacity"
+                  style={{
+                    backgroundColor: isImageTheme ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                    color: isImageTheme ? 'rgba(255, 255, 255, 0.9)' : currentTheme.separatorColor,
+                    borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder,
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={save}
+                  className="px-4 py-2 text-sm rounded-xl border hover:opacity-90 transition-opacity"
+                  style={{
+                    backgroundColor: isImageTheme ? 'rgba(255, 255, 255, 0.2)' : currentTheme.digitColor,
+                    color: isImageTheme ? 'rgba(255, 255, 255, 0.95)' : currentTheme.background,
+                    borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.4)' : 'transparent',
+                    border: isImageTheme ? '1px solid' : 'none',
+                  }}
+                >
+                  Save Changes
+                </button>
               </div>
             </div>
-          </fieldset>
-        </div>
+          </div>
 
-        <SheetFooter className="mt-6">
-          <Button
-            onClick={save}
-            style={{
-              backgroundColor: currentTheme.digitColor,
-              color: currentTheme.background,
-              border: `1px solid ${currentTheme.cardBorder}`,
-            }}
-          >
-            Save
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+          <style jsx>{`
+            .custom-scrollbar::-webkit-scrollbar {
+              width: 8px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+              background: ${isImageTheme ? 'rgba(255, 255, 255, 0.1)' : currentTheme.cardBorder + '20'};
+              border-radius: 4px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: ${isImageTheme ? 'rgba(255, 255, 255, 0.4)' : currentTheme.cardBorder};
+              border-radius: 4px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+              background: ${isImageTheme ? 'rgba(255, 255, 255, 0.6)' : currentTheme.digitColor + '80'};
+            }
+            
+            @keyframes zoom-in-95 {
+              0% { transform: scale(0.95); opacity: 0; }
+              100% { transform: scale(1); opacity: 1; }
+            }
+            .animate-in {
+              animation-fill-mode: both;
+            }
+            .zoom-in-95 {
+              animation-name: zoom-in-95;
+            }
+            .duration-300 {
+              animation-duration: 300ms;
+            }
+
+            /* Input focus styles */
+            input:focus, select:focus {
+              outline: none;
+              box-shadow: 0 0 0 2px ${isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.digitColor + '40'};
+            }
+
+            /* Select dropdown styling */
+            select option {
+              background: ${currentTheme.background};
+              color: ${currentTheme.digitColor};
+            }
+          `}</style>
+        </>
+      )}
+    </>
   );
 }
 

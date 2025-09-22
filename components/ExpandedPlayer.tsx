@@ -58,8 +58,8 @@ export function ExpandedPlayer({
           style={{
             background: isImageTheme 
               ? 'rgba(0, 0, 0, 0.55)' 
-              : currentTheme.cardBackground,
-            borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.25)' : currentTheme.cardBorder,
+                :currentTheme.background, 
+            borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.25)' : `${currentTheme.cardBorder}80`,
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             boxShadow: isImageTheme 

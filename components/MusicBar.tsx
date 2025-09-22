@@ -59,10 +59,10 @@ export function MusicBar({
           // Adaptive background based on theme type
           background: isImageTheme 
             ? 'rgba(255, 255, 255, 0.02)' // Light/white for image themes
-            : currentTheme.cardBackground, // Use theme's card background
+            :currentTheme.background, // Use theme's card background
           borderColor: isImageTheme 
             ? 'rgba(255, 255, 255, 0.3)' // Light border for image themes
-            : currentTheme.cardBorder, // Theme's border color
+            : `${currentTheme.cardBorder}80`, // Theme's border color
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           boxShadow: isImageTheme 

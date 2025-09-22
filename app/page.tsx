@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { SettingsSheet } from "@/components/settings/settings-sheet";
+import { TodoList } from "@/components/todo/TodoList";
 import { FocusToggleIcon } from "@/components/timer/focus-mode-toggle";
 import { SessionQuote } from "@/components/timer/quote";
 import { ProgressChart } from "@/components/progress/progress-chart";
@@ -171,7 +172,7 @@ function AppBody() {
       audioPlayer.playTrack(track, playlist.tracks);
     }
   };
-
+  const [todoOpen, setTodoOpen] = React.useState(false);
   return (
     <main
       className="min-h-dvh text-foreground transition-all duration-500 ease-in-out"
@@ -217,6 +218,12 @@ function AppBody() {
             </h1>
           </div>
           <div className="flex items-center gap-2">
+            <TodoList
+              open={todoOpen}
+              onOpenChange={setTodoOpen}
+              currentTheme={currentTheme}
+            />
+
             <ColorPicker
               currentTheme={currentTheme}
               onThemeChange={setCurrentTheme}
