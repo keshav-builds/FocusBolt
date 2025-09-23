@@ -105,7 +105,7 @@ export function SettingsSheet({
             <div 
               className="rounded-3xl shadow-2xl overflow-hidden max-w-lg w-full max-h-[85vh] border animate-in zoom-in-95 duration-300"
               style={{
-                background: isImageTheme ? 'rgba(0, 0, 0, 0.55)' : currentTheme.background,
+                background: isImageTheme ? 'rgba(0, 0, 0, 0.85)' : currentTheme.background,
                 borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.25)' : `${currentTheme.cardBorder}80`,
                 backdropFilter: 'blur(20px)',
                 WebkitBackdropFilter: 'blur(20px)',

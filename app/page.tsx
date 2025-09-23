@@ -21,7 +21,6 @@ import { LoaderThree } from "@/components/ui/loader";
 import { ColorPicker } from "@/components/ColorPicker";
 import { colorThemes } from "@/config/themes";
 import { ColorTheme } from "@/lib/theme";
-
 function AppBody() {
   const {
     viewMode,
@@ -260,6 +259,9 @@ function AppBody() {
                 >
                   Pomodoro
                 </CardTitle>
+
+                
+
                 <div className="flex-shrink-0">
                   <Tabs
                     value={viewMode}
@@ -300,6 +302,7 @@ function AppBody() {
               </div>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-6">
+             
               <FlipClock
                 seconds={remaining}
                 theme={currentTheme}
@@ -386,6 +389,13 @@ function AppBody() {
               isExpanded={isExpanded}
               onToggleExpand={handleToggleExpand}
               currentTheme={currentTheme}
+                onSelectFirstTrack={() => {
+      // Get first track from first playlist
+      if (samplePlaylists.length > 0 && samplePlaylists[0].tracks.length > 0) {
+        const firstTrack = samplePlaylists[0].tracks[0];
+        handleSelectTrack(firstTrack); // Use your existing function
+      }
+    }}
             />
           </div>
 

@@ -57,7 +57,7 @@ export function ExpandedPlayer({
           className="rounded-3xl shadow-2xl overflow-hidden max-w-2xl w-full max-h-[80vh] border animate-in zoom-in-95 duration-300"
           style={{
             background: isImageTheme 
-              ? 'rgba(0, 0, 0, 0.55)' 
+              ? 'rgba(0, 0, 0, 0.85)' 
                 :currentTheme.background, 
             borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.25)' : `${currentTheme.cardBorder}80`,
             backdropFilter: 'blur(20px)',
