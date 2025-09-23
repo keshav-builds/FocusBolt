@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { motion } from "framer-motion";
+import { Ripple } from "@/components/ui/shadcn-io/ripple";
 import { SettingsSheet } from "@/components/settings/settings-sheet";
 import { TodoList } from "@/components/todo/TodoList";
 import { FocusToggleIcon } from "@/components/timer/focus-mode-toggle";
@@ -14,13 +16,14 @@ import { usePomodoro } from "@/components/timer/pomodoro-provider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+// import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { RegisterSW } from "@/components/register-sw";
 import { LoaderThree } from "@/components/ui/loader";
 import { ColorPicker } from "@/components/ColorPicker";
 import { colorThemes } from "@/config/themes";
 import { ColorTheme } from "@/lib/theme";
+
 function AppBody() {
   const {
     viewMode,
@@ -174,7 +177,7 @@ function AppBody() {
   const [todoOpen, setTodoOpen] = React.useState(false);
   return (
     <main
-      className="min-h-dvh text-foreground transition-all duration-500 ease-in-out"
+      className="min-h-dvh text-foreground transition-all duration-500 ease-in-out relative"
       style={{
         // Handle image themes
         ...(currentTheme.backgroundImage && {
@@ -194,6 +197,15 @@ function AppBody() {
         color: currentTheme.digitColor,
       }}
     >
+       {(mode === "short" || mode === "long") && (
+    <Ripple
+      mainCircleSize={350}
+      mainCircleOpacity={0.55}
+      numCircles={5}
+      currentTheme={currentTheme}
+      className="fixed inset-0 z-0" // Fixed positioning to cover entire viewport
+    />
+  )}
       <RegisterSW />
       <div
         className={cn(
@@ -260,49 +272,61 @@ function AppBody() {
                   Pomodoro
                 </CardTitle>
 
-                
-
                 <div className="flex-shrink-0">
-                  <Tabs
-                    value={viewMode}
-                    onValueChange={(v) => {
-                      setViewMode(v as any);
-                      switchMode(v as any);
-                    }}
-                  >
-                    <TabsList
-                      className="grid grid-cols-3"
-                      themeStyle={{
-                        background: `${currentTheme.background}90`,
-                        // backgroundColor: `${currentTheme.cardBorder}20`,
+                  <div className="relative">
+                    {/* Custom animated tabs container */}
+                    <div
+                      className="flex rounded-lg p-1"
+                      style={{
+                        background: currentTheme.background,
                         border: `1px solid ${currentTheme.cardBorder}`,
                       }}
                     >
-                      {tabs.map((t) => (
-                        <TabsTrigger
-                          key={t.value}
-                          value={t.value}
-                          className="text-sm data-[state=active]:shadow-sm"
-                          isActive={viewMode === t.value}
-                          themeStyle={{
-                            color: `${currentTheme.digitColor}80`,
+                      {tabs.map((tab) => (
+                        <button
+                          key={tab.value}
+                          onClick={() => {
+                            setViewMode(tab.value as any);
+                            switchMode(tab.value as any);
                           }}
-                          activeThemeStyle={{
-                            color: currentTheme.digitColor,
-                            boxShadow: `0 1px 3px ${currentTheme.cardBorder}40`,
+                          className={`${
+                            viewMode === tab.value ? "" : "hover:opacity-60"
+                          } relative rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2`}
+                          style={{
+                            color:
+                              viewMode === tab.value
+                                ? currentTheme.digitColor
+                                : `${currentTheme.digitColor}80`,
+                            WebkitTapHighlightColor: "transparent",
                           }}
-                          aria-label={`Switch to ${t.label}`}
+                          aria-label={`Switch to ${tab.label}`}
                         >
-                          {t.label}
-                        </TabsTrigger>
+                          {/* Animated background bubble */}
+                          {viewMode === tab.value && (
+                            <motion.span
+                              layoutId="activeTabBubble"
+                              className="absolute inset-0 z-0"
+                              style={{
+                                borderRadius: 6,
+                                backgroundColor:currentTheme.cardBorder,
+                                boxShadow: `0 1px 3px ${currentTheme.cardBorder}40`,
+                              }}
+                              transition={{
+                                type: "spring",
+                                bounce: 0.2,
+                                duration: 0.6,
+                              }}
+                            />
+                          )}
+                          <span className="relative z-10">{tab.label}</span>
+                        </button>
                       ))}
-                    </TabsList>
-                  </Tabs>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-6">
-             
               <FlipClock
                 seconds={remaining}
                 theme={currentTheme}
@@ -389,13 +413,16 @@ function AppBody() {
               isExpanded={isExpanded}
               onToggleExpand={handleToggleExpand}
               currentTheme={currentTheme}
-                onSelectFirstTrack={() => {
-      // Get first track from first playlist
-      if (samplePlaylists.length > 0 && samplePlaylists[0].tracks.length > 0) {
-        const firstTrack = samplePlaylists[0].tracks[0];
-        handleSelectTrack(firstTrack); // Use your existing function
-      }
-    }}
+              onSelectFirstTrack={() => {
+                // Get first track from first playlist
+                if (
+                  samplePlaylists.length > 0 &&
+                  samplePlaylists[0].tracks.length > 0
+                ) {
+                  const firstTrack = samplePlaylists[0].tracks[0];
+                  handleSelectTrack(firstTrack); // Use your existing function
+                }
+              }}
             />
           </div>
 
