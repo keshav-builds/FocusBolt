@@ -197,15 +197,15 @@ function AppBody() {
         color: currentTheme.digitColor,
       }}
     >
-       {(mode === "short" || mode === "long") && (
-    <Ripple
-      mainCircleSize={350}
-      mainCircleOpacity={0.55}
-      numCircles={5}
-      currentTheme={currentTheme}
-      className="fixed inset-0 z-0" // Fixed positioning to cover entire viewport
-    />
-  )}
+      {(mode === "short" || mode === "long") && (
+        <Ripple
+          mainCircleSize={350}
+          mainCircleOpacity={0.55}
+          numCircles={5}
+          currentTheme={currentTheme}
+          className="fixed inset-0 z-0" // Fixed positioning to cover entire viewport
+        />
+      )}
       <RegisterSW />
       <div
         className={cn(
@@ -248,7 +248,7 @@ function AppBody() {
           </div>
         </header>
 
-        <section className="mt-6">
+        <section className="mt-4">
           <Card
             id="pomodoro-focus-section"
             className={cn(
@@ -263,7 +263,7 @@ function AppBody() {
               minHeight: "600px",
             }}
           >
-            <CardHeader className="pb-2 card-header">
+            <CardHeader className="pb-0 card-header">
               <div className="flex items-center justify-between gap-4">
                 <CardTitle
                   className="text-balance text-lg"
@@ -308,7 +308,7 @@ function AppBody() {
                               className="absolute inset-0 z-0"
                               style={{
                                 borderRadius: 6,
-                                backgroundColor:currentTheme.cardBorder,
+                                backgroundColor: currentTheme.cardBorder,
                                 boxShadow: `0 1px 3px ${currentTheme.cardBorder}40`,
                               }}
                               transition={{
@@ -326,7 +326,7 @@ function AppBody() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="flex flex-col items-center gap-6">
+            <CardContent className="flex flex-col items-center gap-1">
               <FlipClock
                 seconds={remaining}
                 theme={currentTheme}
@@ -340,18 +340,28 @@ function AppBody() {
 
                 <SessionQuote currentTheme={currentTheme} />
               </div>
-              <div className="flex items-center justify-center gap-3">
+
+              <div className="flex items-center justify-center gap-4 mt-2">
                 {isRunning ? (
                   <Button
                     size="lg"
                     onClick={pause}
-                    className="px-6 transition-all duration-200"
+                    className="relative px-6 transition-all duration-200 group"
                     style={{
                       background: currentTheme.background,
                       color: currentTheme.digitColor,
-                      border: `1px solid ${currentTheme.cardBorder}`,
+                      // border: `1px solid ${currentTheme.cardBorder}`,
+                      cursor: "pointer",
                     }}
                   >
+                    {/* Top left corner */}
+                    <div className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-yellow-400"></div>
+                    {/* Top right corner */}
+                    <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-yellow-400"></div>
+                    {/* Bottom left corner */}
+                    <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-yellow-400"></div>
+                    {/* Bottom right corner */}
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-yellow-400"></div>
                     Pause
                   </Button>
                 ) : (
@@ -362,13 +372,14 @@ function AppBody() {
                     style={{
                       background: currentTheme.background,
                       color: currentTheme.digitColor,
-                      border: `1px solid ${currentTheme.cardBorder}`,
+                      // border: `1px solid ${currentTheme.cardBorder}`,
+                      cursor: "pointer",
                     }}
                   >
                     Start
                   </Button>
                 )}
-                <Button
+                {/* <Button
                   size="lg"
                   variant="secondary"
                   onClick={reset}
@@ -377,11 +388,12 @@ function AppBody() {
                     background: currentTheme.background,
                     color: currentTheme.digitColor,
                     border: `1px solid ${currentTheme.cardBorder}`,
+                    cursor: "pointer",
                   }}
                 >
                   Reset
-                </Button>
-                <Button
+                </Button> */}
+                {/* <Button
                   variant="ghost"
                   onClick={skip}
                   className="transition-all duration-200"
@@ -390,7 +402,7 @@ function AppBody() {
                   }}
                 >
                   Skip
-                </Button>
+                </Button> */}
               </div>
               <FocusToggleIcon currentTheme={currentTheme} />
             </CardContent>

@@ -137,19 +137,7 @@ export const colorThemes: ColorTheme[] = [
     shadow: "0 8px 32px rgba(139, 92, 246, 0.2)",
     category: "gradient",
   },
-  {
-    id: "sunset-vibes",
-    name: "Sunset Vibes",
-    background:
-      "linear-gradient(135deg, #ffeaa7 0%, #fab1a0 50%, #fd79a8 100%)",
-    cardBackground:
-      "linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)",
-    cardBorder: "rgba(255,255,255,0.3)",
-    digitColor: "#2d3436",
-    separatorColor: "#636e72",
-    shadow: "0 8px 32px rgba(253, 121, 168, 0.3)",
-    category: "gradient",
-  },
+  
   {
     id: "ocean-breeze",
     name: "Ocean Breeze",
@@ -164,19 +152,6 @@ export const colorThemes: ColorTheme[] = [
     category: "gradient",
   },
 
-  {
-    id: "fire-orange",
-    name: "Fire Orange",
-    background:
-      "linear-gradient(135deg, #fdcb6e 0%, #e17055 50%, #d63031 100%)",
-    cardBackground:
-      "linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)",
-    cardBorder: "rgba(255,255,255,0.3)",
-    digitColor: "#ffffff",
-    separatorColor: "#f0f0f0",
-    shadow: "0 8px 32px rgba(253, 203, 110, 0.4)",
-    category: "gradient",
-  },
 
   // Dark pastels
   {
