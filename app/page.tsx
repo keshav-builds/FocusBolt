@@ -61,7 +61,7 @@ function AppBody() {
       localStorage.setItem("focusBoltTheme", currentTheme.id);
     }
   }, [currentTheme]);
-
+const isImageTheme = currentTheme.backgroundImage;
   // Apply theme CSS variables to document root
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -102,7 +102,7 @@ function AppBody() {
     ],
     []
   );
-
+  
   // Memoize mode label function to avoid redeclaration
   const modeLabel = useCallback((mode: "work" | "short" | "long") => {
     switch (mode) {
@@ -276,10 +276,11 @@ function AppBody() {
                   <div className="relative">
                     {/* Custom animated tabs container */}
                     <div
-                      className="flex rounded-lg p-1"
+                      className="flex rounded-lg p-1 shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
                       style={{
                         background: currentTheme.background,
                         border: `1px solid ${currentTheme.cardBorder}`,
+                        
                       }}
                     >
                       {tabs.map((tab) => (
@@ -290,14 +291,15 @@ function AppBody() {
                             switchMode(tab.value as any);
                           }}
                           className={`${
-                            viewMode === tab.value ? "" : "hover:opacity-60"
-                          } relative rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2`}
+                            viewMode === tab.value ? "" : "hover:opacity-50"
+                          } relative rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2  cursor-pointer `}
                           style={{
                             color:
                               viewMode === tab.value
                                 ? currentTheme.digitColor
                                 : `${currentTheme.digitColor}80`,
                             WebkitTapHighlightColor: "transparent",
+                           
                           }}
                           aria-label={`Switch to ${tab.label}`}
                         >
@@ -344,35 +346,45 @@ function AppBody() {
               <div className="flex items-center justify-center gap-4 mt-2">
                 {isRunning ? (
                   <Button
-                    size="lg"
+                    size="xl"
                     onClick={pause}
-                    className="relative px-6 transition-all duration-200 group"
+                    className="relative px-6 transition-all duration-200 group "
                     style={{
-                      background: currentTheme.background,
+                    background: isImageTheme
+                        ? "rgba(255,255,255,0.78) "
+                        : `${currentTheme.background}`,
                       color: currentTheme.digitColor,
-                      // border: `1px solid ${currentTheme.cardBorder}`,
+                   
+                      border: isImageTheme
+                        ? `1px solid ${currentTheme.digitColor} `
+                        : `1px solid ${currentTheme.digitColor}`,
+                      boxShadow: isImageTheme
+                        ? `5px 5px 0 0 ${currentTheme.background}`
+                        : `5px 5px 0 0 ${currentTheme.digitColor}`,
                       cursor: "pointer",
                     }}
                   >
-                    {/* Top left corner */}
-                    <div className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-yellow-400"></div>
-                    {/* Top right corner */}
-                    <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-yellow-400"></div>
-                    {/* Bottom left corner */}
-                    <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-yellow-400"></div>
-                    {/* Bottom right corner */}
-                    <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-yellow-400"></div>
                     Pause
                   </Button>
                 ) : (
                   <Button
                     size="lg"
                     onClick={start}
-                    className="px-6 transition-all duration-200"
+                    className=" relative px-6 transition-all duration-200 group "
                     style={{
-                      background: currentTheme.background,
+                      
+                      background: isImageTheme
+                        ? "rgba(255,255,255,0.78) "
+                        : `${currentTheme.background}`,
                       color: currentTheme.digitColor,
-                      // border: `1px solid ${currentTheme.cardBorder}`,
+                   
+                      border: isImageTheme
+                        ? `1px solid ${currentTheme.digitColor} `
+                        : `1px solid ${currentTheme.digitColor}`,
+                      boxShadow: isImageTheme
+                        ? `5px 5px 0 0 ${currentTheme.background}`
+                        : `5px 5px 0 0 ${currentTheme.digitColor}`,
+                      
                       cursor: "pointer",
                     }}
                   >

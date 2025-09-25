@@ -156,6 +156,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
           background: currentTheme.background,
           color: currentTheme.digitColor,
           border: `1px solid ${currentTheme.cardBorder}`,
+          
         }}
       >
          <svg 
