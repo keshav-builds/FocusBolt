@@ -6,7 +6,7 @@ import { getRandomQuote } from "@/lib/quotes";
 export function SessionQuote({ currentTheme }: { currentTheme: any }) {
   const [quote, setQuote] = useState(getRandomQuote());
   const [isVisible, setIsVisible] = useState(true);
-
+  const isImageTheme = currentTheme.backgroundImage;
   useEffect(() => {
     const interval = setInterval(() => {
       // Fade out
@@ -25,10 +25,13 @@ export function SessionQuote({ currentTheme }: { currentTheme: any }) {
 
   return (
     <div
-      className="mt-2 w-md rounded-lg p-2 text-center transition-all duration-500 relative "
+      className="mt-0 w-md rounded-lg p-2 text-center transition-all duration-500 relative "
       style={{
         color: currentTheme.digitColor,
-        backgroundColor: currentTheme.background,
+        background: isImageTheme
+                        ? "rgba(255,255,255,0.78) "
+                        : `${currentTheme.background}`,
+                      
 
       }}
     >

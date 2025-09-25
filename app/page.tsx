@@ -61,7 +61,7 @@ function AppBody() {
       localStorage.setItem("focusBoltTheme", currentTheme.id);
     }
   }, [currentTheme]);
-const isImageTheme = currentTheme.backgroundImage;
+  const isImageTheme = currentTheme.backgroundImage;
   // Apply theme CSS variables to document root
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -102,7 +102,7 @@ const isImageTheme = currentTheme.backgroundImage;
     ],
     []
   );
-  
+
   // Memoize mode label function to avoid redeclaration
   const modeLabel = useCallback((mode: "work" | "short" | "long") => {
     switch (mode) {
@@ -280,7 +280,6 @@ const isImageTheme = currentTheme.backgroundImage;
                       style={{
                         background: currentTheme.background,
                         border: `1px solid ${currentTheme.cardBorder}`,
-                        
                       }}
                     >
                       {tabs.map((tab) => (
@@ -299,7 +298,6 @@ const isImageTheme = currentTheme.backgroundImage;
                                 ? currentTheme.digitColor
                                 : `${currentTheme.digitColor}80`,
                             WebkitTapHighlightColor: "transparent",
-                           
                           }}
                           aria-label={`Switch to ${tab.label}`}
                         >
@@ -329,11 +327,61 @@ const isImageTheme = currentTheme.backgroundImage;
               </div>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-1">
-              <FlipClock
-                seconds={remaining}
-                theme={currentTheme}
-                ariaLabel={`${modeLabel(mode)} time remaining`}
-              />
+              <div
+                className="relative flex justify-center items-center w-full"
+                style={{ minHeight: "110px" }}
+              >
+                {/* Reset Button - absolutely positioned near the upper right of FlipClock */}
+                <button
+                  onClick={reset}
+                  aria-label="Reset"
+                  className="p-2 rounded-full focus:outline-none"
+                  style={{
+                    position: "absolute",
+                    top: 25,
+                    right: 80, // adjust this value for exact placement!
+                    background: isImageTheme
+                      ? "rgba(255,255,255,0.82)"
+                      : currentTheme.background,
+                    color: currentTheme.digitColor,
+                    border: `1px solid ${currentTheme.cardBorder}`,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    zIndex: 2,
+                  }}
+                  title="Reset"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="icon icon-tabler icons-tabler-outline icon-tabler-reload"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M19.933 13.041a8 8 0 1 1 -9.925 -8.788c3.899 -1 7.935 1.007 9.425 4.747" />
+                    <path d="M20 4v5h-5" />
+                  </svg>
+                </button>
+
+                {/* Flip Clock */}
+                <FlipClock
+                  seconds={remaining}
+                  theme={currentTheme}
+                  ariaLabel={`${modeLabel(mode)} time remaining`}
+                />
+              </div>
+
               <div
                 className="text-xs transition-colors duration-300"
                 style={{ color: currentTheme.separatorColor, opacity: 0.8 }}
@@ -343,68 +391,51 @@ const isImageTheme = currentTheme.backgroundImage;
                 <SessionQuote currentTheme={currentTheme} />
               </div>
 
-              <div className="flex items-center justify-center gap-4 mt-2">
+              <div className="flex items-center justify-center gap-4 mt-4">
                 {isRunning ? (
                   <Button
                     size="xl"
                     onClick={pause}
                     className="relative px-6 transition-all duration-200 group "
                     style={{
-                    background: isImageTheme
-                        ? "rgba(255,255,255,0.78) "
-                        : `${currentTheme.background}`,
+                      background: `${currentTheme.background}`,
                       color: currentTheme.digitColor,
-                   
+
                       border: isImageTheme
                         ? `1px solid ${currentTheme.digitColor} `
                         : `1px solid ${currentTheme.digitColor}`,
                       boxShadow: isImageTheme
-                        ? `5px 5px 0 0 ${currentTheme.background}`
+                        ? "5px 5px 0 0 rgba(255,255,255,0.78)"
                         : `5px 5px 0 0 ${currentTheme.digitColor}`,
+
                       cursor: "pointer",
                     }}
+                  
                   >
                     Pause
                   </Button>
                 ) : (
                   <Button
-                    size="lg"
+                    size="xl"
                     onClick={start}
                     className=" relative px-6 transition-all duration-200 group "
                     style={{
-                      
-                      background: isImageTheme
-                        ? "rgba(255,255,255,0.78) "
-                        : `${currentTheme.background}`,
+                      background: `${currentTheme.background}`,
                       color: currentTheme.digitColor,
-                   
+
                       border: isImageTheme
                         ? `1px solid ${currentTheme.digitColor} `
                         : `1px solid ${currentTheme.digitColor}`,
                       boxShadow: isImageTheme
-                        ? `5px 5px 0 0 ${currentTheme.background}`
+                        ? "5px 5px 0 0 rgba(255,255,255,0.78)"
                         : `5px 5px 0 0 ${currentTheme.digitColor}`,
-                      
+
                       cursor: "pointer",
                     }}
                   >
                     Start
                   </Button>
                 )}
-                {/* <Button
-                  size="lg"
-                  variant="secondary"
-                  onClick={reset}
-                  className="transition-all duration-200"
-                  style={{
-                    background: currentTheme.background,
-                    color: currentTheme.digitColor,
-                    border: `1px solid ${currentTheme.cardBorder}`,
-                    cursor: "pointer",
-                  }}
-                >
-                  Reset
-                </Button> */}
                 {/* <Button
                   variant="ghost"
                   onClick={skip}
