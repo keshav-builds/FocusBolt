@@ -123,6 +123,7 @@ export function ExpandedPlayer({
                   ? 'rgba(255, 255, 255, 0.1)' 
                   : 'transparent',
                 borderColor: isImageTheme ? 'rgba(255, 255, 255, 0.3)' : currentTheme.cardBorder,
+                cursor:'pointer'
               }}
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -189,7 +190,8 @@ export function ExpandedPlayer({
                             ringColor: isImageTheme 
                               ? 'rgba(255, 255, 255, 0.4)' 
                               : currentTheme.digitColor + '40',
-                          })
+                          }),
+                          cursor:'pointer'
                         }}
                       >
                         <div className="flex items-center justify-between">

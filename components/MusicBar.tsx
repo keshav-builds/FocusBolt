@@ -202,6 +202,7 @@ export function MusicBar({
               borderColor: isImageTheme 
                 ? 'rgba(255, 255, 255, 0.3)' 
                 : currentTheme.cardBorder,
+                cursor:'pointer',
             }}
           >
             <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
@@ -226,6 +227,7 @@ export function MusicBar({
               boxShadow: isImageTheme 
                 ? '0 4px 16px rgba(255, 255, 255, 0.3)' 
                 : `0 4px 16px ${currentTheme.digitColor}40`,
+                cursor:'pointer',
             }}
             title={!currentTrack ? "Play first track" : isPlaying ? "Pause" : "Play"}
           >
@@ -263,6 +265,7 @@ export function MusicBar({
               borderColor: isImageTheme 
                 ? 'rgba(255, 255, 255, 0.3)' 
                 : currentTheme.cardBorder,
+                cursor:'pointer',
             }}
           >
             <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">

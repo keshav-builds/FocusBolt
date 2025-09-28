@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ColorTheme } from "@/lib/theme";
 
 // Types
@@ -137,7 +136,18 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
         return currentTheme.separatorColor;
     }
   };
-
+ const getColor = () => {
+  if (isImageTheme) return "white";  // white for image theme
+  
+  if (currentTheme.id === 'pure-white' || currentTheme.id === 'light-gray')// blue for light themes
+    
+   return "#60A5FA";  
+  if (currentTheme.id === 'pure-black' || currentTheme.id === 'dark-gray')// yellow for dark themes
+    
+   return "#FCD34D";  
+  
+  return currentTheme.cardBorder; //return default 
+};
   // Stats
   const totalTodos = todos.length;
   const completedTodos = todos.filter((t) => t.completed).length;
@@ -156,19 +166,25 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
           background: currentTheme.background,
           color: currentTheme.digitColor,
           border: `1px solid ${currentTheme.cardBorder}`,
-          
+          cursor: "pointer",
         }}
       >
-         <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width="18" 
-    height="18" 
-    viewBox="0 0 24 24" 
-    fill="currentColor" 
-  >
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-    <path d="M12.01 2.011a3.2 3.2 0 0 1 2.113 .797l.154 .145l.698 .698a1.2 1.2 0 0 0 .71 .341l.135 .008h1a3.2 3.2 0 0 1 3.195 3.018l.005 .182v1c0 .27 .092 .533 .258 .743l.09 .1l.697 .698a3.2 3.2 0 0 1 .147 4.382l-.145 .154l-.698 .698a1.2 1.2 0 0 0 -.341 .71l-.008 .135v1a3.2 3.2 0 0 1 -3.018 3.195l-.182 .005h-1a1.2 1.2 0 0 0 -.743 .258l-.1 .09l-.698 .697a3.2 3.2 0 0 1 -4.382 .147l-.154 -.145l-.698 -.698a1.2 1.2 0 0 0 -.71 -.341l-.135 -.008h-1a3.2 3.2 0 0 1 -3.195 -3.018l-.005 -.182v-1a1.2 1.2 0 0 0 -.258 -.743l-.09 -.1l-.697 -.698a3.2 3.2 0 0 1 -.147 -4.382l.145 -.154l.698 -.698a1.2 1.2 0 0 0 .341 -.71l.008 -.135v-1l.005 -.182a3.2 3.2 0 0 1 3.013 -3.013l.182 -.005h1a1.2 1.2 0 0 0 .743 -.258l.1 -.09l.698 -.697a3.2 3.2 0 0 1 2.269 -.944zm3.697 7.282a1 1 0 0 0 -1.414 0l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.32 1.497l2 2l.094 .083a1 1 0 0 0 1.32 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z" />
-  </svg>
+        <svg
+  xmlns="http://www.w3.org/2000/svg"
+  
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke={isImageTheme ? "currentColor" : getColor()}
+  strokeWidth="2"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  className="size-5"
+>
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M5 7.2a2.2 2.2 0 0 1 2.2 -2.2h1a2.2 2.2 0 0 0 1.55 -.64l.7 -.7a2.2 2.2 0 0 1 3.12 0l.7 .7c.412 .41 .97 .64 1.55 .64h1a2.2 2.2 0 0 1 2.2 2.2v1c0 .58 .23 1.138 .64 1.55l.7 .7a2.2 2.2 0 0 1 0 3.12l-.7 .7a2.2 2.2 0 0 0 -.64 1.55v1a2.2 2.2 0 0 1 -2.2 2.2h-1a2.2 2.2 0 0 0 -1.55 .64l-.7 .7a2.2 2.2 0 0 1 -3.12 0l-.7 -.7a2.2 2.2 0 0 0 -1.55 -.64h-1a2.2 2.2 0 0 1 -2.2 -2.2v-1a2.2 2.2 0 0 0 -.64 -1.55l-.7 -.7a2.2 2.2 0 0 1 0 -3.12l.7 -.7a2.2 2.2 0 0 0 .64 -1.55v-1"/>
+  <path d="M9 12l2 2l4 -4" />
+</svg>
+
   To-Do
       </Button>
 
@@ -242,6 +258,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                     color: isImageTheme ? "rgba(255, 255, 255, 0.9)" : currentTheme.separatorColor,
                     backgroundColor: isImageTheme ? "rgba(255, 255, 255, 0.1)" : "transparent",
                     borderColor: isImageTheme ? "rgba(255, 255, 255, 0.3)" : currentTheme.cardBorder,
+                    cursor:'pointer'
                   }}
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -304,6 +321,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                         backgroundColor: isImageTheme ? "rgba(255, 255, 255, 0.15)" : currentTheme.digitColor,
                         color: isImageTheme ? "rgba(255, 255, 255, 0.95)" : currentTheme.background,
                         border: `1px solid ${isImageTheme ? "rgba(255, 255, 255, 0.3)" : "transparent"}`,
+                        cursor:'pointer'
                       }}
                     >
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -352,6 +370,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                                   selectedCategory === cat
                                     ? `0 0 0 2px ${getPriorityColor(selectedPriority)}40`
                                     : "none",
+                                    cursor:'pointer'
                               }}
                             >
                               {cat}
@@ -366,6 +385,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                                 backgroundColor: isImageTheme ? "rgba(255, 255, 255, 0.08)" : "transparent",
                                 color: isImageTheme ? "rgba(255, 255, 255, 0.7)" : currentTheme.separatorColor,
                                 borderColor: isImageTheme ? "rgba(255, 255, 255, 0.2)" : currentTheme.cardBorder,
+                                cursor:'pointer'
                               }}
                             >
                               {showAllCategories ? "Less" : `+${categories.length - 4} more`}
@@ -397,6 +417,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                                     selectedPriority === priority
                                       ? `0 0 0 2px ${getPriorityColor(priority)}40`
                                       : "none",
+                                      cursor:'pointer'
                                 }}
                                 title={`${priority} priority`}
                               />
@@ -414,6 +435,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                             backgroundColor: isImageTheme ? "rgba(255, 255, 255, 0.08)" : "transparent",
                             color: isImageTheme ? "rgba(255, 255, 255, 0.8)" : currentTheme.separatorColor,
                             borderColor: isImageTheme ? "rgba(255, 255, 255, 0.2)" : currentTheme.cardBorder,
+                            cursor:'pointer'
                           }}
                         >
                           + Add New Category
@@ -440,6 +462,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                             style={{
                               backgroundColor: getPriorityColor("low"),
                               color: "white",
+                              cursor:'pointer'
                             }}
                           >
                             Add
@@ -453,6 +476,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                             style={{
                               backgroundColor: getPriorityColor("high"),
                               color: "white",
+                              cursor:'pointer'
                             }}
                           >
                             Cancel
@@ -484,6 +508,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                               : "transparent",
                           color: isImageTheme ? "rgba(255, 255, 255, 0.9)" : currentTheme.digitColor,
                           borderColor: isImageTheme ? "rgba(255, 255, 255, 0.3)" : currentTheme.cardBorder,
+                          cursor:'pointer'
                         }}
                       >
                         {filterType}
@@ -545,6 +570,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                               style={{
                                 borderColor: getPriorityColor(todo.priority),
                                 backgroundColor: todo.completed ? getPriorityColor(todo.priority) : "transparent",
+                                cursor:'pointer'
                               }}
                             >
                               {todo.completed && (
@@ -594,6 +620,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                             className="p-1 rounded-lg hover:scale-110 transition-transform"
                             style={{
                               color: getPriorityColor("high"),
+                              cursor: "pointer",
                             }}
                           >
                             <svg

@@ -33,9 +33,15 @@ export function SettingsSheet({
   } = usePomodoro();
 
   // Use consistent number types with proper initialization
-  const [work, setWork] = React.useState<number>(Math.round(durations.work / 60));
-  const [shortB, setShortB] = React.useState<number>(Math.round(durations.short / 60));
-  const [longB, setLongB] = React.useState<number>(Math.round(durations.long / 60));
+  const [work, setWork] = React.useState<number>(
+    Math.round(durations.work / 60)
+  );
+  const [shortB, setShortB] = React.useState<number>(
+    Math.round(durations.short / 60)
+  );
+  const [longB, setLongB] = React.useState<number>(
+    Math.round(durations.long / 60)
+  );
   const [longInt, setLongInt] = React.useState<number>(longInterval);
 
   React.useEffect(() => {
@@ -51,12 +57,12 @@ export function SettingsSheet({
   // Handle input changes with proper validation
   const handleWorkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === '') {
+    if (value === "") {
       setWork(1); // Set to minimum valid value instead of empty string
       return;
     }
     // Remove leading zeros and validate
-    const cleanValue = value.replace(/^0+(?=\d)/, '') || '1';
+    const cleanValue = value.replace(/^0+(?=\d)/, "") || "1";
     const numValue = parseInt(cleanValue, 10);
     if (!isNaN(numValue) && numValue >= 1 && numValue <= 90) {
       setWork(numValue);
@@ -65,11 +71,11 @@ export function SettingsSheet({
 
   const handleShortChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === '') {
+    if (value === "") {
       setShortB(1);
       return;
     }
-    const cleanValue = value.replace(/^0+(?=\d)/, '') || '1';
+    const cleanValue = value.replace(/^0+(?=\d)/, "") || "1";
     const numValue = parseInt(cleanValue, 10);
     if (!isNaN(numValue) && numValue >= 1 && numValue <= 60) {
       setShortB(numValue);
@@ -78,11 +84,11 @@ export function SettingsSheet({
 
   const handleLongChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === '') {
+    if (value === "") {
       setLongB(1);
       return;
     }
-    const cleanValue = value.replace(/^0+(?=\d)/, '') || '1';
+    const cleanValue = value.replace(/^0+(?=\d)/, "") || "1";
     const numValue = parseInt(cleanValue, 10);
     if (!isNaN(numValue) && numValue >= 1 && numValue <= 90) {
       setLongB(numValue);
@@ -91,11 +97,11 @@ export function SettingsSheet({
 
   const handleLongIntChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === '') {
+    if (value === "") {
       setLongInt(2);
       return;
     }
-    const cleanValue = value.replace(/^0+(?=\d)/, '') || '2';
+    const cleanValue = value.replace(/^0+(?=\d)/, "") || "2";
     const numValue = parseInt(cleanValue, 10);
     if (!isNaN(numValue) && numValue >= 2 && numValue <= 12) {
       setLongInt(numValue);
@@ -128,7 +134,20 @@ export function SettingsSheet({
   };
 
   const isImageTheme = currentTheme.backgroundImage;
+  const getColor = () => {
+    if (isImageTheme) return "white"; // white for image theme
 
+    if (currentTheme.id === "pure-white" || currentTheme.id === "light-gray")
+      // blue for light themes
+
+      return "#60A5FA";
+    if (currentTheme.id === "pure-black" || currentTheme.id === "dark-gray")
+      // yellow for dark themes
+
+      return "#FCD34D";
+
+    return currentTheme.cardBorder; //return default
+  };
   return (
     <>
       {/* Trigger Button */}
@@ -141,7 +160,20 @@ export function SettingsSheet({
           border: `1px solid ${currentTheme.cardBorder}`,
         }}
       >
-        <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round"  className="icon icon-tabler icons-tabler-outline icon-tabler-settings-bolt"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13.256 20.473c-.855 .907 -2.583 .643 -2.931 -.79a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.07 .26 1.488 1.29 1.254 2.15" /><path d="M19 16l-2 3h4l-2 3" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none" // Keeps fill transparent
+          stroke={isImageTheme ? "currentColor" : getColor()} // Dynamic stroke color
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="size-5"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+          <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+        </svg>
         Settings
       </Button>
 
@@ -241,6 +273,7 @@ export function SettingsSheet({
                     borderColor: isImageTheme
                       ? "rgba(255, 255, 255, 0.3)"
                       : currentTheme.cardBorder,
+                    cursor: "pointer",
                   }}
                 >
                   <svg
@@ -275,14 +308,14 @@ export function SettingsSheet({
                   }}
                 >
                   <h3
-                    className="text-base font-semibold mb-4"
+                    className="text-base font-semibold mb-4 underline"
                     style={{
                       color: isImageTheme
                         ? "rgba(255, 255, 255, 0.95)"
                         : currentTheme.digitColor,
                     }}
                   >
-                    Session Durations
+                    Session Durations 
                   </h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
@@ -437,7 +470,7 @@ export function SettingsSheet({
                   }}
                 >
                   <h3
-                    className="text-base font-semibold mb-4"
+                    className="text-base font-semibold mb-4 underline"
                     style={{
                       color: isImageTheme
                         ? "rgba(255, 255, 255, 0.95)"
@@ -447,7 +480,6 @@ export function SettingsSheet({
                     Preferences
                   </h3>
                   <div className="space-y-4">
-                    
                     {/* Switches */}
                     <div className="flex items-center justify-between">
                       <div>
@@ -538,6 +570,67 @@ export function SettingsSheet({
                     </div>
                   </div>
                 </div>
+                {/* Keyboard Shortcuts Section */}
+                <div className="p-4 rounded-2xl border">
+                  <h3
+                    className="text-base font-semibold mb-4 underline"
+                    style={{
+                      color: isImageTheme
+                        ? "rgba(255, 255, 255, 0.95)"
+                        : currentTheme.digitColor,
+                    }}
+                  >
+                    Keyboard Shortcuts
+                  </h3>
+                  <ul
+                    style={{ paddingLeft: 0, margin: 0, listStyleType: "none" }}
+                  >
+                    {[
+                      { key: "Space", description: "Start / Pause timer" },
+                      { key: "F", description: "Toggle focus mode" },
+                      { key: "C", description: "Cycle between themes" },
+                    ].map(({ key, description }) => (
+                      <li
+                        key={key}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between", // align text left, key right
+                          alignItems: "center",
+                          marginBottom: 10,
+                          color: isImageTheme
+                            ? "rgba(255,255,255,0.85)"
+                            : currentTheme.digitColor,
+                          fontSize: 14,
+                          fontWeight: "500",
+                        }}
+                      >
+                        <span>{description}</span>
+                        <span
+                          style={{
+                            padding: "6px 12px",
+                            borderRadius: 8,
+                            backgroundColor: isImageTheme
+                              ? "rgba(255,255,255,0.15)"
+                              : currentTheme.cardBorder,
+                            border: `1.5px solid ${
+                              isImageTheme
+                                ? "rgba(255,255,255,0.3)"
+                                : currentTheme.cardBorder
+                            }`,
+                            fontWeight: "700",
+                            fontFamily: "monospace",
+                            userSelect: "none",
+                            minWidth: 48,
+                            textAlign: "center",
+                            marginLeft: 20, // spacing from description
+                          }}
+                        >
+                          {key}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
 
               {/* Footer */}
@@ -565,6 +658,7 @@ export function SettingsSheet({
                     borderColor: isImageTheme
                       ? "rgba(255, 255, 255, 0.3)"
                       : currentTheme.cardBorder,
+                    cursor: "pointer",
                   }}
                 >
                   Cancel
@@ -583,6 +677,7 @@ export function SettingsSheet({
                       ? "rgba(255, 255, 255, 0.4)"
                       : "transparent",
                     border: isImageTheme ? "1px solid" : "none",
+                    cursor: "pointer",
                   }}
                 >
                   Save Changes

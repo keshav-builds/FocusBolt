@@ -17,6 +17,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 // import { Separator } from "@/components/ui/separator";
+import { PomodoroInfoModal } from "@/components/PomodoroInfoModal";
+
 import { cn } from "@/lib/utils";
 import { RegisterSW } from "@/components/register-sw";
 import { LoaderThree } from "@/components/ui/loader";
@@ -102,6 +104,9 @@ function AppBody() {
     ],
     []
   );
+  //pomodorInfo
+  const [showPomodoroInfo, setShowPomodoroInfo] = React.useState(false);
+
 
   // Memoize mode label function to avoid redeclaration
   const modeLabel = useCallback((mode: "work" | "short" | "long") => {
@@ -115,6 +120,19 @@ function AppBody() {
     }
   }, []);
 
+  //get the color based on theme id
+ const getColor = () => {
+  if (isImageTheme) return "white";  // white for image theme
+  
+  if (currentTheme.id === 'pure-white' || currentTheme.id === 'light-gray')// blue for light themes
+    
+   return "#60A5FA";  
+  if (currentTheme.id === 'pure-black' || currentTheme.id === 'dark-gray')// yellow for dark themes
+    
+   return "#FCD34D";  
+  
+  return currentTheme.cardBorder; //return default 
+};
   // Keyboard event handler wrapped with useCallback and stable deps for performance
   const onKey = useCallback(
     (e: KeyboardEvent) => {
@@ -129,12 +147,12 @@ function AppBody() {
           break;
         default:
           switch (e.key.toLowerCase()) {
-            case "r":
-              reset();
-              break;
-            case "s":
-              skip();
-              break;
+            // case "r":
+            //   reset();
+            //   break;
+            // case "s":
+            //   skip();
+            //   break;
             case "f":
               setFocusMode(!focusMode);
               break;
@@ -199,11 +217,12 @@ function AppBody() {
     >
       {(mode === "short" || mode === "long") && (
         <Ripple
-          mainCircleSize={350}
+          mainCircleSize={250}
           mainCircleOpacity={0.55}
           numCircles={5}
           currentTheme={currentTheme}
-          className="fixed inset-0 z-0" // Fixed positioning to cover entire viewport
+          className="fixed inset-0 z-0 "
+          style={{ bottom: "80px" }}
         />
       )}
       <RegisterSW />
@@ -214,20 +233,34 @@ function AppBody() {
         )}
       >
         <header className={cn("flex items-center justify-between gap-2")}>
-          <div className="flex items-center gap-3">
-            <img
-              src="/favicon.ico"
-              alt=""
-              aria-hidden="true"
-              className="h-8 w-8 rounded-md object-contain"
-            />
-            <h1
-              className="text-pretty text-xl font-semibold md:text-2xl transition-colors duration-300"
-              style={{ color: currentTheme.digitColor }}
-            >
-              Focus Bolt
-            </h1>
-          </div>
+         <div className="flex items-center gap-3">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="32"
+    height="32"
+    viewBox="0 0 24 24"
+    
+     strokeWidth="2"
+    fill="none"
+     stroke={getColor()}
+    className="icon icon-tabler icons-tabler-filled icon-tabler-bolt "
+    aria-hidden="true"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M13 2l.018 .001l.016 .001l.083 .005l.011 .002h.011l.038 .009l.052 .008l.016 .006l.011 .001l.029 .011l.052 .014l.019 .009l.015 .004l.028 .014l.04 .017l.021 .012l.022 .01l.023 .015l.031 .017l.034 .024l.018 .011l.013 .012l.024 .017l.038 .034l.022 .017l.008 .01l.014 .012l.036 .041l.026 .027l.006 .009c.12 .147 .196 .322 .218 .513l.001 .012l.002 .041l.004 .064v6h5a1 1 0 0 1 .868 1.497l-.06 .091l-8 11c-.568 .783 -1.808 .38 -1.808 -.588v-6h-5a1 1 0 0 1 -.868 -1.497l.06 -.091l8 -11l.01 -.013l.018 -.024l.033 -.038l.018 -.022l.009 -.008l.013 -.014l.04 -.036l.028 -.026l.008 -.006a1 1 0 0 1 .402 -.199l.011 -.001l.027 -.005l.074 -.013l.011 -.001l.041 -.002z" />
+  </svg>
+  <h1
+    className="text-pretty text-xl font-semibold md:text-2xl transition-colors duration-300 tracking-tight text-shadow-md"
+    style={{
+      color: isImageTheme ? currentTheme.background : currentTheme.digitColor,
+     
+
+    }}
+  >
+    Focus Bolt
+  </h1>
+</div>
+
           <div className="flex items-center gap-2">
             <TodoList
               open={todoOpen}
@@ -266,11 +299,21 @@ function AppBody() {
             <CardHeader className="pb-0 card-header">
               <div className="flex items-center justify-between gap-4">
                 <CardTitle
-                  className="text-balance text-lg"
-                  style={{ color: currentTheme.digitColor }}
-                >
-                  Pomodoro
-                </CardTitle>
+  onClick={() => setShowPomodoroInfo(true)}
+  className="cursor-pointer text-lg tracking-tight text-shadow-md underline"
+  style={{ color: isImageTheme ? currentTheme.background : currentTheme.digitColor 
+    
+  }}
+>
+  Pomodoro ?
+</CardTitle>
+
+<PomodoroInfoModal 
+  isOpen={showPomodoroInfo} 
+  onClose={() => setShowPomodoroInfo(false)} 
+  currentTheme={currentTheme} 
+/>
+
 
                 <div className="flex-shrink-0">
                   <div className="relative">
@@ -339,7 +382,7 @@ function AppBody() {
                   style={{
                     position: "absolute",
                     top: 25,
-                    right: 80, // adjust this value for exact placement!
+                    right: 80,
                     background: isImageTheme
                       ? "rgba(255,255,255,0.82)"
                       : currentTheme.background,
@@ -401,16 +444,15 @@ function AppBody() {
                       background: `${currentTheme.background}`,
                       color: currentTheme.digitColor,
 
-                      border: isImageTheme
+                     border: isImageTheme
                         ? `1px solid ${currentTheme.digitColor} `
-                        : `1px solid ${currentTheme.digitColor}`,
+                        : `1px solid ${getColor()}`,
                       boxShadow: isImageTheme
-                        ? "5px 5px 0 0 rgba(255,255,255,0.78)"
-                        : `5px 5px 0 0 ${currentTheme.digitColor}`,
+                        ? "4px 4px 0 0 rgba(255,255,255,0.78)"
+                        : `4px 4px 0 0 ${getColor()}`,
 
                       cursor: "pointer",
                     }}
-                  
                   >
                     Pause
                   </Button>
@@ -425,10 +467,10 @@ function AppBody() {
 
                       border: isImageTheme
                         ? `1px solid ${currentTheme.digitColor} `
-                        : `1px solid ${currentTheme.digitColor}`,
+                        : `1px solid ${getColor()}`,
                       boxShadow: isImageTheme
-                        ? "5px 5px 0 0 rgba(255,255,255,0.78)"
-                        : `5px 5px 0 0 ${currentTheme.digitColor}`,
+                        ? "4px 4px 0 0 rgba(255,255,255,0.78)"
+                        : `4px 4px 0 0 ${getColor()}`,
 
                       cursor: "pointer",
                     }}
@@ -436,22 +478,13 @@ function AppBody() {
                     Start
                   </Button>
                 )}
-                {/* <Button
-                  variant="ghost"
-                  onClick={skip}
-                  className="transition-all duration-200"
-                  style={{
-                    color: currentTheme.separatorColor,
-                  }}
-                >
-                  Skip
-                </Button> */}
+                {/* skip button removed */}
+                <FocusToggleIcon currentTheme={currentTheme} />
               </div>
-              <FocusToggleIcon currentTheme={currentTheme} />
             </CardContent>
           </Card>
           {/* {music bar} */}
-          <div className="-mt-16 -mb-2">
+          <div className="-mt-24">
             <MusicBar
               currentTrack={audioPlayer.currentTrack}
               isPlaying={audioPlayer.isPlaying}

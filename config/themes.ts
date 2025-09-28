@@ -1,75 +1,7 @@
 import { ColorTheme } from "../lib/theme";
 
 export const colorThemes: ColorTheme[] = [
-  //images
-  {
-    id: "Anime bg",
-    name: "Anime bg",
-    background: "#ffffff",
-    backgroundImage: "/images/backgrounds/Anime.png",
-    backgroundOverlay: "rgba(255, 255, 255, 0.05)", // White overlay for light theme
-    cardBackground: "rgba(255, 255, 255, 0.9)",
-    cardBorder: "rgba(0, 0, 0, 0.1)",
-    digitColor: "#1f2937",
-    separatorColor: "#6b7280",
-    shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
-    category: "image",
-  },
-
-  {
-    id: "Car Bg",
-    name: "Car Bg",
-    background: "#ffffff",
-    backgroundImage: "/images/backgrounds/carWallpaper.jpg",
-    backgroundOverlay: "rgba(255, 255, 255, 0.05)",
-    cardBackground: "rgba(255, 255, 255, 0.9)",
-    cardBorder: "rgba(0, 0, 0, 0.1)",
-    digitColor: "#1f2937",
-    separatorColor: "#6b7280",
-    shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
-    category: "image",
-  },
-
-  {
-    id: "Tokyo Bg",
-    name: "Tokyo Bg",
-    background: "#ffffff",
-    backgroundImage: "/images/backgrounds/tokyo.png",
-    backgroundOverlay: "rgba(255, 255, 255, 0.05)", // White overlay for light theme
-    cardBackground: "rgba(255, 255, 255, 0.9)",
-    cardBorder: "rgba(0, 0, 0, 0.1)",
-    digitColor: "#1f2937",
-    separatorColor: "#6b7280",
-    shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
-    category: "image",
-  },
-  {
-    id: "Aesthetic Bg",
-    name: "Aesthetic Bg",
-    background: "#ffffff",
-    backgroundImage: "/images/backgrounds/aesthetic.png",
-    backgroundOverlay: "rgba(255, 255, 255, 0.05)", // White overlay for light theme
-    cardBackground: "rgba(255, 255, 255, 0.9)",
-    cardBorder: "rgba(0, 0, 0, 0.1)",
-    digitColor: "#1f2937",
-    separatorColor: "#6b7280",
-    shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
-    category: "image",
-  },
-  {
-    id: "Black_space",
-    name: "Black_space",
-    background: "#ffffff",
-    backgroundImage: "/images/backgrounds/black_space.jpg",
-    backgroundOverlay: "rgba(255, 255, 255, 0.05)",
-    cardBackground: "rgba(255, 255, 255, 0.9)",
-    cardBorder: "rgba(0, 0, 0, 0.1)",
-    digitColor: "#1f2937",
-    separatorColor: "#6b7280",
-    shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
-    category: "image",
-  },
-
+  
   // Light themes
   {
     id: "pure-white",
@@ -94,7 +26,8 @@ export const colorThemes: ColorTheme[] = [
     category: "light",
   },
 
-  // Dark themes
+
+    // Dark themes
   {
     id: "pure-black",
     name: "Pure Black",
@@ -177,6 +110,75 @@ export const colorThemes: ColorTheme[] = [
     shadow: "0 8px 32px rgba(16, 185, 129, 0.3)",
     category: "pastel-dark",
   },
+  //images
+  {
+    id: "Anime bg",
+    name: "Anime bg",
+    background: "#ffffff",
+    backgroundImage: "/images/backgrounds/Anime.png",
+    backgroundOverlay: "rgba(255, 255, 255, 0.05)", // White overlay for light theme
+    cardBackground: "rgba(255, 255, 255, 0.9)",
+    cardBorder: "rgba(0, 0, 0, 0.1)",
+    digitColor: "#1f2937",
+    separatorColor: "#6b7280",
+    shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+    category: "image",
+  },
+
+  {
+    id: "Car Bg",
+    name: "Car Bg",
+    background: "#ffffff",
+    backgroundImage: "/images/backgrounds/carWallpaper.jpg",
+    backgroundOverlay: "rgba(255, 255, 255, 0.05)",
+    cardBackground: "rgba(255, 255, 255, 0.9)",
+    cardBorder: "rgba(0, 0, 0, 0.1)",
+    digitColor: "#1f2937",
+    separatorColor: "#6b7280",
+    shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+    category: "image",
+  },
+
+  {
+    id: "Tokyo Bg",
+    name: "Tokyo Bg",
+    background: "#ffffff",
+    backgroundImage: "/images/backgrounds/tokyo.png",
+    backgroundOverlay: "rgba(255, 255, 255, 0.05)", // White overlay for light theme
+    cardBackground: "rgba(255, 255, 255, 0.9)",
+    cardBorder: "rgba(0, 0, 0, 0.1)",
+    digitColor: "#1f2937",
+    separatorColor: "#6b7280",
+    shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+    category: "image",
+  },
+  {
+    id: "Aesthetic Bg",
+    name: "Aesthetic Bg",
+    background: "#ffffff",
+    backgroundImage: "/images/backgrounds/aesthetic.png",
+    backgroundOverlay: "rgba(255, 255, 255, 0.05)", // White overlay for light theme
+    cardBackground: "rgba(255, 255, 255, 0.9)",
+    cardBorder: "rgba(0, 0, 0, 0.1)",
+    digitColor: "#1f2937",
+    separatorColor: "#6b7280",
+    shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+    category: "image",
+  },
+  {
+    id: "Black_space",
+    name: "Black_space",
+    background: "#ffffff",
+    backgroundImage: "/images/backgrounds/black_space.jpg",
+    backgroundOverlay: "rgba(255, 255, 255, 0.05)",
+    cardBackground: "rgba(255, 255, 255, 0.9)",
+    cardBorder: "rgba(0, 0, 0, 0.1)",
+    digitColor: "#1f2937",
+    separatorColor: "#6b7280",
+    shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+    category: "image",
+  },
+
 ];
 
 export const themeCategories = [
