@@ -107,7 +107,6 @@ function AppBody() {
   //pomodorInfo
   const [showPomodoroInfo, setShowPomodoroInfo] = React.useState(false);
 
-
   // Memoize mode label function to avoid redeclaration
   const modeLabel = useCallback((mode: "work" | "short" | "long") => {
     switch (mode) {
@@ -121,18 +120,20 @@ function AppBody() {
   }, []);
 
   //get the color based on theme id
- const getColor = () => {
-  if (isImageTheme) return "white";  // white for image theme
-  
-  if (currentTheme.id === 'pure-white' || currentTheme.id === 'light-gray')// blue for light themes
-    
-   return "#60A5FA";  
-  if (currentTheme.id === 'pure-black' || currentTheme.id === 'dark-gray')// yellow for dark themes
-    
-   return "#FCD34D";  
-  
-  return currentTheme.cardBorder; //return default 
-};
+  const getColor = () => {
+    if (isImageTheme) return "white"; // white for image theme
+
+    if (currentTheme.id === "pure-white" || currentTheme.id === "light-gray")
+      // blue for light themes
+
+      return "#60A5FA";
+    if (currentTheme.id === "pure-black" || currentTheme.id === "dark-gray")
+      // yellow for dark themes
+
+      return "#FCD34D";
+
+    return currentTheme.cardBorder; //return default
+  };
   // Keyboard event handler wrapped with useCallback and stable deps for performance
   const onKey = useCallback(
     (e: KeyboardEvent) => {
@@ -233,33 +234,32 @@ function AppBody() {
         )}
       >
         <header className={cn("flex items-center justify-between gap-2")}>
-         <div className="flex items-center gap-3">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="32"
-    height="32"
-    viewBox="0 0 24 24"
-    
-     strokeWidth="2"
-    fill="none"
-     stroke={getColor()}
-    className="icon icon-tabler icons-tabler-filled icon-tabler-bolt "
-    aria-hidden="true"
-  >
-    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-    <path d="M13 2l.018 .001l.016 .001l.083 .005l.011 .002h.011l.038 .009l.052 .008l.016 .006l.011 .001l.029 .011l.052 .014l.019 .009l.015 .004l.028 .014l.04 .017l.021 .012l.022 .01l.023 .015l.031 .017l.034 .024l.018 .011l.013 .012l.024 .017l.038 .034l.022 .017l.008 .01l.014 .012l.036 .041l.026 .027l.006 .009c.12 .147 .196 .322 .218 .513l.001 .012l.002 .041l.004 .064v6h5a1 1 0 0 1 .868 1.497l-.06 .091l-8 11c-.568 .783 -1.808 .38 -1.808 -.588v-6h-5a1 1 0 0 1 -.868 -1.497l.06 -.091l8 -11l.01 -.013l.018 -.024l.033 -.038l.018 -.022l.009 -.008l.013 -.014l.04 -.036l.028 -.026l.008 -.006a1 1 0 0 1 .402 -.199l.011 -.001l.027 -.005l.074 -.013l.011 -.001l.041 -.002z" />
-  </svg>
-  <h1
-    className="text-pretty text-xl font-semibold md:text-2xl transition-colors duration-300 tracking-tight text-shadow-md"
-    style={{
-      color: isImageTheme ? currentTheme.background : currentTheme.digitColor,
-     
-
-    }}
-  >
-    Focus Bolt
-  </h1>
-</div>
+          <div className="flex items-center gap-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              fill="none"
+              stroke={getColor()}
+              className="icon icon-tabler icons-tabler-filled icon-tabler-bolt "
+              aria-hidden="true"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M13 2l.018 .001l.016 .001l.083 .005l.011 .002h.011l.038 .009l.052 .008l.016 .006l.011 .001l.029 .011l.052 .014l.019 .009l.015 .004l.028 .014l.04 .017l.021 .012l.022 .01l.023 .015l.031 .017l.034 .024l.018 .011l.013 .012l.024 .017l.038 .034l.022 .017l.008 .01l.014 .012l.036 .041l.026 .027l.006 .009c.12 .147 .196 .322 .218 .513l.001 .012l.002 .041l.004 .064v6h5a1 1 0 0 1 .868 1.497l-.06 .091l-8 11c-.568 .783 -1.808 .38 -1.808 -.588v-6h-5a1 1 0 0 1 -.868 -1.497l.06 -.091l8 -11l.01 -.013l.018 -.024l.033 -.038l.018 -.022l.009 -.008l.013 -.014l.04 -.036l.028 -.026l.008 -.006a1 1 0 0 1 .402 -.199l.011 -.001l.027 -.005l.074 -.013l.011 -.001l.041 -.002z" />
+            </svg>
+            <h1
+              className="text-pretty text-xl font-semibold md:text-2xl transition-colors duration-300 tracking-tight text-shadow-md"
+              style={{
+                color: isImageTheme
+                  ? currentTheme.background
+                  : currentTheme.digitColor,
+              }}
+            >
+              Focus Bolt
+            </h1>
+          </div>
 
           <div className="flex items-center gap-2">
             <TodoList
@@ -299,21 +299,22 @@ function AppBody() {
             <CardHeader className="pb-0 card-header">
               <div className="flex items-center justify-between gap-4">
                 <CardTitle
-  onClick={() => setShowPomodoroInfo(true)}
-  className="cursor-pointer text-lg tracking-tight text-shadow-md underline"
-  style={{ color: isImageTheme ? currentTheme.background : currentTheme.digitColor 
-    
-  }}
->
-  Pomodoro ?
-</CardTitle>
+                  onClick={() => setShowPomodoroInfo(true)}
+                  className="cursor-pointer text-lg tracking-tight text-shadow-md underline"
+                  style={{
+                    color: isImageTheme
+                      ? currentTheme.background
+                      : currentTheme.digitColor,
+                  }}
+                >
+                  Pomodoro ?
+                </CardTitle>
 
-<PomodoroInfoModal 
-  isOpen={showPomodoroInfo} 
-  onClose={() => setShowPomodoroInfo(false)} 
-  currentTheme={currentTheme} 
-/>
-
+                <PomodoroInfoModal
+                  isOpen={showPomodoroInfo}
+                  onClose={() => setShowPomodoroInfo(false)}
+                  currentTheme={currentTheme}
+                />
 
                 <div className="flex-shrink-0">
                   <div className="relative">
@@ -444,7 +445,7 @@ function AppBody() {
                       background: `${currentTheme.background}`,
                       color: currentTheme.digitColor,
 
-                     border: isImageTheme
+                      border: isImageTheme
                         ? `1px solid ${currentTheme.digitColor} `
                         : `1px solid ${getColor()}`,
                       boxShadow: isImageTheme
@@ -484,8 +485,9 @@ function AppBody() {
             </CardContent>
           </Card>
           {/* {music bar} */}
+          
           <div className="-mt-24">
-            <MusicBar
+            <MusicBar 
               currentTrack={audioPlayer.currentTrack}
               isPlaying={audioPlayer.isPlaying}
               isBuffering={audioPlayer.isBuffering}
@@ -551,40 +553,7 @@ function AppBody() {
               <ProgressChart />
             </CardContent>
           </Card>
-          <Card
-            className="border transition-all duration-300"
-            style={{
-              backgroundColor: "transparent",
-              borderColor: currentTheme.cardBorder,
-              boxShadow: `0 4px 12px ${currentTheme.cardBorder}20`,
-            }}
-          >
-            <CardHeader>
-              <CardTitle
-                className="text-lg transition-colors duration-300"
-                style={{ color: currentTheme.digitColor }}
-              >
-                Tips
-              </CardTitle>
-            </CardHeader>
-            <CardContent
-              className="space-y-3 text-sm transition-colors duration-300"
-              style={{ color: `${currentTheme.separatorColor}80` }}
-            >
-              <p>
-                Press Space to start/pause, R to reset, S to skip, F for Focus
-                Mode.
-              </p>
-              <p>Press C to cycle through color themes, or use the color picker.</p>
-              <p>
-                Enable notifications in Settings to get alerts even if the tab is
-                in the background.
-              </p>
-              <p>
-                Customize durations, long break interval, and behavior in Settings.
-              </p>
-            </CardContent>
-          </Card>
+          
         </section> */}
       </div>
     </main>

@@ -129,6 +129,8 @@ main:fullscreen {
   align-items: center;
   width: 100% !important;
 }
+
+
 @keyframes ripple {
   0%, 100% {
     transform: translate(-50%, -50%) scale(1);

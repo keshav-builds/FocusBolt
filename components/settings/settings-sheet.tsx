@@ -315,7 +315,7 @@ export function SettingsSheet({
                         : currentTheme.digitColor,
                     }}
                   >
-                    Session Durations 
+                    Session Durations
                   </h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
@@ -546,7 +546,7 @@ export function SettingsSheet({
                               : currentTheme.digitColor,
                           }}
                         >
-                          Desktop notifications
+                          Notifications
                         </Label>
                         <p
                           className="text-xs mt-1"
@@ -571,13 +571,22 @@ export function SettingsSheet({
                   </div>
                 </div>
                 {/* Keyboard Shortcuts Section */}
-                <div className="p-4 rounded-2xl border">
+                <div className="p-4 rounded-2xl border"
+                    style={{
+                      color: isImageTheme
+                        ? "rgba(255, 255, 255, 0.95)"
+                        : currentTheme.digitColor,
+                      borderColor: isImageTheme
+                        ? "rgba(255, 255, 255, 0.2)"
+                        : currentTheme.cardBorder,
+                    }}>
                   <h3
                     className="text-base font-semibold mb-4 underline"
                     style={{
                       color: isImageTheme
                         ? "rgba(255, 255, 255, 0.95)"
                         : currentTheme.digitColor,
+                      
                     }}
                   >
                     Keyboard Shortcuts
@@ -588,6 +597,7 @@ export function SettingsSheet({
                     {[
                       { key: "Space", description: "Start / Pause timer" },
                       { key: "F", description: "Toggle focus mode" },
+                       { key: "Esc", description: "Escape focus mode" },
                       { key: "C", description: "Cycle between themes" },
                     ].map(({ key, description }) => (
                       <li

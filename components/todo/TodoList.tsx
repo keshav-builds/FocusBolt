@@ -279,7 +279,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                   className="mb-6 p-5 rounded-2xl border-2 border-dashed transition-all hover:border-solid"
                   style={{
                     backgroundColor: isImageTheme ? "rgba(255, 255, 255, 0.05)" : `${currentTheme.background}10`,
-                    borderColor: isImageTheme ? "rgba(255, 255, 255, 0.15)" : `${currentTheme.cardBorder}`,
+                    borderColor: isImageTheme ? "rgba(255, 255, 255, 0.35)" : getColor(),
                   }}
                 >
                   {/* Primary Input Row */}

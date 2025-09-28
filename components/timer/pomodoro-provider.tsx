@@ -7,6 +7,7 @@ import { useVisibility } from "@/hooks/use-visibility"
 import { notify, ensurePermission } from "@/lib/notifications"
 import { addProgressEvent, markTodayWorkComplete } from "@/lib/progress"
 
+
 type Mode = "work" | "short" | "long"
 type ViewMode = Mode
 
@@ -296,6 +297,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     (f: Settings["timeFormat"]) => setSettings((s) => ({ ...s, timeFormat: f })),
     [setSettings],
   )
+  
 
   const ctx: Ctx = useMemo(
     () => ({
@@ -357,6 +359,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       setTimeFormat,
     ],
   )
+
 
   return <PomodoroContext.Provider value={ctx}>{children}</PomodoroContext.Provider>
 }

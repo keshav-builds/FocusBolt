@@ -24,6 +24,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
+      <head>
+        <link id="favicon" rel="icon" href="/favicon.ico" />
+      </head>
       <body className={`${dancingScript.variable} font-sans`}>
         <Suspense fallback={<LoaderThree />}>
           <AppProviders>{children}</AppProviders>
