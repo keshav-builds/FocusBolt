@@ -1,25 +1,16 @@
-export async function ensurePermission(): Promise<boolean> {
-  if (typeof window === "undefined" || !("Notification" in window)) return false
-  if (Notification.permission === "granted") return true
-  if (Notification.permission === "denied") return false
-  const res = await Notification.requestPermission()
-  return res === "granted"
+export  async function ensurePermission(): Promise<boolean> {
+  if (typeof window === "undefined" || !("Notification" in window)) return false;
+  if (Notification.permission === "granted") return true;
+  if (Notification.permission === "denied") return false;
+  const res = await Notification.requestPermission();
+  return res === "granted";
 }
 
+
 export function notify(title: string, options?: NotificationOptions) {
-  if (typeof window === "undefined" || !("Notification" in window)) return
+  if (typeof window === "undefined" || !("Notification" in window)) return;
   try {
-    navigator.serviceWorker
-      ?.getRegistration?.()
-      .then((reg) => {
-        if (reg && "showNotification" in reg) {
-          reg.showNotification(title, options)
-        } else {
-          new Notification(title, options)
-        }
-      })
-      .catch(() => {
-        new Notification(title, options)
-      })
+    new Notification(title, options);
   } catch {}
 }
+

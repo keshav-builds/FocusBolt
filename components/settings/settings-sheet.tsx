@@ -129,9 +129,23 @@ export function SettingsSheet({
     onOpenChange?.(false);
   };
 
-  const requestNotif = async () => {
-    if (await ensurePermission()) setNotifications(true);
-  };
+  // const requestNotif = async () => {
+  //   if (await ensurePermission()) setNotifications(true);
+  // };
+  
+const handleNotificationToggle = async (checked: boolean) => {
+  if (!checked) {
+    setNotifications(false);
+    return;
+  }
+  const granted = await ensurePermission();
+  if (granted) {
+    setNotifications(true);
+  } else {
+    setNotifications(false);
+    alert("Notifications are blocked by the browser. Please enable them in  browser's site settings.");
+  }
+};
 
   const isImageTheme = currentTheme.backgroundImage;
   const getColor = () => {
@@ -506,6 +520,10 @@ export function SettingsSheet({
                       <Switch
                         checked={autoStartNext}
                         onCheckedChange={setAutoStartNext}
+                          style={{
+                          
+                              cursor: "pointer",
+                          }}
                       />
                     </div>
 
@@ -534,6 +552,10 @@ export function SettingsSheet({
                       <Switch
                         checked={autoPauseOnBlur}
                         onCheckedChange={setAutoPauseOnBlur}
+                         style={{
+                          
+                              cursor: "pointer",
+                          }}
                       />
                     </div>
 
@@ -560,33 +582,36 @@ export function SettingsSheet({
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Switch
-                          checked={notifications}
-                          onCheckedChange={(b) =>
-                            b ? requestNotif() : setNotifications(false)
-                          }
-                        />
+                      <Switch
+  checked={notifications}
+  onCheckedChange={handleNotificationToggle}
+  style={{
+    cursor: "pointer"
+  }}
+/>
+
                       </div>
                     </div>
                   </div>
                 </div>
                 {/* Keyboard Shortcuts Section */}
-                <div className="p-4 rounded-2xl border"
-                    style={{
-                      color: isImageTheme
-                        ? "rgba(255, 255, 255, 0.95)"
-                        : currentTheme.digitColor,
-                      borderColor: isImageTheme
-                        ? "rgba(255, 255, 255, 0.2)"
-                        : currentTheme.cardBorder,
-                    }}>
+                <div
+                  className="p-4 rounded-2xl border"
+                  style={{
+                    color: isImageTheme
+                      ? "rgba(255, 255, 255, 0.95)"
+                      : currentTheme.digitColor,
+                    borderColor: isImageTheme
+                      ? "rgba(255, 255, 255, 0.2)"
+                      : currentTheme.cardBorder,
+                  }}
+                >
                   <h3
                     className="text-base font-semibold mb-4 underline"
                     style={{
                       color: isImageTheme
                         ? "rgba(255, 255, 255, 0.95)"
                         : currentTheme.digitColor,
-                      
                     }}
                   >
                     Keyboard Shortcuts
@@ -597,7 +622,7 @@ export function SettingsSheet({
                     {[
                       { key: "Space", description: "Start / Pause timer" },
                       { key: "F", description: "Toggle focus mode" },
-                       { key: "Esc", description: "Escape focus mode" },
+                      { key: "Esc", description: "Escape focus mode" },
                       { key: "C", description: "Cycle between themes" },
                     ].map(({ key, description }) => (
                       <li

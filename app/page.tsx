@@ -18,7 +18,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 // import { Separator } from "@/components/ui/separator";
 import { PomodoroInfoModal } from "@/components/PomodoroInfoModal";
-
+import { NotificationPrompt } from "@/components/ui/NotificationPrompt";
+import { ensurePermission } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
 import { RegisterSW } from "@/components/register-sw";
 import { LoaderThree } from "@/components/ui/loader";
@@ -151,9 +152,9 @@ function AppBody() {
             // case "r":
             //   reset();
             //   break;
-            // case "s":
-            //   skip();
-            //   break;
+            case "s":
+              skip();
+              break;
             case "f":
               setFocusMode(!focusMode);
               break;
@@ -194,6 +195,44 @@ function AppBody() {
     }
   };
   const [todoOpen, setTodoOpen] = React.useState(false);
+
+  //notification prompt
+  const [showNotifPrompt, setShowNotifPrompt] = React.useState(false);
+
+React.useEffect(() => {
+  if (
+    typeof window !== "undefined" &&
+    "Notification" in window &&
+    Notification.permission === "default"
+  ) {
+    const promptedBefore = localStorage.getItem("notifPromptDismissed");
+    if (!promptedBefore) {
+      const timer = setTimeout(() => {
+        setShowNotifPrompt(true);
+      }, 5000); // 5 seconds delay
+      return () => clearTimeout(timer);
+    }
+  }
+}, []);
+ const handleAcceptNotifications = async () => {
+    setShowNotifPrompt(false);
+    localStorage.setItem("notifPromptDismissed", "true");
+
+    const granted = await ensurePermission();
+    if (!granted) {
+      alert("Notifications are blocked. Please enable them in browser settings.");
+    }
+  };
+
+  const handleDismissNotifications = () => {
+    setShowNotifPrompt(false);
+    localStorage.setItem("notifPromptDismissed", "true");
+  };
+const handleClose = () => {
+  console.log("Notification prompt closed temporarily");
+  setShowNotifPrompt(false);
+  // No persistence here, so prompt will be shown again on reload
+};
   return (
     <main
       className="min-h-dvh text-foreground transition-all duration-500 ease-in-out relative"
@@ -441,6 +480,7 @@ function AppBody() {
                     size="xl"
                     onClick={pause}
                     className="relative px-6 transition-all duration-200 group "
+                    title="Press Space to start/pause timer"
                     style={{
                       background: `${currentTheme.background}`,
                       color: currentTheme.digitColor,
@@ -462,6 +502,7 @@ function AppBody() {
                     size="xl"
                     onClick={start}
                     className=" relative px-6 transition-all duration-200 group "
+                    title="Press Space to start/pause timer"
                     style={{
                       background: `${currentTheme.background}`,
                       color: currentTheme.digitColor,
@@ -485,7 +526,7 @@ function AppBody() {
             </CardContent>
           </Card>
           {/* {music bar} */}
-          
+
           <div className="-mt-24">
             <MusicBar 
               currentTrack={audioPlayer.currentTrack}
@@ -556,6 +597,39 @@ function AppBody() {
           
         </section> */}
       </div>
+        {/* Soft notification prompt */}
+    {showNotifPrompt && (
+  <>
+    <div
+      style={{
+    position: "fixed",
+    inset: 0,
+    background: "rgba(24,24,24,0.35)",
+    backdropFilter: "blur(3px)",
+    WebkitBackdropFilter: "blur(3px)",
+    zIndex: 1000,
+  }}
+      // onClick={handleDismissNotifications} 
+      // optional: click outside to dismiss
+    />
+    <NotificationPrompt
+      style={{
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 1000,
+        maxWidth: 360,
+      }}
+      currentTheme={currentTheme}
+      onAccept={handleAcceptNotifications}
+      onDismiss={handleDismissNotifications}
+      onClose={handleClose}
+    />
+  </>
+)}
+
+    
     </main>
   );
 }
