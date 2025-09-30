@@ -82,8 +82,10 @@ const isImageTheme = currentTheme.backgroundImage;
           background: currentTheme.background,
           borderColor: currentTheme.cardBorder,
           color: currentTheme.digitColor,
+          
         }}
         aria-label="Change theme colors"
+        title="Press 'C' to cycle themes"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

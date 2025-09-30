@@ -1,7 +1,6 @@
 import { ColorTheme } from "../lib/theme";
 
 export const colorThemes: ColorTheme[] = [
-  
   // Light themes
   {
     id: "pure-white",
@@ -26,8 +25,7 @@ export const colorThemes: ColorTheme[] = [
     category: "light",
   },
 
-
-    // Dark themes
+  // Dark themes
   {
     id: "pure-black",
     name: "Pure Black",
@@ -51,40 +49,30 @@ export const colorThemes: ColorTheme[] = [
     category: "dark",
   },
 
-  // Vibrant gradients
-  {
-    id: "rainbow-dream",
-    name: "Dual Dream",
-    background: `
-      linear-gradient(to right, rgba(229,231,235,0.8) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(229,231,235,0.8) 1px, transparent 1px),
-      radial-gradient(circle 500px at 20% 100%, rgba(139,92,246,0.3), transparent),
-      radial-gradient(circle 500px at 100% 80%, rgba(59,130,246,0.3), transparent),
-      #ffffff
-    `,
-    cardBackground:
-      "linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)",
-    cardBorder: "rgba(139,92,246,0.2)",
-    digitColor: "#1f2937",
-    separatorColor: "#6b7280",
-    shadow: "0 8px 32px rgba(139, 92, 246, 0.2)",
-    category: "gradient",
-  },
-  
-  {
-    id: "ocean-breeze",
-    name: "Ocean Breeze",
-    background:
-      "linear-gradient(135deg, #74b9ff 0%, #0984e3 50%, #00b894 100%)",
-    cardBackground:
-      "linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)",
-    cardBorder: "rgba(255,255,255,0.25)",
-    digitColor: "#ffffff",
-    separatorColor: "#ddd",
-    shadow: "0 8px 32px rgba(116, 185, 255, 0.4)",
-    category: "gradient",
-  },
+  // Vibrant  light gradients
 
+  {
+    id: "serene-breeze",
+    name: "Serene Breeze",
+    background: "#f6f9fc", // Very light, gentle blue-white
+    cardBackground: "linear-gradient(180deg, #ffffff 0%, #eaf0f6 100%)", // Soft blue gradient
+    cardBorder: "#d2e3ea", // Pale blue border
+    digitColor: "#27384a", // Deep navy for readability
+    separatorColor: "#90a4ae", // Muted slate blue
+    shadow: "0 8px 32px rgba(39, 56, 74, 0.08)", // Soft shadow
+    category: "light",
+  },
+  {
+    id: "warm-glow",
+    name: "Warm Glow",
+    background: "#fff8f0", // Soft warm cream background
+    cardBackground: "linear-gradient(180deg, #fffdfa 0%, #ffeeda 100%)", // Warm gradient with soft peach undertones
+    cardBorder: "#f5c9a0", // Warm muted orange border
+    digitColor: "#7a4a00", // Rich dark amber text for strong contrast and readability
+    separatorColor: "#d9a762", // Warm golden separator for subtle division
+    shadow: "0 8px 32px rgba(250, 176, 100, 0.15)", // Warm golden shadow for depth
+    category: "light",
+  },
 
   // Dark pastels
   {
@@ -115,22 +103,8 @@ export const colorThemes: ColorTheme[] = [
     id: "Anime bg",
     name: "Anime bg",
     background: "#ffffff",
-    backgroundImage: "/images/backgrounds/Anime.png",
+    backgroundImage: "https://ik.imagekit.io/jzry83ljs/anime.png?updatedAt=1759218915353",
     backgroundOverlay: "rgba(255, 255, 255, 0.05)", // White overlay for light theme
-    cardBackground: "rgba(255, 255, 255, 0.9)",
-    cardBorder: "rgba(0, 0, 0, 0.1)",
-    digitColor: "#1f2937",
-    separatorColor: "#6b7280",
-    shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
-    category: "image",
-  },
-
-  {
-    id: "Car Bg",
-    name: "Car Bg",
-    background: "#ffffff",
-    backgroundImage: "/images/backgrounds/carWallpaper.jpg",
-    backgroundOverlay: "rgba(255, 255, 255, 0.05)",
     cardBackground: "rgba(255, 255, 255, 0.9)",
     cardBorder: "rgba(0, 0, 0, 0.1)",
     digitColor: "#1f2937",
@@ -143,7 +117,7 @@ export const colorThemes: ColorTheme[] = [
     id: "Tokyo Bg",
     name: "Tokyo Bg",
     background: "#ffffff",
-    backgroundImage: "/images/backgrounds/tokyo.png",
+    backgroundImage: "https://ik.imagekit.io/jzry83ljs/tokyo.png?updatedAt=1759218913614",
     backgroundOverlay: "rgba(255, 255, 255, 0.05)", // White overlay for light theme
     cardBackground: "rgba(255, 255, 255, 0.9)",
     cardBorder: "rgba(0, 0, 0, 0.1)",
@@ -156,7 +130,7 @@ export const colorThemes: ColorTheme[] = [
     id: "Aesthetic Bg",
     name: "Aesthetic Bg",
     background: "#ffffff",
-    backgroundImage: "/images/backgrounds/aesthetic.png",
+    backgroundImage: "https://ik.imagekit.io/jzry83ljs/aesthetic.png?updatedAt=1759218914879",
     backgroundOverlay: "rgba(255, 255, 255, 0.05)", // White overlay for light theme
     cardBackground: "rgba(255, 255, 255, 0.9)",
     cardBorder: "rgba(0, 0, 0, 0.1)",
@@ -169,7 +143,7 @@ export const colorThemes: ColorTheme[] = [
     id: "Black_space",
     name: "Black_space",
     background: "#ffffff",
-    backgroundImage: "/images/backgrounds/black_space.jpg",
+    backgroundImage: "https://ik.imagekit.io/jzry83ljs/black_space.jpg?updatedAt=1759218909200",
     backgroundOverlay: "rgba(255, 255, 255, 0.05)",
     cardBackground: "rgba(255, 255, 255, 0.9)",
     cardBorder: "rgba(0, 0, 0, 0.1)",
@@ -178,7 +152,6 @@ export const colorThemes: ColorTheme[] = [
     shadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
     category: "image",
   },
-
 ];
 
 export const themeCategories = [

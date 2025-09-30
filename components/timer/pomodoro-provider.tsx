@@ -251,14 +251,14 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
         markTodayWorkComplete();
         addProgressEvent({ type: "work", seconds: durationFor("work") });
         safeNotify(
-          "Work session complete 🔴",
+          "Work session complete 🍃",
           "Great job! Time for a break.",
           { tag: `session-complete-${Date.now()}`  },
           notificationSound.current ?? undefined
         );
       } else {
         safeNotify(
-          "Break complete 🟡",
+          "Break complete ⏰",
           "Time to focus. Start your next work session.",
           { tag: `break-complete-${Date.now()}` },
           notificationSound.current ?? undefined
@@ -280,7 +280,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
 
         if (nextMode === "work" && !willAutoStart) {
           safeNotify(
-            "Time to start work 🟡",
+            "Time to start work ⏰",
             "Press Start to begin your next focus block.",
             { tag: `start-work-${Date.now()}` }
           );

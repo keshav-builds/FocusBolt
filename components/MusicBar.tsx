@@ -64,7 +64,7 @@ export function MusicBar({
   <div className="w-full max-w-2xl mx-auto">
     {/* Theme-Adaptive Music Bar */}
     <div
-      className="rounded-2xl p-4 backdrop-blur-xl transition-all duration-300 hover:scale-[1.01] border cursor-pointer"
+      className="rounded-2xl p-4  mt-10 backdrop-blur-xl transition-all duration-300 hover:scale-[1.01] border cursor-pointer"
       onClick={onToggleExpand}
       style={{
         cursor: 'pointer',

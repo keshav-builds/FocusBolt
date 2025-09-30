@@ -163,6 +163,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
         variant="outline"
         onClick={() => onOpenChange?.(true)}
         style={{
+         
           background: currentTheme.background,
           color: currentTheme.digitColor,
           border: `1px solid ${currentTheme.cardBorder}`,
@@ -279,7 +280,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                   className="mb-6 p-5 rounded-2xl border-2 border-dashed transition-all hover:border-solid"
                   style={{
                     backgroundColor: isImageTheme ? "rgba(255, 255, 255, 0.05)" : `${currentTheme.background}10`,
-                    borderColor: isImageTheme ? "rgba(255, 255, 255, 0.35)" : getColor(),
+                    borderColor: isImageTheme ? "rgba(255, 255, 255, 0.35)" : `${getColor()}60`,
                   }}
                 >
                   {/* Primary Input Row */}

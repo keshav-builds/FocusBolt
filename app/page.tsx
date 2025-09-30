@@ -199,28 +199,30 @@ function AppBody() {
   //notification prompt
   const [showNotifPrompt, setShowNotifPrompt] = React.useState(false);
 
-React.useEffect(() => {
-  if (
-    typeof window !== "undefined" &&
-    "Notification" in window &&
-    Notification.permission === "default"
-  ) {
-    const promptedBefore = localStorage.getItem("notifPromptDismissed");
-    if (!promptedBefore) {
-      const timer = setTimeout(() => {
-        setShowNotifPrompt(true);
-      }, 5000); // 5 seconds delay
-      return () => clearTimeout(timer);
+  React.useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      "Notification" in window &&
+      Notification.permission === "default"
+    ) {
+      const promptedBefore = localStorage.getItem("notifPromptDismissed");
+      if (!promptedBefore) {
+        const timer = setTimeout(() => {
+          setShowNotifPrompt(true);
+        }, 5000); // 5 seconds delay
+        return () => clearTimeout(timer);
+      }
     }
-  }
-}, []);
- const handleAcceptNotifications = async () => {
+  }, []);
+  const handleAcceptNotifications = async () => {
     setShowNotifPrompt(false);
     localStorage.setItem("notifPromptDismissed", "true");
 
     const granted = await ensurePermission();
     if (!granted) {
-      alert("Notifications are blocked. Please enable them in browser settings.");
+      alert(
+        "Notifications are blocked. Please enable them in browser settings."
+      );
     }
   };
 
@@ -228,18 +230,19 @@ React.useEffect(() => {
     setShowNotifPrompt(false);
     localStorage.setItem("notifPromptDismissed", "true");
   };
-const handleClose = () => {
-  console.log("Notification prompt closed temporarily");
-  setShowNotifPrompt(false);
-  // No persistence here, so prompt will be shown again on reload
-};
+  const handleClose = () => {
+    console.log("Notification prompt closed temporarily");
+    setShowNotifPrompt(false);
+    // No persistence here, so prompt will be shown again on reload
+  };
+
   return (
     <main
       className="min-h-dvh text-foreground transition-all duration-500 ease-in-out relative"
       style={{
         // Handle image themes
         ...(currentTheme.backgroundImage && {
-          backgroundColor: "transparent",
+          backgroundColor: "#2a2f36", // fallback color if image fails gun metal color
           backgroundImage: currentTheme.backgroundOverlay
             ? `linear-gradient(${currentTheme.backgroundOverlay}, ${currentTheme.backgroundOverlay}), url('${currentTheme.backgroundImage}')`
             : `url('${currentTheme.backgroundImage}')`,
@@ -410,19 +413,17 @@ const handleClose = () => {
               </div>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-1">
-              <div
-                className="relative flex justify-center items-center w-full"
-                style={{ minHeight: "110px" }}
-              >
+           
                 {/* Reset Button - absolutely positioned near the upper right of FlipClock */}
                 <button
                   onClick={reset}
                   aria-label="Reset"
                   className="p-2 rounded-full focus:outline-none"
                   style={{
-                    position: "absolute",
-                    top: 25,
-                    right: 80,
+                    position: "fixed",
+                      
+        right: "27%",
+        top: "25%",
                     background: isImageTheme
                       ? "rgba(255,255,255,0.82)"
                       : currentTheme.background,
@@ -463,7 +464,7 @@ const handleClose = () => {
                   theme={currentTheme}
                   ariaLabel={`${modeLabel(mode)} time remaining`}
                 />
-              </div>
+              
 
               <div
                 className="text-xs transition-colors duration-300"
@@ -521,42 +522,70 @@ const handleClose = () => {
                   </Button>
                 )}
                 {/* skip button removed */}
-                <FocusToggleIcon currentTheme={currentTheme} />
+                <FocusToggleIcon currentTheme={currentTheme}  />
               </div>
+              {/* {music bar} */}
+
+              <MusicBar
+                currentTrack={audioPlayer.currentTrack}
+                isPlaying={audioPlayer.isPlaying}
+                isBuffering={audioPlayer.isBuffering}
+                error={audioPlayer.error}
+                onPlayPause={audioPlayer.togglePlayPause}
+                onNext={audioPlayer.playNext}
+                onPrevious={audioPlayer.playPrevious}
+                currentTime={audioPlayer.currentTime}
+                duration={audioPlayer.duration}
+                volume={audioPlayer.volume}
+                onSeek={audioPlayer.seek}
+                onVolumeChange={audioPlayer.changeVolume}
+                isExpanded={isExpanded}
+                onToggleExpand={handleToggleExpand}
+                currentTheme={currentTheme}
+                onSelectFirstTrack={() => {
+                  // Get first track from first playlist
+                  if (
+                    samplePlaylists.length > 0 &&
+                    samplePlaylists[0].tracks.length > 0
+                  ) {
+                    const firstTrack = samplePlaylists[0].tracks[0];
+                    handleSelectTrack(firstTrack); // Use your existing function
+                  }
+                }}
+              />
+              {/* Soft notification prompt */}
+              {showNotifPrompt && (
+                <>
+                  <div
+                    style={{
+                      position: "fixed",
+                      inset: 0,
+                      background: "rgba(24,24,24,0.35)",
+                      backdropFilter: "blur(3px)",
+                      WebkitBackdropFilter: "blur(3px)",
+                      zIndex: 1000,
+                    }}
+                    // onClick={handleDismissNotifications}
+                    // optional: click outside to dismiss
+                  />
+                  <NotificationPrompt
+                    style={{
+                      position: "fixed",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      zIndex: 2000,
+                      maxWidth: 360,
+                    }}
+                    currentTheme={currentTheme}
+                    onAccept={handleAcceptNotifications}
+                    onDismiss={handleDismissNotifications}
+                    onClose={handleClose}
+                  />
+                </>
+              )}
             </CardContent>
           </Card>
-          {/* {music bar} */}
-
-          <div className="-mt-24">
-            <MusicBar 
-              currentTrack={audioPlayer.currentTrack}
-              isPlaying={audioPlayer.isPlaying}
-              isBuffering={audioPlayer.isBuffering}
-              error={audioPlayer.error}
-              onPlayPause={audioPlayer.togglePlayPause}
-              onNext={audioPlayer.playNext}
-              onPrevious={audioPlayer.playPrevious}
-              currentTime={audioPlayer.currentTime}
-              duration={audioPlayer.duration}
-              volume={audioPlayer.volume}
-              onSeek={audioPlayer.seek}
-              onVolumeChange={audioPlayer.changeVolume}
-              isExpanded={isExpanded}
-              onToggleExpand={handleToggleExpand}
-              currentTheme={currentTheme}
-              onSelectFirstTrack={() => {
-                // Get first track from first playlist
-                if (
-                  samplePlaylists.length > 0 &&
-                  samplePlaylists[0].tracks.length > 0
-                ) {
-                  const firstTrack = samplePlaylists[0].tracks[0];
-                  handleSelectTrack(firstTrack); // Use your existing function
-                }
-              }}
-            />
-          </div>
-
           {/* Expandable Player Popup */}
           <ExpandedPlayer
             isExpanded={isExpanded}
@@ -597,39 +626,6 @@ const handleClose = () => {
           
         </section> */}
       </div>
-        {/* Soft notification prompt */}
-    {showNotifPrompt && (
-  <>
-    <div
-      style={{
-    position: "fixed",
-    inset: 0,
-    background: "rgba(24,24,24,0.35)",
-    backdropFilter: "blur(3px)",
-    WebkitBackdropFilter: "blur(3px)",
-    zIndex: 1000,
-  }}
-      // onClick={handleDismissNotifications} 
-      // optional: click outside to dismiss
-    />
-    <NotificationPrompt
-      style={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        zIndex: 1000,
-        maxWidth: 360,
-      }}
-      currentTheme={currentTheme}
-      onAccept={handleAcceptNotifications}
-      onDismiss={handleDismissNotifications}
-      onClose={handleClose}
-    />
-  </>
-)}
-
-    
     </main>
   );
 }
