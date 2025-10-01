@@ -120,7 +120,7 @@ function handleDragSeekStart(e: React.MouseEvent | React.TouchEvent) {
   <div className="w-full max-w-2xl mx-auto">
     {/* Theme-Adaptive Music Bar */}
     <div
-      className="rounded-2xl p-4  mt-6 backdrop-blur-xl transition-all duration-300 hover:scale-[1.01] border cursor-pointer"
+      className="rounded-2xl p-4  mt-6 -mb-2 backdrop-blur-xl transition-all duration-300 hover:scale-[1.01] border cursor-pointer"
       onClick={onToggleExpand}
       style={{
         cursor: 'pointer',
@@ -208,7 +208,7 @@ function handleDragSeekStart(e: React.MouseEvent | React.TouchEvent) {
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{
                   color: isImageTheme 
                     ? 'rgba(255, 255, 255, 0.8)' 
-                    : currentTheme.separatorColor 
+                    : currentTheme.digitColor 
                 }}>
                   <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                 </svg>

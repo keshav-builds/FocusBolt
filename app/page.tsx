@@ -6,7 +6,6 @@ import { SettingsSheet } from "@/components/settings/settings-sheet";
 import { TodoList } from "@/components/todo/TodoList";
 import { FocusToggleIcon } from "@/components/timer/focus-mode-toggle";
 import { SessionQuote } from "@/components/timer/quote";
-import { ProgressChart } from "@/components/progress/progress-chart";
 import { MusicBar } from "../components/music/MusicBar";
 import { ExpandedPlayer } from "@/components/music/ExpandedPlayer";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
@@ -322,7 +321,7 @@ function AppBody() {
               background: "transparent",
               border: "none",
               boxShadow: "none",
-              minHeight: "600px",
+               minHeight: "auto",
             }}
           >
             <CardHeader className="pb-0 card-header">
@@ -571,6 +570,7 @@ function AppBody() {
                   />
                 </>
               )}
+              
             </CardContent>
           </Card>
           {/* Expandable Player Popup */}
@@ -584,34 +584,6 @@ function AppBody() {
           />
         </section>
 
-        {/* <section
-          className={cn(
-            "grid gap-6 md:grid-cols-2 transition-all duration-300",
-            focusMode && "opacity-40 pointer-events-none"
-          )}
-        >
-          <Card
-            className="border transition-all duration-300"
-            style={{
-              backgroundColor: "transparent",
-              borderColor: currentTheme.cardBorder,
-              boxShadow: `0 4px 12px ${currentTheme.cardBorder}20`,
-            }}
-          >
-            <CardHeader>
-              <CardTitle
-                className="text-lg transition-colors duration-300"
-                style={{ color: currentTheme.digitColor }}
-              >
-                Today&apos;s Progress
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ProgressChart />
-            </CardContent>
-          </Card>
-          
-        </section> */}
       </div>
     </main>
   );

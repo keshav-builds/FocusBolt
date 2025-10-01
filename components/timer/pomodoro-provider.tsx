@@ -36,6 +36,7 @@ type PersistedState = {
   cycleCount: number;
   viewMode: ViewMode;
   focusMode: boolean;
+  workSessionStart: number; // Track work session start time for progress tracking
 };
 
 const DEFAULT_SETTINGS: Settings = {
@@ -56,6 +57,7 @@ const DEFAULT_STATE: PersistedState = {
   cycleCount: 0,
   viewMode: "work",
   focusMode: false,
+  workSessionStart: 0,
 };
 
 type Ctx = {
@@ -111,6 +113,28 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
   const durationFor = useCallback(
     (mode: Mode) => settings.durations[mode],
     [settings.durations]
+  );
+
+  // Helper function to save work progress
+  const saveWorkProgress = useCallback(
+    (currentState: PersistedState) => {
+      if (
+        currentState.mode === "work" &&
+        currentState.workSessionStart > 0 &&
+        currentState.remaining >= 0
+      ) {
+        const secondsWorked = currentState.workSessionStart - currentState.remaining;
+
+        if (secondsWorked > 0) {
+          addProgressEvent({
+            type: "work",
+            seconds: secondsWorked,
+          });
+          console.log(`Saved ${secondsWorked} seconds of work`);
+        }
+      }
+    },
+    []
   );
 
   // Recompute remaining when durations change (new duration)
@@ -184,7 +208,11 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       settings.autoPauseOnBlur &&
       state.isRunning
     ) {
-      setState((s) => ({ ...s, isRunning: false, epochMs: null }));
+      // Save work progress before pausing
+      setState((s) => {
+        saveWorkProgress(s);
+        return { ...s, isRunning: false, epochMs: null, workSessionStart: 0 };
+      });
     } else if (
       visibility === "visible" &&
       settings.autoResumeOnFocus &&
@@ -193,7 +221,14 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       setState((s) => {
         // Only auto-resume if there's time remaining and it was previously running
         if (s.remaining > 0 && s.epochMs !== null) {
-          return { ...s, isRunning: true, epochMs: Date.now() };
+          // Restart work session tracking on resume
+          const newWorkSessionStart = s.mode === "work" ? s.remaining : 0;
+          return {
+            ...s,
+            isRunning: true,
+            epochMs: Date.now(),
+            workSessionStart: newWorkSessionStart,
+          };
         }
         return s;
       });
@@ -205,6 +240,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     setState,
     isInitialLoad,
     state.isRunning,
+    saveWorkProgress,
   ]);
 
   //notify sound
@@ -215,6 +251,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       notificationSound.current = new Audio("/sounds/notify.wav");
     }
   }, []);
+
   const safeNotify = useCallback(
     async (
       title: string,
@@ -247,25 +284,26 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
 
   const onComplete = useCallback(
     (finishedMode: Mode) => {
-      if (finishedMode === "work") {
-        markTodayWorkComplete();
-        addProgressEvent({ type: "work", seconds: durationFor("work") });
-        safeNotify(
-          "Work session complete 🍃",
-          "Great job! Time for a break.",
-          { tag: `session-complete-${Date.now()}` },
-          notificationSound.current ?? undefined
-        );
-      } else {
-        safeNotify(
-          "Break complete ⏰",
-          "Time to focus. Start your next work session.",
-          { tag: `break-complete-${Date.now()}` },
-          notificationSound.current ?? undefined
-        );
-      }
-
+      // Save work progress when session completes
       setState((prev) => {
+        if (finishedMode === "work") {
+          saveWorkProgress(prev);
+          markTodayWorkComplete();
+          safeNotify(
+            "Work session complete 🍃",
+            "Great job! Time for a break.",
+            { tag: `session-complete-${Date.now()}` },
+            notificationSound.current ?? undefined
+          );
+        } else {
+          safeNotify(
+            "Break complete ⏰",
+            "Time to focus. Start your next work session.",
+            { tag: `break-complete-${Date.now()}` },
+            notificationSound.current ?? undefined
+          );
+        }
+
         let cycleCount = prev.cycleCount;
         let nextMode: Mode = prev.mode;
         if (finishedMode === "work") {
@@ -294,6 +332,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
           remaining: nextRemaining,
           isRunning: willAutoStart,
           epochMs: willAutoStart ? Date.now() : null,
+          workSessionStart: willAutoStart && nextMode === "work" ? nextRemaining : 0,
         };
       });
     },
@@ -303,6 +342,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       setState,
       settings.longInterval,
       settings.autoStartNext,
+      saveWorkProgress,
     ]
   );
 
@@ -315,44 +355,72 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       const alreadyElapsed = fullDuration - remaining;
       const adjustedEpochMs = Date.now() - alreadyElapsed * 1000;
 
+      // Track work session start for progress tracking
+      const workSessionStart = prev.mode === "work" ? remaining : 0;
+
       return {
         ...prev,
         isRunning: true,
         remaining,
         epochMs: adjustedEpochMs,
+        workSessionStart,
       };
     });
   }, [durationFor, setState]);
 
   const pause = useCallback(() => {
-    setState((prev) => ({ ...prev, isRunning: false, epochMs: null }));
-  }, [setState]);
+    setState((prev) => {
+      // Save work progress before pausing
+      saveWorkProgress(prev);
+      return {
+        ...prev,
+        isRunning: false,
+        epochMs: null,
+        workSessionStart: 0,
+      };
+    });
+  }, [setState, saveWorkProgress]);
 
   const reset = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      remaining: durationFor(prev.mode),
-      isRunning: false,
-      epochMs: null,
-    }));
-  }, [durationFor, setState]);
+    setState((prev) => {
+      // Save work progress before resetting
+      saveWorkProgress(prev);
+      return {
+        ...prev,
+        remaining: durationFor(prev.mode),
+        isRunning: false,
+        epochMs: null,
+        workSessionStart: 0,
+      };
+    });
+  }, [durationFor, setState, saveWorkProgress]);
 
   const skip = useCallback(() => {
+    setState((prev) => {
+      // Save work progress before skipping
+      saveWorkProgress(prev);
+      return prev;
+    });
     onComplete(state.mode);
-  }, [onComplete, state.mode]);
+  }, [onComplete, state.mode, setState, saveWorkProgress]);
 
   const switchMode = useCallback(
     (mode: Mode) => {
-      setState((prev) => ({
-        ...prev,
-        mode,
-        viewMode: mode,
-        remaining: durationFor(mode),
-        isRunning: false,
-        epochMs: null,
-      }));
+      setState((prev) => {
+        // Save work progress before switching modes
+        saveWorkProgress(prev);
+        return {
+          ...prev,
+          mode,
+          viewMode: mode,
+          remaining: durationFor(mode),
+          isRunning: false,
+          epochMs: null,
+          workSessionStart: 0,
+        };
+      });
     },
-    [durationFor, setState]
+    [durationFor, setState, saveWorkProgress]
   );
 
   const setDurations = useCallback(

@@ -8,6 +8,8 @@ import { usePomodoro } from "@/components/timer/pomodoro-provider";
 import { ensurePermission } from "@/lib/notifications";
 import { ColorTheme } from "@/lib/theme";
 import { getColor } from "@/lib/colorUtils";
+import { ProgressChart } from "@/components/progress/progress-chart";
+
 interface SettingsSheetProps {
   open?: boolean;
   onOpenChange?: (b: boolean) => void;
@@ -581,6 +583,9 @@ export function SettingsSheet({
                 <div
                   className="p-4 rounded-2xl border"
                   style={{
+                    backgroundColor: isImageTheme
+      ? "rgba(255, 255, 255, 0.08)"
+      : `${currentTheme.background}20`, 
                     color: isImageTheme
                       ? "rgba(255, 255, 255, 0.95)"
                       : currentTheme.digitColor,
@@ -590,7 +595,7 @@ export function SettingsSheet({
                   }}
                 >
                   <h3
-                    className="text-base font-semibold mb-4 underline"
+                    className="text-base font-semibold mb-4 "
                     style={{
                       color: isImageTheme
                         ? "rgba(255, 255, 255, 0.95)"
@@ -648,6 +653,20 @@ export function SettingsSheet({
                       </li>
                     ))}
                   </ul>
+                </div>
+
+                  <div
+                  className="p-4"
+                  style={{
+                    color: isImageTheme
+                      ? "rgba(255, 255, 255, 0.95)"
+                      : currentTheme.digitColor,
+                    borderColor: isImageTheme
+                      ? "rgba(255, 255, 255, 0.2)"
+                      : currentTheme.cardBorder,
+                  }}
+                >
+                  <ProgressChart currentTheme={currentTheme}/>
                 </div>
               </div>
 
