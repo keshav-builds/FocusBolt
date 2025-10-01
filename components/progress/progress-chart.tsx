@@ -37,7 +37,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const MemoizedBarChart = memo(({ data }: { data: DayData[] }) => (
   <ResponsiveContainer width="100%" height="100%">
     <BarChart data={data} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
-    
       <XAxis
         dataKey="label"
         tick={{ fontSize: 12, fontWeight: 500 }}

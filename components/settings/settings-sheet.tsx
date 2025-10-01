@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { usePomodoro } from "@/components/timer/pomodoro-provider";
 import { ensurePermission } from "@/lib/notifications";
 import { ColorTheme } from "@/lib/theme";
-
+import { getColor } from "@/lib/colorUtils";
 interface SettingsSheetProps {
   open?: boolean;
   onOpenChange?: (b: boolean) => void;
@@ -129,39 +129,25 @@ export function SettingsSheet({
     onOpenChange?.(false);
   };
 
-  // const requestNotif = async () => {
-  //   if (await ensurePermission()) setNotifications(true);
-  // };
-  
-const handleNotificationToggle = async (checked: boolean) => {
-  if (!checked) {
-    setNotifications(false);
-    return;
-  }
-  const granted = await ensurePermission();
-  if (granted) {
-    setNotifications(true);
-  } else {
-    setNotifications(false);
-    alert("Notifications are blocked by the browser. Please enable them in  browser's site settings.");
-  }
-};
-
-  const isImageTheme = currentTheme.backgroundImage;
-  const getColor = () => {
-    if (isImageTheme) return "white"; // white for image theme
-
-    if (currentTheme.id === "pure-white" || currentTheme.id === "light-gray")
-      // blue for light themes
-
-      return "#60A5FA";
-    if (currentTheme.id === "pure-black" || currentTheme.id === "dark-gray")
-      // yellow for dark themes
-
-      return "#FCD34D";
-
-    return currentTheme.cardBorder; //return default
+  const handleNotificationToggle = async (checked: boolean) => {
+    if (!checked) {
+      setNotifications(false);
+      return;
+    }
+    const granted = await ensurePermission();
+    if (granted) {
+      setNotifications(true);
+    } else {
+      setNotifications(false);
+      alert(
+        "Notifications are blocked by the browser. Please enable them in  browser's site settings."
+      );
+    }
   };
+
+ const isImageTheme = Boolean(currentTheme.backgroundImage);
+   const color = getColor(currentTheme, isImageTheme);
+  
   return (
     <>
       {/* Trigger Button */}
@@ -178,7 +164,7 @@ const handleNotificationToggle = async (checked: boolean) => {
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="none" // Keeps fill transparent
-          stroke={isImageTheme ? "currentColor" : getColor()} // Dynamic stroke color
+          stroke={isImageTheme ? "currentColor" : color} // Dynamic stroke color
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -520,10 +506,9 @@ const handleNotificationToggle = async (checked: boolean) => {
                       <Switch
                         checked={autoStartNext}
                         onCheckedChange={setAutoStartNext}
-                          style={{
-                          
-                              cursor: "pointer",
-                          }}
+                        style={{
+                          cursor: "pointer",
+                        }}
                       />
                     </div>
 
@@ -552,10 +537,9 @@ const handleNotificationToggle = async (checked: boolean) => {
                       <Switch
                         checked={autoPauseOnBlur}
                         onCheckedChange={setAutoPauseOnBlur}
-                         style={{
-                          
-                              cursor: "pointer",
-                          }}
+                        style={{
+                          cursor: "pointer",
+                        }}
                       />
                     </div>
 
@@ -582,14 +566,13 @@ const handleNotificationToggle = async (checked: boolean) => {
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                      <Switch
-  checked={notifications}
-  onCheckedChange={handleNotificationToggle}
-  style={{
-    cursor: "pointer"
-  }}
-/>
-
+                        <Switch
+                          checked={notifications}
+                          onCheckedChange={handleNotificationToggle}
+                          style={{
+                            cursor: "pointer",
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -629,7 +612,7 @@ const handleNotificationToggle = async (checked: boolean) => {
                         key={key}
                         style={{
                           display: "flex",
-                          justifyContent: "space-between", // align text left, key right
+                          justifyContent: "space-between", 
                           alignItems: "center",
                           marginBottom: 10,
                           color: isImageTheme
@@ -657,7 +640,7 @@ const handleNotificationToggle = async (checked: boolean) => {
                             userSelect: "none",
                             minWidth: 48,
                             textAlign: "center",
-                            marginLeft: 20, // spacing from description
+                            marginLeft: 20, 
                           }}
                         >
                           {key}

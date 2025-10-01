@@ -54,7 +54,7 @@ export const colorThemes: ColorTheme[] = [
   {
     id: "serene-breeze",
     name: "Serene Breeze",
-    background: "#f6f9fc", // Very light, gentle blue-white
+    background: "#f6f9fc", // gentle blue-white
     cardBackground: "linear-gradient(180deg, #ffffff 0%, #eaf0f6 100%)", // Soft blue gradient
     cardBorder: "#d2e3ea", // Pale blue border
     digitColor: "#27384a", // Deep navy for readability

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { ColorTheme } from "@/lib/theme";
-
+import { getColor } from "@/lib/colorUtils";
 // Types
 export interface TodoItem {
   id: string;
@@ -136,24 +136,16 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
         return currentTheme.separatorColor;
     }
   };
- const getColor = () => {
-  if (isImageTheme) return "white";  // white for image theme
-  
-  if (currentTheme.id === 'pure-white' || currentTheme.id === 'light-gray')// blue for light themes
-    
-   return "#60A5FA";  
-  if (currentTheme.id === 'pure-black' || currentTheme.id === 'dark-gray')// yellow for dark themes
-    
-   return "#FCD34D";  
-  
-  return currentTheme.cardBorder; //return default 
-};
+
   // Stats
   const totalTodos = todos.length;
   const completedTodos = todos.filter((t) => t.completed).length;
   const activeTodos = totalTodos - completedTodos;
 
-  const isImageTheme = currentTheme.backgroundImage;
+  // const isImageTheme = currentTheme.backgroundImage;
+  const isImageTheme = Boolean(currentTheme.backgroundImage);
+
+  const color = getColor(currentTheme, isImageTheme);
   const visibleCategories = showAllCategories ? categories : categories.slice(0, 4);
 
   return (
@@ -175,7 +167,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
   
   viewBox="0 0 24 24"
   fill="none"
-  stroke={isImageTheme ? "currentColor" : getColor()}
+  stroke={isImageTheme ? "currentColor" : color}
   strokeWidth="2"
   strokeLinecap="round"
   strokeLinejoin="round"
@@ -208,6 +200,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
               style={{
                 background: isImageTheme ? "rgba(0, 0, 0, 0.85)" : currentTheme.background,
                 borderColor: isImageTheme ? "rgba(255, 255, 255, 0.25)" : `${currentTheme.cardBorder}80`,
+             
                 backdropFilter: "blur(20px)",
                 WebkitBackdropFilter: "blur(20px)",
                 boxShadow: isImageTheme
@@ -280,7 +273,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                   className="mb-6 p-5 rounded-2xl border-2 border-dashed transition-all hover:border-solid"
                   style={{
                     backgroundColor: isImageTheme ? "rgba(255, 255, 255, 0.05)" : `${currentTheme.background}10`,
-                    borderColor: isImageTheme ? "rgba(255, 255, 255, 0.35)" : `${getColor()}60`,
+                    borderColor: isImageTheme ? "rgba(255, 255, 255, 0.35)" : `${color}60`,
                   }}
                 >
                   {/* Primary Input Row */}

@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
-import { ColorTheme } from "../lib/theme";
-import { colorThemes, themeCategories } from "../config/themes";
+import { ColorTheme } from "../../lib/theme";
+import { colorThemes, themeCategories } from "../../config/themes";
+import{getColor} from"@/lib/colorUtils"
 import { Button } from "@/components/ui/button";
 
 interface ColorPickerProps {
@@ -58,19 +59,9 @@ export function ColorPicker({
       theme.category === "gradient" && theme.cardBackground.includes("rgba")
     );
   };
-const isImageTheme = currentTheme.backgroundImage;
-   const getColor = () => {
-  if (isImageTheme) return "white";  // white for image theme
-  
-  if (currentTheme.id === 'pure-white' || currentTheme.id === 'light-gray')// blue for light themes
-    
-   return "#60A5FA";  
-  if (currentTheme.id === 'pure-black' || currentTheme.id === 'dark-gray')// yellow for dark themes
-    
-   return "#FCD34D";  
-  
-  return currentTheme.cardBorder; //return default 
-};
+const isImageTheme = Boolean(currentTheme.backgroundImage);
+  const color = getColor(currentTheme, isImageTheme);
+   
   return (
     <div className={containerClass}>
       {/* Toggle Button */}
@@ -92,7 +83,7 @@ const isImageTheme = currentTheme.backgroundImage;
           
           viewBox="0 0 24 24"
           fill="none"
-           stroke={isImageTheme ? "currentColor" : getColor()} 
+           stroke={isImageTheme ? "currentColor" : color} 
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -123,7 +114,7 @@ const isImageTheme = currentTheme.backgroundImage;
               WebkitBackdropFilter: "blur(10px)",
             }}
           >
-            {/* Category Tabs - Dynamic Theming */}
+            {/* Category Tabs */}
             <div
               className="flex border-b"
               style={{

@@ -288,8 +288,8 @@ function FlipDigit({
           top: 50%;
           left: -2px;
           right: -2px;
-          height: 2px;
-          background: rgba(0, 0, 0, 0.1);
+          height: 3px;
+          background: rgba(0, 0, 0, 0.15);
           transform: translateY(-50%);
           z-index: 25;
           border-radius: 1px;

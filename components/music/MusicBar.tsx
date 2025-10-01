@@ -59,12 +59,68 @@ export function MusicBar({
       onPlayPause(); // Normal play/pause when track is selected
     }
   };
+  
+  const progressBarRef = React.useRef<HTMLDivElement>(null);
+
+function getSeekPercent(e: React.MouseEvent | React.TouchEvent, node: HTMLDivElement) {
+  let clientX = 0;
+  if ('touches' in e && e.touches.length > 0) {
+    clientX = e.touches[0].clientX;
+  } else if ('clientX' in e) {
+    clientX = e.clientX;
+  }
+  const rect = node.getBoundingClientRect();
+  let percent = (clientX - rect.left) / rect.width;
+  return Math.max(0, Math.min(1, percent));
+}
+
+function handleSeek(e: React.MouseEvent | React.TouchEvent) {
+  e.stopPropagation();
+  const node = progressBarRef.current;
+  if (!node) return;
+  const percent = getSeekPercent(e, node);
+  onSeek(percent * duration);
+}
+
+function handleDragSeekStart(e: React.MouseEvent | React.TouchEvent) {
+  e.stopPropagation();
+  handleSeek(e);
+
+  function moveHandler(ev: MouseEvent | TouchEvent) {
+    ev.stopPropagation();
+    let clientX = 0;
+    if (ev instanceof TouchEvent && ev.touches.length) {
+      clientX = ev.touches[0].clientX;
+    } else if (ev instanceof MouseEvent) {
+      clientX = ev.clientX;
+    }
+    const node = progressBarRef.current;
+    if (!node) return;
+    const rect = node.getBoundingClientRect();
+    let percent = (clientX - rect.left) / rect.width;
+    percent = Math.max(0, Math.min(1, percent));
+    onSeek(percent * duration);
+  }
+
+  function upHandler(ev: MouseEvent | TouchEvent) {
+    ev.stopPropagation();
+    window.removeEventListener('mousemove', moveHandler as any);
+    window.removeEventListener('mouseup', upHandler as any);
+    window.removeEventListener('touchmove', moveHandler as any);
+    window.removeEventListener('touchend', upHandler as any);
+  }
+
+  window.addEventListener('mousemove', moveHandler as any);
+  window.addEventListener('mouseup', upHandler as any);
+  window.addEventListener('touchmove', moveHandler as any);
+  window.addEventListener('touchend', upHandler as any);
+}
 
  return (
   <div className="w-full max-w-2xl mx-auto">
     {/* Theme-Adaptive Music Bar */}
     <div
-      className="rounded-2xl p-4  mt-10 backdrop-blur-xl transition-all duration-300 hover:scale-[1.01] border cursor-pointer"
+      className="rounded-2xl p-4  mt-6 backdrop-blur-xl transition-all duration-300 hover:scale-[1.01] border cursor-pointer"
       onClick={onToggleExpand}
       style={{
         cursor: 'pointer',
@@ -83,32 +139,32 @@ export function MusicBar({
     >
       {/* Progress Bar */}
       {currentTrack && (
-        <div 
-          className="w-full h-1 rounded-full cursor-pointer overflow-hidden mb-3"
-          style={{ 
-            backgroundColor: isImageTheme 
-              ? 'rgba(255, 255, 255, 0.3)' 
-              : `${currentTheme.separatorColor}30`
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleSeekClick(e);
-          }}
-        >
-          <div 
-            className="h-full rounded-full transition-all duration-200"
-            style={{ 
-              width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%',
-              backgroundColor: isImageTheme 
-                ? 'rgba(255, 255, 255, 0.9)' 
-                : currentTheme.digitColor,
-              boxShadow: isImageTheme 
-                ? '0 0 8px rgba(255, 255, 255, 0.5)' 
-                : `0 0 8px ${currentTheme.digitColor}50`
-            }}
-          />
-        </div>
-      )}
+  <div
+    ref={progressBarRef}
+    className="w-full h-1 rounded-full cursor-pointer overflow-hidden mb-3"
+    style={{
+      backgroundColor: isImageTheme 
+        ? 'rgba(255, 255, 255, 0.3)'
+        : `${currentTheme.separatorColor}30`
+    }}
+    onClick={handleSeek}
+    onMouseDown={handleDragSeekStart}
+    onTouchStart={handleDragSeekStart}
+  >
+    <div
+      className="h-full rounded-full transition-all duration-200"
+      style={{
+        width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%',
+        backgroundColor: isImageTheme
+          ? 'rgba(255, 255, 255, 0.9)'
+          : currentTheme.digitColor,
+        boxShadow: isImageTheme
+          ? '0 0 8px rgba(255, 255, 255, 0.5)'
+          : `0 0 8px ${currentTheme.digitColor}50`
+      }}
+    />
+  </div>
+)}
 
       <div className="flex items-center">
         {/* Track Info */}

@@ -100,6 +100,7 @@ main:fullscreen {
   background-repeat: var(--theme-background-repeat, initial) !important;
 }
 
+/* focusmode styles */
 .fullscreen-mode:fullscreen {
   display: flex;
   flex-direction: column;
@@ -130,6 +131,7 @@ main:fullscreen {
   width: 100% !important;
 }
 
+/* break ripple bg animation */
 
 @keyframes ripple {
   0%, 100% {
@@ -159,7 +161,6 @@ html,
 body {
   transition: background-color 300ms ease, color 300ms ease;
 }
-
 
 
 @media (prefers-reduced-motion: reduce) {

@@ -253,7 +253,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
         safeNotify(
           "Work session complete 🍃",
           "Great job! Time for a break.",
-          { tag: `session-complete-${Date.now()}`  },
+          { tag: `session-complete-${Date.now()}` },
           notificationSound.current ?? undefined
         );
       } else {

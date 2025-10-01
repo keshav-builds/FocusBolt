@@ -73,7 +73,7 @@ export function ExpandedPlayer({
             style={{
               borderBottomColor: isImageTheme ? 'rgba(255, 255, 255, 0.15)' : currentTheme.cardBorder,
               background: isImageTheme 
-                ? 'rgba(0, 0, 0, 0.2)' // Even lighter header background
+                ? 'rgba(0, 0, 0, 0.2)' //light header background
                 : 'transparent',
             }}
           >

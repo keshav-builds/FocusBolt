@@ -1,4 +1,4 @@
-import { Playlist } from '@/components/ExpandedPlayer';
+import { Playlist } from '@/components/music/ExpandedPlayer';
 
 const CDN_BASE = 'https://cdn.jsdelivr.net/gh/keshav-builds/focusbolt-audio@main';
 

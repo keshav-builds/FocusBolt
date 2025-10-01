@@ -104,7 +104,7 @@ export function useAudioPlayer() {
           audio.removeEventListener('canplay', onCanPlay);
           audio.removeEventListener('error', onError);
           
-          // Now we can safely play
+          // safe play
           const actualPlayPromise = audio.play();
           actualPlayPromise.then(() => {
             setIsPlaying(true);
@@ -163,7 +163,7 @@ export function useAudioPlayer() {
       setError('Playback failed');
       setIsPlaying(false);
     } finally {
-      if (!isPlaying) { // Only clear if we were trying to play
+      if (!isPlaying) { // Only clear if trying to play
         playPromiseRef.current = null;
       }
     }

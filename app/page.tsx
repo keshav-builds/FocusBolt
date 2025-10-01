@@ -7,25 +7,24 @@ import { TodoList } from "@/components/todo/TodoList";
 import { FocusToggleIcon } from "@/components/timer/focus-mode-toggle";
 import { SessionQuote } from "@/components/timer/quote";
 import { ProgressChart } from "@/components/progress/progress-chart";
-import { MusicBar } from "../components/MusicBar";
-import { ExpandedPlayer } from "@/components/ExpandedPlayer";
+import { MusicBar } from "../components/music/MusicBar";
+import { ExpandedPlayer } from "@/components/music/ExpandedPlayer";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { samplePlaylists } from "@/data/playlists";
 import { FlipClock } from "@/components/timer/flip-clock";
 import { usePomodoro } from "@/components/timer/pomodoro-provider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-// import { Separator } from "@/components/ui/separator";
-import { PomodoroInfoModal } from "@/components/PomodoroInfoModal";
+import { PomodoroInfoModal } from "@/components/infoPomodoro/PomodoroInfoModal";
 import { NotificationPrompt } from "@/components/ui/NotificationPrompt";
 import { ensurePermission } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
 import { RegisterSW } from "@/components/register-sw";
 import { LoaderThree } from "@/components/ui/loader";
-import { ColorPicker } from "@/components/ColorPicker";
+import { ColorPicker } from "@/components/themeColor/ColorPicker";
 import { colorThemes } from "@/config/themes";
 import { ColorTheme } from "@/lib/theme";
+import { getColor } from "@/lib/colorUtils";
 
 function AppBody() {
   const {
@@ -64,7 +63,9 @@ function AppBody() {
       localStorage.setItem("focusBoltTheme", currentTheme.id);
     }
   }, [currentTheme]);
-  const isImageTheme = currentTheme.backgroundImage;
+  const isImageTheme = Boolean(currentTheme.backgroundImage);
+  const color = getColor(currentTheme, isImageTheme);
+
   // Apply theme CSS variables to document root
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -120,21 +121,7 @@ function AppBody() {
     }
   }, []);
 
-  //get the color based on theme id
-  const getColor = () => {
-    if (isImageTheme) return "white"; // white for image theme
-
-    if (currentTheme.id === "pure-white" || currentTheme.id === "light-gray")
-      // blue for light themes
-
-      return "#60A5FA";
-    if (currentTheme.id === "pure-black" || currentTheme.id === "dark-gray")
-      // yellow for dark themes
-
-      return "#FCD34D";
-
-    return currentTheme.cardBorder; //return default
-  };
+  
   // Keyboard event handler wrapped with useCallback and stable deps for performance
   const onKey = useCallback(
     (e: KeyboardEvent) => {
@@ -152,9 +139,9 @@ function AppBody() {
             // case "r":
             //   reset();
             //   break;
-            case "s":
-              skip();
-              break;
+            // case "s":
+            //   skip();
+              // break;
             case "f":
               setFocusMode(!focusMode);
               break;
@@ -284,7 +271,7 @@ function AppBody() {
               viewBox="0 0 24 24"
               strokeWidth="2"
               fill="none"
-              stroke={getColor()}
+              stroke={color}
               className="icon icon-tabler icons-tabler-filled icon-tabler-bolt "
               aria-hidden="true"
             >
@@ -480,7 +467,7 @@ function AppBody() {
                   <Button
                     size="xl"
                     onClick={pause}
-                    className="relative px-6 transition-all duration-200 group "
+                    className="relative px-6 transition-all duration-200 group hover:opacity-80 "
                     title="Press Space to start/pause timer"
                     style={{
                       background: `${currentTheme.background}`,
@@ -488,10 +475,10 @@ function AppBody() {
 
                       border: isImageTheme
                         ? `1px solid ${currentTheme.digitColor} `
-                        : `1px solid ${getColor()}`,
+                        : `1px solid ${color}`,
                       boxShadow: isImageTheme
                         ? "4px 4px 0 0 rgba(255,255,255,0.78)"
-                        : `4px 4px 0 0 ${getColor()}`,
+                        : `4px 4px 0 0 ${color}`,
 
                       cursor: "pointer",
                     }}
@@ -502,7 +489,7 @@ function AppBody() {
                   <Button
                     size="xl"
                     onClick={start}
-                    className=" relative px-6 transition-all duration-200 group "
+                    className=" relative px-6 transition-all duration-200 group hover:opacity-80 "
                     title="Press Space to start/pause timer"
                     style={{
                       background: `${currentTheme.background}`,
@@ -510,10 +497,10 @@ function AppBody() {
 
                       border: isImageTheme
                         ? `1px solid ${currentTheme.digitColor} `
-                        : `1px solid ${getColor()}`,
+                        : `1px solid ${color}`,
                       boxShadow: isImageTheme
                         ? "4px 4px 0 0 rgba(255,255,255,0.78)"
-                        : `4px 4px 0 0 ${getColor()}`,
+                        : `4px 4px 0 0 ${color}`,
 
                       cursor: "pointer",
                     }}

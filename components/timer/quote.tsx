@@ -29,10 +29,8 @@ export function SessionQuote({ currentTheme }: { currentTheme: any }) {
       style={{
         color: currentTheme.digitColor,
         background: isImageTheme
-                        ? "rgba(255,255,255,0.78) "
-                        : `${currentTheme.background}`,
-                      
-
+          ? "rgba(255,255,255,0.78) "
+          : `${currentTheme.background}`,
       }}
     >
       <svg

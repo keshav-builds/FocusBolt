@@ -2,7 +2,7 @@ import React, { CSSProperties } from "react";
 
 import { Button } from "@/components/ui/button";
 import { ColorTheme } from "@/lib/theme";
-
+import { getColor } from "@/lib/colorUtils";
 interface NotificationPromptProps {
   currentTheme: ColorTheme;
   onAccept: () => void;
@@ -46,18 +46,11 @@ export function NotificationPrompt({
   onClose,
   style,
 }: NotificationPromptProps) {
-  const isImageTheme = currentTheme.backgroundImage;
-  const getColor = () => {
-    if (isImageTheme) return "black";
-    if (currentTheme.id === "pure-white" || currentTheme.id === "light-gray")
-      return "#60A5FA";
-    if (currentTheme.id === "pure-black" || currentTheme.id === "dark-gray")
-      return "#FCD34D";
-    return currentTheme.cardBorder;
-  };
+ const isImageTheme = Boolean(currentTheme.backgroundImage);
+   const color = getColor(currentTheme, isImageTheme);
+ 
 
-  // For the icon, you might want to use accent color or something matching vibrant theme edge
-  const iconColor = getColor();
+ 
 
   return (
   
@@ -115,14 +108,14 @@ export function NotificationPrompt({
         gap: 0,
         marginBottom: 10,
       }}>
-        <NotificationBellIcon color={iconColor} />
+        <NotificationBellIcon color={color} />
         <span
           style={{
             lineHeight: 1.5,
             textAlign: "left",
             wordBreak: "break-word",
             flex: 1,
-            marginTop: 2, // adjust as needed for vertical alignment
+            marginTop: 2, 
           }}
         >
           Enable notifications to get alerts when sessions end.
@@ -159,10 +152,10 @@ export function NotificationPrompt({
             color: currentTheme.digitColor,
             border: isImageTheme
               ? `2px solid ${currentTheme.digitColor} `
-              : `1px solid ${iconColor}`,
+              : `1px solid ${color}`,
             boxShadow: isImageTheme
               ? " "
-              : `4px 4px 0 0 ${iconColor}`,
+              : `4px 4px 0 0 ${color}`,
             cursor: "pointer",
           }}
         >
