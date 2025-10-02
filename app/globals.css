@@ -145,16 +145,43 @@ main:fullscreen {
 .animate-ripple {
   animation: ripple calc(var(--duration, 2) * 1s) infinite;
 }
+/* Prevent horizontal overflow on mobile */
+@media (max-width: 640px) {
+  body {
+    overflow-x: hidden;
+  }
+  
+  #pomodoro-focus-section {
+    overflow: visible;
+  }
+  
+  /* Ensure flip clock digits don't overflow */
+  .flip-clock-container {
+    max-width: 100%;
+    overflow: visible;
+  }
+}
 
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
-  body {
+  
+  html, body {
     @apply bg-background text-foreground;
+    overflow-x: hidden; 
+    overflow-y: hidden; 
+    max-width: 100vw;
+    position: relative;
+  }
+  
+  body {
+    min-height: 100vh;
   }
 }
+
 
 :root,
 html,

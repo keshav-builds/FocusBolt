@@ -147,9 +147,9 @@ export function SettingsSheet({
     }
   };
 
- const isImageTheme = Boolean(currentTheme.backgroundImage);
-   const color = getColor(currentTheme, isImageTheme);
-  
+  const isImageTheme = Boolean(currentTheme.backgroundImage);
+  const color = getColor(currentTheme, isImageTheme);
+
   return (
     <>
       {/* Trigger Button */}
@@ -581,11 +581,11 @@ export function SettingsSheet({
                 </div>
                 {/* Keyboard Shortcuts Section */}
                 <div
-                  className="p-4 rounded-2xl border"
+                  className=" hidden sm:block p-4 rounded-2xl border"
                   style={{
                     backgroundColor: isImageTheme
-      ? "rgba(255, 255, 255, 0.08)"
-      : `${currentTheme.background}20`, 
+                      ? "rgba(255, 255, 255, 0.08)"
+                      : `${currentTheme.background}20`,
                     color: isImageTheme
                       ? "rgba(255, 255, 255, 0.95)"
                       : currentTheme.digitColor,
@@ -617,7 +617,7 @@ export function SettingsSheet({
                         key={key}
                         style={{
                           display: "flex",
-                          justifyContent: "space-between", 
+                          justifyContent: "space-between",
                           alignItems: "center",
                           marginBottom: 10,
                           color: isImageTheme
@@ -645,7 +645,7 @@ export function SettingsSheet({
                             userSelect: "none",
                             minWidth: 48,
                             textAlign: "center",
-                            marginLeft: 20, 
+                            marginLeft: 20,
                           }}
                         >
                           {key}
@@ -655,7 +655,7 @@ export function SettingsSheet({
                   </ul>
                 </div>
 
-                  <div
+                <div
                   className="p-4"
                   style={{
                     color: isImageTheme
@@ -666,7 +666,7 @@ export function SettingsSheet({
                       : currentTheme.cardBorder,
                   }}
                 >
-                  <ProgressChart currentTheme={currentTheme}/>
+                  <ProgressChart currentTheme={currentTheme} />
                 </div>
               </div>
 

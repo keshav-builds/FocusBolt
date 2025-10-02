@@ -515,7 +515,7 @@ export function TodoList({ open, onOpenChange, currentTheme }: TodoListProps) {
                     placeholder="Search tasks..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="px-3 py-1 text-xs rounded-xl border flex-1 max-w-48"
+                    className="px-3 py-1 text-xs rounded-xl border flex-1  max-w-32 md:max-w-48"
                     style={{
                       backgroundColor: isImageTheme ? "rgba(255, 255, 255, 0.1)" : currentTheme.background,
                       color: isImageTheme ? "rgba(255, 255, 255, 0.9)" : currentTheme.digitColor,

@@ -13,17 +13,18 @@ export const colorThemes: ColorTheme[] = [
     shadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
     category: "light",
   },
-  {
-    id: "light-gray",
-    name: "Light Gray",
-    background: "#f8f9fa",
-    cardBackground: "linear-gradient(180deg, #ffffff 0%, #f1f3f4 100%)",
-    cardBorder: "#dee2e6",
-    digitColor: "#495057",
-    separatorColor: "#6c757d",
-    shadow: "0 8px 32px rgba(0, 0, 0, 0.08)",
-    category: "light",
-  },
+ {
+  id: "light-gray",
+  name: "Light Gray",
+  background: "#f5f7fa",
+  cardBackground: "linear-gradient(135deg, #ffffff 0%, #e8ecf1 100%)",
+  cardBorder: "#c5cdd6",
+  digitColor: "#2d3748",
+  separatorColor: "#4a5568",
+  shadow: "0 12px 40px rgba(45, 55, 72, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06)",
+  category: "light",
+}
+,
 
   // Dark themes
   {
@@ -40,12 +41,12 @@ export const colorThemes: ColorTheme[] = [
   {
     id: "dark-gray",
     name: "Dark Gray",
-    background: "#0d1117",
-    cardBackground: "linear-gradient(180deg, #21262d 0%, #161b22 100%)",
-    cardBorder: "#30363d",
-    digitColor: "#f0f6fc",
-    separatorColor: "#7d8590",
-    shadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
+    background: "#2a2f36",
+    cardBackground: "linear-gradient(180deg, #2f3440 0%, #23282f 100%)",
+    cardBorder: "#3d424a",
+    digitColor: "#e6edf3",
+    separatorColor: "#8b949e",
+    shadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
     category: "dark",
   },
 
@@ -103,7 +104,8 @@ export const colorThemes: ColorTheme[] = [
     id: "Anime bg",
     name: "Anime bg",
     background: "#ffffff",
-    backgroundImage: "https://ik.imagekit.io/jzry83ljs/anime.png?updatedAt=1759218915353",
+    backgroundImage:
+      "https://ik.imagekit.io/jzry83ljs/anime.png?updatedAt=1759218915353",
     backgroundOverlay: "rgba(255, 255, 255, 0.05)", // White overlay for light theme
     cardBackground: "rgba(255, 255, 255, 0.9)",
     cardBorder: "rgba(0, 0, 0, 0.1)",
@@ -117,7 +119,8 @@ export const colorThemes: ColorTheme[] = [
     id: "Tokyo Bg",
     name: "Tokyo Bg",
     background: "#ffffff",
-    backgroundImage: "https://ik.imagekit.io/jzry83ljs/tokyo.png?updatedAt=1759218913614",
+    backgroundImage:
+      "https://ik.imagekit.io/jzry83ljs/tokyo.png?updatedAt=1759218913614",
     backgroundOverlay: "rgba(255, 255, 255, 0.05)", // White overlay for light theme
     cardBackground: "rgba(255, 255, 255, 0.9)",
     cardBorder: "rgba(0, 0, 0, 0.1)",
@@ -130,7 +133,8 @@ export const colorThemes: ColorTheme[] = [
     id: "Aesthetic Bg",
     name: "Aesthetic Bg",
     background: "#ffffff",
-    backgroundImage: "https://ik.imagekit.io/jzry83ljs/aesthetic.png?updatedAt=1759218914879",
+    backgroundImage:
+      "https://ik.imagekit.io/jzry83ljs/aesthetic.png?updatedAt=1759218914879",
     backgroundOverlay: "rgba(255, 255, 255, 0.05)", // White overlay for light theme
     cardBackground: "rgba(255, 255, 255, 0.9)",
     cardBorder: "rgba(0, 0, 0, 0.1)",
@@ -143,7 +147,8 @@ export const colorThemes: ColorTheme[] = [
     id: "Black_space",
     name: "Black_space",
     background: "#ffffff",
-    backgroundImage: "https://ik.imagekit.io/jzry83ljs/black_space.jpg?updatedAt=1759218909200",
+    backgroundImage:
+      "https://ik.imagekit.io/jzry83ljs/black_space.jpg?updatedAt=1759218909200",
     backgroundOverlay: "rgba(255, 255, 255, 0.05)",
     cardBackground: "rgba(255, 255, 255, 0.9)",
     cardBorder: "rgba(0, 0, 0, 0.1)",

@@ -21,7 +21,7 @@ export function PomodoroInfoModal({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-40 backdrop-blur-[2px]"
+        className="fixed inset-0 z-auto backdrop-blur-[2px]"
         style={{
           backgroundColor: isImageTheme
             ? "rgba(0,0,0,0.25)"

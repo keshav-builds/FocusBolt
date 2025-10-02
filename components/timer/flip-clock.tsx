@@ -184,127 +184,190 @@ function FlipDigit({
 
       <div className="divider" />
 
-      <style jsx>{`
-        .flip-digit-container {
-          position: relative;
-          width: 100px;
-          height: 140px;
-          perspective: 1000px;
-        }
+     <style jsx>{`
+  .flip-clock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 40px;
+    border-radius: 20px;
+    user-select: none;
+    font-family: "SF Pro Display", "Fira Code", "Space Mono",
+      -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    max-width: 100vw;
+    overflow-x: auto;
+    box-sizing: border-box;
+  }
 
-        .digit-half {
-          position: absolute;
-          width: 100%;
-          height: 50%;
-          overflow: hidden;
-          background: ${theme.cardBackground};
-          border: 1px solid ${theme.cardBorder};
-        }
+  .separator {
+    font-size: 120px;
+    font-weight: 300;
+    margin: 0 16px;
+    line-height: 0.8;
+    color: ${theme.separatorColor};
+    user-select: none;
+  }
 
-        .top-base {
-          top: 0;
-          border-bottom: none;
-          border-radius: 8px 8px 0 0;
-          z-index: 1;
-        }
+  .flip-digit-container {
+    position: relative;
+    width: 100px;
+    height: 140px;
+    perspective: 1000px;
+    flex-shrink: 0;
+  }
 
-        .bottom-base {
-          bottom: 0;
-          border-top: none;
-          border-radius: 0 0 8px 8px;
-          z-index: 1;
-        }
+  .digit-half {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    overflow: hidden;
+    background: ${theme.cardBackground};
+    border: 1px solid ${theme.cardBorder};
+  }
 
-        .flip-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-        }
+  .top-base {
+    top: 0;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    z-index: 1;
+  }
 
-        .flip-card {
-          position: absolute;
-          width: 100%;
-          height: 50%;
-          overflow: hidden;
-          backface-visibility: hidden;
-          background: ${theme.cardBackground};
-          border: 1px solid ${theme.cardBorder};
-        }
+  .bottom-base {
+    bottom: 0;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    z-index: 1;
+  }
 
-        .top-card {
-          top: 0;
-          border-bottom: none;
-          border-radius: 8px 8px 0 0;
-          transform-origin: center bottom;
-          animation: topFlipDown ${halfDuration}ms ease-in forwards;
-          z-index: 20;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
+  .flip-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
 
-        .bottom-card {
-          bottom: 0;
-          border-top: none;
-          border-radius: 0 0 8px 8px;
-          transform-origin: center top;
-          transform: rotateX(90deg);
-          animation: bottomFlipUp ${halfDuration}ms ease-out ${halfDuration}ms forwards;
-          z-index: 10;
-          box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
-        }
+  .flip-card {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    overflow: hidden;
+    backface-visibility: hidden;
+    background: ${theme.cardBackground};
+    border: 1px solid ${theme.cardBorder};
+  }
 
-        .digit-content {
-          position: absolute;
-          width: 100%;
-          height: 200%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
+  .top-card {
+    top: 0;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    transform-origin: center bottom;
+    animation: topFlipDown ${animationDuration / 2}ms ease-in forwards;
+    z-index: 20;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
 
-        .top-base .digit-content,
-        .top-card .digit-content {
-          top: 0;
-        }
+  .bottom-card {
+    bottom: 0;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    transform-origin: center top;
+    transform: rotateX(90deg);
+    animation: bottomFlipUp ${animationDuration / 2}ms ease-out ${animationDuration / 2}ms forwards;
+    z-index: 10;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+  }
 
-        .bottom-base .digit-content,
-        .bottom-card .digit-content {
-          top: -100%;
-        }
+  .digit-content {
+    position: absolute;
+    width: 100%;
+    height: 200%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-        .digit-text {
-          font-size: 100px;
-          font-weight: 700;
-          line-height: 1;
-          font-variant-numeric: tabular-nums;
-          color: ${theme.digitColor};
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+  .top-base .digit-content,
+  .top-card .digit-content {
+    top: 0;
+  }
 
-        .divider {
-          position: absolute;
-          top: 50%;
-          left: -2px;
-          right: -2px;
-          height: 3px;
-          background: rgba(0, 0, 0, 0.15);
-          transform: translateY(-50%);
-          z-index: 25;
-          border-radius: 1px;
-        }
+  .bottom-base .digit-content,
+  .bottom-card .digit-content {
+    top: -100%;
+  }
 
-        @keyframes topFlipDown {
-          0% { transform: rotateX(0deg); }
-          100% { transform: rotateX(-90deg); }
-        }
+  .digit-text {
+    font-size: 100px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: ${theme.digitColor};
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    user-select: none;
+  }
 
-        @keyframes bottomFlipUp {
-          0% { transform: rotateX(90deg); }
-          100% { transform: rotateX(0deg); }
-        }
-      `}</style>
+  .divider {
+    position: absolute;
+    top: 50%;
+    left: -2px;
+    right: -2px;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.15);
+    transform: translateY(-50%);
+    z-index: 25;
+    border-radius: 1px;
+  }
+
+  @keyframes topFlipDown {
+    0% {
+      transform: rotateX(0deg);
+    }
+    100% {
+      transform: rotateX(-90deg);
+    }
+  }
+
+  @keyframes bottomFlipUp {
+    0% {
+      transform: rotateX(90deg);
+    }
+    100% {
+      transform: rotateX(0deg);
+    }
+  }
+
+  /* Responsive styles for mobile */
+  @media (max-width: 640px) {
+    .flip-clock {
+      padding: 20px;
+      gap: 12px;
+      overflow-x: visible;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .separator {
+      font-size: 96px;
+      margin: 0 8px;
+    }
+
+    .flip-digit-container {
+      width: 140px !important;
+      height: 200px !important;
+      margin-bottom: 12px;
+    }
+
+    .digit-text {
+      font-size: 140px !important;
+      line-height: 1;
+    }
+  }
+`}</style>
     </div>
   );
 }

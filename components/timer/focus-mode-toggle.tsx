@@ -46,8 +46,9 @@ export function FocusToggleIcon({ currentTheme }: Props) {
         border: `1px solid ${currentTheme.cardBorder}`,
         boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
         position: "fixed",
-        right: "27%",
-        bottom: "25%",
+        right: "24%",
+        bottom: "20%",
+        opacity: 0.8,
       }}
     >
       {focusMode ? (
