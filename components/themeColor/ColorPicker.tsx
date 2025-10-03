@@ -226,8 +226,8 @@ if (variant === "mobile") {
                   {/* Content for non-image themes */}
                   {theme.category !== "image" && (
                     <div className="relative z-10 flex flex-col items-center justify-center h-full p-1">
-                      <span className="text-lg font-bold">Aa</span>
-                      <span className="text-[9px] font-medium opacity-90 mt-0.5 truncate w-full text-center px-0.5 leading-tight">
+                      <span className="text-lg font-bold" style={{ color: theme.digitColor }}>Aa</span>
+                      <span className="text-[9px] font-medium opacity-90 mt-0.5 truncate w-full text-center px-0.5 leading-tight "style={{ color: theme.digitColor }}>
                         {theme.name}
                       </span>
                     </div>
@@ -299,7 +299,7 @@ if (variant === "mobile") {
     </div>
   );
 }
-  // HEADER & FLOATING VARIANTS (original desktop functionality)
+  // HEADER & FLOATING VARIANTS ( desktop functionality)
   const containerClass =
     variant === "header"
       ? "relative"

@@ -111,11 +111,11 @@ export function MusicBar({
   }
 
   return (
-    <div className="w-full mx-auto ">
+    <div className="w-full mx-auto pb-4 sm:pb-3">
       {/* Theme-Adaptive Music Bar */}
       <div
-        className="rounded-xl mb-5sm:rounded-2xl p-2 sm:p-3 mt-22 md:mt-4 mb-8 backdrop-blur-xl transition-all duration-300 hover:scale-[1.005] sm:hover:scale-[1.01] border cursor-pointer min-h-[68px] sm:min-h-[76px]"
-        onClick={onToggleExpand} 
+      className="rounded-xl sm:rounded-2xl p-2 sm:p-3 backdrop-blur-xl transition-all duration-300 hover:scale-[1.005] sm:hover:scale-[1.01] border cursor-pointer min-h-[68px] sm:min-h-[76px]"
+ onClick={onToggleExpand} 
         style={{
           cursor: 'pointer',
           background: isImageTheme 
