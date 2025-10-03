@@ -6,16 +6,38 @@ import { AppProviders } from "./providers"
 import { Suspense } from "react"
 import { LoaderThree } from "@/components/ui/loader"
 
+
 const dancingScript = Dancing_Script({
   subsets: ['latin'],
   variable: '--font-dancing-script',
 })
 
+
 export const metadata: Metadata = {
-  title: "FocusBolt",
-  description: "Helps you stay focused and get things done.",
+  title: "Focus Bolt - Pomodoro Timer",
+  description: "A beautiful Pomodoro timer with customizable sessions, themes, and music integration to boost your productivity.",
   generator: "keshavcodes",
+  openGraph: {
+    title: "Focus Bolt - Pomodoro Timer",
+    description: "A beautiful Pomodoro timer with customizable sessions, themes, and music integration to boost your productivity.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Focus Bolt Preview",
+      }
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Focus Bolt - Pomodoro Timer",
+    description: "A beautiful Pomodoro timer with customizable sessions, themes, and music integration.",
+    images: ["/og-image.png"],
+  },
 }
+
 
 export default function RootLayout({
   children,
