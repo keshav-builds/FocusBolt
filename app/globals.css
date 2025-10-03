@@ -110,9 +110,9 @@ main:fullscreen {
   overflow: auto; /* Allow scroll if content is too tall */
 }
 
-.fullscreen-mode:fullscreen .flip-clock {
+/* .fullscreen-mode:fullscreen .flip-clock {
   transform: scale(1.2);
-}
+} */
 
 .fullscreen-mode:fullscreen .card-header {
   width: 100%;

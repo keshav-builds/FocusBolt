@@ -150,7 +150,20 @@ function AppBody() {
           switch (e.key.toLowerCase()) {
             case "f":
               if (!isMobile) {
-                setFocusMode(!focusMode);
+                e.preventDefault();
+                const target = document.getElementById(
+                  "pomodoro-focus-section"
+                );
+                if (!target) return;
+
+                // Check actual fullscreen state
+                if (document.fullscreenElement) {
+                  document.exitFullscreen();
+                  setFocusMode(false);
+                } else {
+                  target.requestFullscreen();
+                  setFocusMode(true);
+                }
               }
               break;
             case "c": {
@@ -254,15 +267,6 @@ function AppBody() {
         color: currentTheme.digitColor,
       }}
     >
-      {(mode === "short" || mode === "long") && (
-        <Ripple
-          mainCircleSize={250}
-          mainCircleOpacity={0.55}
-          numCircles={5}
-          currentTheme={currentTheme}
-          className="fixed inset-0 z-0"
-        />
-      )}
       <RegisterSW />
 
       <div className="flex flex-col min-h-dvh">
@@ -702,13 +706,27 @@ function AppBody() {
                     </button>
                   )}
 
-                  {/* FLIP CLOCK */}
-                  <div className="scale-[0.6] md:scale-110 lg:scale-100 ">
-                    <FlipClock
-                      seconds={remaining}
-                      theme={currentTheme}
-                      ariaLabel={`${modeLabel(mode)} time remaining`}
-                    />
+                  {/* FLIP CLOCK  && Ripple effect*/}
+                  <div className="relative w-full flex items-center justify-center">
+                    {/* Ripple positioned relative to clock container */}
+                    {(mode === "short" || mode === "long") && (
+                      <div className="absolute inset-0 overflow-hidden rounded-xl">
+                        <Ripple
+                          mainSize={isMobile ? 250 : isTablet ? 350 : 400}
+                          mainOpacity={isImageTheme ? 0.75 : 0.55}
+                          numWaves={isMobile ? 4 : isTablet ? 5 : 6}
+                          currentTheme={currentTheme}
+                          className="absolute inset-0 z-0 pointer-events-none"
+                        />
+                      </div>
+                    )}
+                    <div className=" relative z-10 scale-[0.6] min-[640px]:scale-[0.95] min-[768px]:scale-100 min-[1024px]:scale-110">
+                      <FlipClock
+                        seconds={remaining}
+                        theme={currentTheme}
+                        ariaLabel={`${modeLabel(mode)} time remaining`}
+                      />
+                    </div>
                   </div>
 
                   {/* QUOTE */}
@@ -827,27 +845,34 @@ function AppBody() {
             />
           </div>
         </div>
-       <footer className="fixed bottom-0 left-0 right-0 text-center">
-  <p
-    className="text-sm font-light backdrop-blur-sm py-2 px-4 rounded-full inline-block transition-colors duration-300 opacity-60"
-    style={{
-      color: isImageTheme
-        ? currentTheme.background
-        : currentTheme.digitColor,
-    }}
-  >
-    Made with ❤️ by{" "}
-    <a
-      href="https://github.com/keshav-builds"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="hover:opacity-100 transition-opacity duration-200 underline"
-    >
-      Keshav
-    </a>
-  </p>
-</footer>
-
+        <footer
+          className="  text-center"
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+          }}
+        >
+          <p
+            className="text-sm font-light backdrop-blur-sm py-2 px-4 rounded-full inline-block transition-colors duration-300 opacity-80"
+            style={{
+              color: isImageTheme
+                ? currentTheme.background
+                : currentTheme.digitColor,
+            }}
+          >
+            Made with ❤️ by{" "}
+            <a
+              href="https://github.com/keshav-builds"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-100 transition-opacity duration-200 underline"
+            >
+              Keshav
+            </a>
+          </p>
+        </footer>
       </div>
 
       {/* MODALS */}

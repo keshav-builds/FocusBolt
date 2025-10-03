@@ -28,15 +28,12 @@ export function FocusToggleIcon({ currentTheme }: Props) {
   // Listen for fullscreen changes (ESC key)
   useEffect(() => {
     const handleFullscreenChange = () => {
-      // Only update if state doesn't match actual fullscreen state
-      if (focusMode !== !!document.fullscreenElement) {
-        setFocusMode(!!document.fullscreenElement);
-      }
+      setFocusMode(!!document.fullscreenElement);
     };
     
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
-  }, [focusMode, setFocusMode]);
+  }, [setFocusMode]);
 
   const isImageTheme = Boolean(currentTheme.backgroundImage);
 
@@ -47,18 +44,18 @@ export function FocusToggleIcon({ currentTheme }: Props) {
     if (!target) return;
 
     try {
-      if (focusMode) {
-        // Exit fullscreen
+      if (focusMode && document.fullscreenElement) {
+        // Only exit if actually in fullscreen
         await document.exitFullscreen();
         setFocusMode(false);
-      } else {
+      } else if (!focusMode) {
         // Enter fullscreen
         await target.requestFullscreen();
         setFocusMode(true);
       }
     } catch (err) {
       console.error("Fullscreen toggle failed:", err);
-      setFocusMode(false);
+      setFocusMode(!!document.fullscreenElement);
     }
   };
 
@@ -74,9 +71,6 @@ export function FocusToggleIcon({ currentTheme }: Props) {
         border: `1px solid ${currentTheme.cardBorder}`,
         boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
         opacity: 0.85,
-        position: 'fixed',
-  bottom: 24,           // 6rem from bottom
-  right: 24,
         cursor: "pointer",
       }}
     >
