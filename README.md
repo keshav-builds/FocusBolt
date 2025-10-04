@@ -35,7 +35,7 @@ A beautiful Pomodoro timer that helps you stay focused and productive. Built wit
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/focus-bolt.git
+git clone https://github.com/keshav-builds/FocusBolt.git
 cd focus-bolt
 ```
 
