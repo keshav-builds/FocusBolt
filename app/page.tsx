@@ -41,6 +41,7 @@ function AppBody() {
     setSettingsOpen,
     focusMode,
     setFocusMode,
+    setNotifications 
   } = usePomodoro();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -227,16 +228,20 @@ function AppBody() {
     }
   }, []);
 
-  const handleAcceptNotifications = async () => {
-    setShowNotifPrompt(false);
-    localStorage.setItem("notifPromptDismissed", "true");
-    const granted = await ensurePermission();
-    if (!granted) {
-      alert(
-        "Notifications are blocked. Please enable them in browser settings."
-      );
-    }
-  };
+const handleAcceptNotifications = async () => {
+  setShowNotifPrompt(false);
+  localStorage.setItem("notifPromptDismissed", "true");
+  
+  const granted = await ensurePermission();
+  if (granted) {
+    setNotifications(true); // ✅ This turns ON the toggle in settings
+  } else {
+    alert(
+      "Notifications are blocked. Please enable them in browser settings."
+    );
+  }
+};
+
 
   const handleDismissNotifications = () => {
     setShowNotifPrompt(false);

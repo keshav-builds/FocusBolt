@@ -444,9 +444,27 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     [setSettings]
   );
   const setNotifications = useCallback(
-    (b: boolean) => setSettings((s) => ({ ...s, notifications: b })),
-    [setSettings]
-  );
+  async (b: boolean) => {
+    if (b) {
+      // Request permission immediately when enabling notifications
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          // User denied or dismissed - keep toggle OFF
+          console.log('Notification permission not granted');
+          return; // Don't update settings
+        }
+      } catch (error) {
+        console.warn("Permission request failed:", error);
+        return; // Don't update settings on error
+      }
+    }
+    // Only update setting if permission was granted (or if disabling)
+    setSettings((s) => ({ ...s, notifications: b }));
+  },
+  [setSettings]
+);
+
   const setViewMode = useCallback(
     (v: ViewMode) => setState((prev) => ({ ...prev, viewMode: v })),
     [setState]
