@@ -304,7 +304,7 @@ const handleAcceptNotifications = async () => {
 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
                   <h1
-                    className="text-lg md:text-2xl font-semibold transition-colors duration-300 tracking-tight"
+                    className="text-xl md:text-2xl  font-semibold transition-colors duration-300 tracking-tight"
                     style={{
                       color: isImageTheme
                         ? currentTheme.background
