@@ -71,13 +71,13 @@ function AppBody() {
   }, [isMobile, focusMode, setFocusMode]);
 
   const [currentTheme, setCurrentTheme] = useState<ColorTheme>(() => {
-    if (typeof window === "undefined") return colorThemes[2];
+    if (typeof window === "undefined") return colorThemes[3];// gun metal/dark grey by default
     const saved = localStorage.getItem("focusBoltTheme");
     if (saved) {
       const savedTheme = colorThemes.find((t) => t.id === saved);
       if (savedTheme) return savedTheme;
     }
-    return colorThemes[2];
+    return colorThemes[3];
   });
 
   useEffect(() => {
@@ -594,7 +594,7 @@ const handleAcceptNotifications = async () => {
                     {!focusMode && (
                       <CardTitle
                         onClick={() => setShowPomodoroInfo(true)}
-                        className="cursor-pointer text-lg tracking-tight underline hover:opacity-80 transition-opacity"
+                        className="cursor-pointer text-lg tracking-tight  hover:opacity-80 transition-opacity"
                         style={{
                           color: isImageTheme
                             ? currentTheme.background
@@ -604,7 +604,8 @@ const handleAcceptNotifications = async () => {
                             : "none",
                         }}
                       >
-                        Pomodoro ?
+                          ❐ Pomodoro
+                         
                       </CardTitle>
                     )}
 
