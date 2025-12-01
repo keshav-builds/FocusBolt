@@ -14,6 +14,7 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useVisibility } from "@/hooks/use-visibility";
 import { notify, ensurePermission } from "@/lib/notifications";
 import { addProgressEvent, markTodayWorkComplete } from "@/lib/progress";
+import { useDailyFocus } from "@/hooks/use-daily-focus";
 
 type Mode = "work" | "short" | "long";
 type ViewMode = Mode;
@@ -92,6 +93,9 @@ type Ctx = {
   setSettingsOpen: (b: boolean) => void;
   setFocusMode: (b: boolean) => void;
   setTimeFormat: (f: Settings["timeFormat"]) => void;
+  //counter
+   dailyMinutes: number;
+  hasStartedToday: boolean;
 };
 
 const PomodoroContext = createContext<Ctx | null>(null);
@@ -243,6 +247,11 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     saveWorkProgress,
   ]);
 
+
+  //counter daily focus minutes
+
+  const { dailyMinutes, hasStarted, addMinutes } = useDailyFocus();
+
   //notify sound
   const notificationSound = useRef<HTMLAudioElement | null>(null);
 
@@ -286,16 +295,22 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     (finishedMode: Mode) => {
       // Save work progress when session completes
       setState((prev) => {
-        if (finishedMode === "work") {
-          saveWorkProgress(prev);
-          markTodayWorkComplete();
-          safeNotify(
-            "Work session complete 🍃",
-            "Great job! Time for a break.",
-            { tag: `session-complete-${Date.now()}` },
-            notificationSound.current ?? undefined
-          );
-        } else {
+     if (finishedMode === "work") {
+  saveWorkProgress(prev);
+  markTodayWorkComplete();
+  
+  // Add completed work minutes to daily total
+  const completedMinutes = Math.floor(durationFor("work") / 60);
+  addMinutes(completedMinutes);
+  
+  safeNotify(
+    "Work session complete 🍃",
+    "Great job! Time for a break.",
+    { tag: `session-complete-${Date.now()}` },
+    notificationSound.current ?? undefined
+  );
+}
+ else {
           safeNotify(
             "Break complete ⏰",
             "Time to focus. Start your next work session.",
@@ -509,6 +524,8 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       setSettingsOpen,
       setFocusMode,
       setTimeFormat,
+      dailyMinutes,
+    hasStartedToday: hasStarted,
     }),
     [
       state.mode,
@@ -537,6 +554,8 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       setNotifications,
       settingsOpen,
       setTimeFormat,
+       dailyMinutes,
+    hasStarted,
     ]
   );
 

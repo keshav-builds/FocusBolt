@@ -20,6 +20,7 @@ import { ensurePermission } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
 import { RegisterSW } from "@/components/register-sw";
 import { LoaderThree } from "@/components/ui/loader";
+import { DailyFocusCounter } from "@/components/timer/daily-focus-counter";
 import { ColorPicker } from "@/components/themeColor/ColorPicker";
 import { colorThemes } from "@/config/themes";
 import { ColorTheme } from "@/lib/theme";
@@ -41,7 +42,9 @@ function AppBody() {
     setSettingsOpen,
     focusMode,
     setFocusMode,
-    setNotifications 
+    setNotifications,
+    dailyMinutes,
+    hasStartedToday,
   } = usePomodoro();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -71,7 +74,7 @@ function AppBody() {
   }, [isMobile, focusMode, setFocusMode]);
 
   const [currentTheme, setCurrentTheme] = useState<ColorTheme>(() => {
-    if (typeof window === "undefined") return colorThemes[3];// gun metal/dark grey by default
+    if (typeof window === "undefined") return colorThemes[3]; // gun metal/dark grey by default
     const saved = localStorage.getItem("focusBoltTheme");
     if (saved) {
       const savedTheme = colorThemes.find((t) => t.id === saved);
@@ -228,20 +231,19 @@ function AppBody() {
     }
   }, []);
 
-const handleAcceptNotifications = async () => {
-  setShowNotifPrompt(false);
-  localStorage.setItem("notifPromptDismissed", "true");
-  
-  const granted = await ensurePermission();
-  if (granted) {
-    setNotifications(true); // ✅ This turns ON the toggle in settings
-  } else {
-    alert(
-      "Notifications are blocked. Please enable them in browser settings."
-    );
-  }
-};
+  const handleAcceptNotifications = async () => {
+    setShowNotifPrompt(false);
+    localStorage.setItem("notifPromptDismissed", "true");
 
+    const granted = await ensurePermission();
+    if (granted) {
+      setNotifications(true); // ✅ This turns ON the toggle in settings
+    } else {
+      alert(
+        "Notifications are blocked. Please enable them in browser settings."
+      );
+    }
+  };
 
   const handleDismissNotifications = () => {
     setShowNotifPrompt(false);
@@ -591,23 +593,32 @@ const handleAcceptNotifications = async () => {
               >
                 <CardHeader className="pb-2 sm:pb-3 md:pb-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-                    {!focusMode && (
-                      <CardTitle
-                        onClick={() => setShowPomodoroInfo(true)}
-                        className="cursor-pointer text-lg tracking-tight  hover:opacity-80 transition-opacity"
-                        style={{
-                          color: isImageTheme
-                            ? currentTheme.background
-                            : currentTheme.digitColor,
-                          textShadow: isImageTheme
-                            ? "0 2px 4px rgba(0,0,0,0.1)"
-                            : "none",
-                        }}
-                      >
+                    <div className="flex items-center gap-3">
+                      {!focusMode && (
+                        <CardTitle
+                          onClick={() => setShowPomodoroInfo(true)}
+                          className="cursor-pointer text-lg tracking-tight hover:opacity-80 transition-opacity"
+                          style={{
+                            color: isImageTheme
+                              ? currentTheme.background
+                              : currentTheme.digitColor,
+                            textShadow: isImageTheme
+                              ? "0 2px 4px rgba(0,0,0,0.1)"
+                              : "none",
+                          }}
+                        >
                           ❐ Pomodoro
-                         
-                      </CardTitle>
-                    )}
+                        </CardTitle>
+                      )}
+
+                      {hasStartedToday && dailyMinutes > 0 && (
+                        <DailyFocusCounter
+                          minutes={dailyMinutes}
+                          currentTheme={currentTheme}
+                          isMobile={isMobile}
+                        />
+                      )}
+                    </div>
 
                     <PomodoroInfoModal
                       isOpen={showPomodoroInfo}
