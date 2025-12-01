@@ -303,22 +303,26 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
   const completedMinutes = Math.floor(durationFor("work") / 60);
   addMinutes(completedMinutes);
   
-  safeNotify(
+   safeNotify(
     "Work session complete 🍃",
     "Great job! Time for a break.",
-    { tag: `session-complete-${Date.now()}` },
+    { 
+      tag: `work-complete-${prev.cycleCount}`,
+      
+    },
+    notificationSound.current ?? undefined
+  );
+} else {
+  safeNotify(
+    "Break complete ⏰",
+    "Time to focus. Start your next work session.",
+    { 
+      tag: `break-complete-${prev.cycleCount}`,
+      
+    },
     notificationSound.current ?? undefined
   );
 }
- else {
-          safeNotify(
-            "Break complete ⏰",
-            "Time to focus. Start your next work session.",
-            { tag: `break-complete-${Date.now()}` },
-            notificationSound.current ?? undefined
-          );
-        }
-
         let cycleCount = prev.cycleCount;
         let nextMode: Mode = prev.mode;
         if (finishedMode === "work") {
@@ -332,12 +336,16 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
         const willAutoStart = settings.autoStartNext;
 
         if (nextMode === "work" && !willAutoStart) {
-          safeNotify(
-            "Time to start work ⏰",
-            "Press Start to begin your next focus block.",
-            { tag: `start-work-${Date.now()}` }
-          );
-        }
+  safeNotify(
+    "Time to start work ⏰",
+    "Press Start to begin your next focus block.",
+    { 
+      tag: `start-work-${cycleCount}`,
+    
+    }
+  );
+}
+
 
         return {
           ...prev,
@@ -358,6 +366,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       settings.longInterval,
       settings.autoStartNext,
       saveWorkProgress,
+      addMinutes,
     ]
   );
 
@@ -556,6 +565,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       setTimeFormat,
        dailyMinutes,
     hasStarted,
+    
     ]
   );
 
