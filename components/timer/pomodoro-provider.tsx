@@ -12,7 +12,6 @@ import {
 } from "react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useVisibility } from "@/hooks/use-visibility";
-import { notify, ensurePermission } from "@/lib/notifications";
 import { addProgressEvent } from "@/lib/progress";
 import { useDailyFocus } from "@/hooks/use-daily-focus";
 
@@ -96,8 +95,66 @@ type Ctx = {
 
 const PomodoroContext = createContext<Ctx | null>(null);
 
-//  flag to track if save already happened this session
+// flag to track if save already happened this session
 let sessionSaveCompleted = false;
+
+// ---- Notification helpers ----
+
+async function requestNotificationPermission(): Promise<boolean> {
+  if (typeof window === "undefined" || !("Notification" in window)) {
+    return false;
+  }
+  try {
+    const permission = await Notification.requestPermission();
+    return permission === "granted";
+  } catch {
+    return false;
+  }
+}
+
+async function sendSwNotification(
+  title: string,
+  options: NotificationOptions
+): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+  if (!("serviceWorker" in navigator)) return false;
+  if (!("Notification" in window)) return false;
+  if (Notification.permission !== "granted") return false;
+
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    if (reg && reg.active) {
+      reg.active.postMessage({
+        type: "FOCUSBOLT_NOTIFY",
+        payload: {
+          title,
+          options,
+        },
+      });
+      return true;
+    }
+  } catch {
+    // ignore, will fall back
+  }
+  return false;
+}
+
+function showPageNotificationFallback(
+  title: string,
+  options: NotificationOptions
+): void {
+  if (typeof window === "undefined" || !("Notification" in window)) return;
+  if (Notification.permission !== "granted") return;
+
+  try {
+    // Works well on desktop and localhost; mobile may ignore it,
+    // but SW path covers that in production.
+    // eslint-disable-next-line no-new
+    new Notification(title, options);
+  } catch {
+    // ignore
+  }
+}
 
 export function PomodoroProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useLocalStorage<Settings>(
@@ -126,7 +183,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      notificationSound.current = new Audio("/sounds/notify.wav");
+      notificationSound.current = new Audio("/sounds/notify.mp3");
     }
   }, []);
 
@@ -138,20 +195,33 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       sound?: HTMLAudioElement
     ) => {
       if (!settings.notifications) return;
+
       try {
-        const granted = await ensurePermission();
-        if (granted) {
-          notify(title, {
-            requireInteraction: true,
-            silent: false,
-            ...options,
-            body,
-          });
-          if (sound) {
-            sound.play().catch(() => {});
-          }
+        if (Notification.permission !== "granted") {
+          const granted = await requestNotificationPermission();
+          if (!granted) return;
+        }
+
+        const baseOptions: NotificationOptions = {
+          requireInteraction: true,
+          silent: false,
+          ...options,
+          body,
+          icon: "/favicon.ico",
+          badge: "/favicon.ico",
+        };
+
+        const sentViaSw = await sendSwNotification(title, baseOptions);
+        if (!sentViaSw) {
+          showPageNotificationFallback(title, baseOptions);
+        }
+
+        if (sound) {
+          sound.play().catch(() => {});
         }
       } catch (error) {
+        // Non-fatal: logging is enough
+        // eslint-disable-next-line no-console
         console.warn("Notification failed:", error);
       }
     },
@@ -160,21 +230,18 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
 
   const onComplete = useCallback(
     (finishedMode: Mode) => {
-      //  Block duplicate saves for same session
+      // Block duplicate saves for same session
       if (sessionSaveCompleted) {
-        // console.log("⛔ Duplicate blocked");
         return;
       }
       sessionSaveCompleted = true;
 
-      // Save work progress when session completes
       if (finishedMode === "work") {
         const fullDuration = durationFor("work");
         addProgressEvent({
           type: "work",
           seconds: fullDuration,
         });
-        // console.log(`✅ Saved: ${fullDuration}s`);
 
         safeNotify(
           "Work session complete 🍃",
@@ -206,13 +273,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
         const nextRemaining = durationFor(nextMode);
         const willAutoStart = settings.autoStartNext;
 
-        if (nextMode === "work" && !willAutoStart) {
-          safeNotify(
-            "Time to start work ⏰",
-            "Press Start to begin your next focus block.",
-            { tag: `start-work-${cycleCount}` }
-          );
-        }
+    
 
         return {
           ...prev,
@@ -257,12 +318,10 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setState((prev) => {
-      // Only update if timer is NOT running
       if (prev.isRunning) {
         return prev;
       }
       const newDuration = durationFor(prev.mode);
-      // Update to new duration if changed
       return { ...prev, remaining: newDuration };
     });
   }, [settings.durations, durationFor, setState]);
@@ -298,7 +357,6 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
   }, [state.isRunning, tick]);
 
   // Visibility-based auto pause/resume
-
   const wasPausedByBlur = useRef(false);
 
   useEffect(() => {
@@ -350,7 +408,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
   ]);
 
   const start = useCallback(() => {
-    //  Reset save flag when starting new session
+    // Reset save flag when starting new session
     sessionSaveCompleted = false;
 
     setState((prev) => {
@@ -392,7 +450,7 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
   }, [durationFor, setState]);
 
   const skip = useCallback(() => {
-    //  Reset save flag before skip triggers onComplete
+    // Reset save flag before skip triggers onComplete
     sessionSaveCompleted = false;
     onComplete(state.mode);
   }, [onComplete, state.mode]);
@@ -443,14 +501,10 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
   const setNotifications = useCallback(
     async (b: boolean) => {
       if (b) {
-        try {
-          const permission = await Notification.requestPermission();
-          if (permission !== "granted") {
-            console.log("Notification permission not granted");
-            return;
-          }
-        } catch (error) {
-          console.warn("Permission request failed:", error);
+        const granted = await requestNotificationPermission();
+        if (!granted) {
+          // eslint-disable-next-line no-console
+          console.log("Notification permission not granted");
           return;
         }
       }
@@ -534,6 +588,8 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       setAutoResumeOnFocus,
       setNotifications,
       settingsOpen,
+      setSettingsOpen,
+      setFocusMode,
       setTimeFormat,
       dailyMinutes,
       hasStarted,
@@ -541,7 +597,9 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <PomodoroContext.Provider value={ctx}>{children}</PomodoroContext.Provider>
+    <PomodoroContext.Provider value={ctx}>
+      {children}
+    </PomodoroContext.Provider>
   );
 }
 
