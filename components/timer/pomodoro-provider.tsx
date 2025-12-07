@@ -181,52 +181,58 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
   // Notify sound
   const notificationSound = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      notificationSound.current = new Audio("/sounds/notify.mp3");
-    }
-  }, []);
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    notificationSound.current = new Audio("/sounds/notify.mp3");
+  }
+}, []);
 
-  const safeNotify = useCallback(
-    async (
-      title: string,
-      body: string,
-      options?: NotificationOptions,
-      sound?: HTMLAudioElement
-    ) => {
-      if (!settings.notifications) return;
+const safeNotify = useCallback(
+  async (
+    title: string,
+    body: string,
+    options?: NotificationOptions,
+    sound?: HTMLAudioElement
+  ) => {
+    if (!settings.notifications) return;
 
-      try {
-        if (Notification.permission !== "granted") {
-          const granted = await requestNotificationPermission();
-          if (!granted) return;
-        }
-
-        const baseOptions: NotificationOptions = {
-          requireInteraction: true,
-          silent: false,
-          ...options,
-          body,
-          icon: "/favicon.ico",
-          badge: "/favicon.ico",
-        };
-
-        const sentViaSw = await sendSwNotification(title, baseOptions);
-        if (!sentViaSw) {
-          showPageNotificationFallback(title, baseOptions);
-        }
-
-        if (sound) {
-          sound.play().catch(() => {});
-        }
-      } catch (error) {
-        // Non-fatal: logging is enough
-        // eslint-disable-next-line no-console
-        console.warn("Notification failed:", error);
+    try {
+      if (Notification.permission !== "granted") {
+        const granted = await requestNotificationPermission();
+        if (!granted) return;
       }
-    },
-    [settings.notifications]
-  );
+
+      const baseOptions: NotificationOptions = {
+        requireInteraction: true,
+        silent: false,
+        ...options,
+        body,
+        icon: "/favicon.ico", 
+        
+      };
+
+      const sentViaSw = await sendSwNotification(title, baseOptions);
+      if (!sentViaSw) {
+        showPageNotificationFallback(title, baseOptions);
+      }
+
+      // Only play custom sound if the page is currently visible
+      if (
+        sound &&
+        typeof document !== "undefined" &&
+        document.visibilityState === "visible"
+      ) {
+        sound.play().catch(() => {});
+      }
+    } catch (error) {
+      // Non-fatal: logging is enough
+      // eslint-disable-next-line no-console
+      console.warn("Notification failed:", error);
+    }
+  },
+  [settings.notifications]
+);
+
 
   const onComplete = useCallback(
     (finishedMode: Mode) => {
