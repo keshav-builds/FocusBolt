@@ -16,6 +16,240 @@ interface SettingsSheetProps {
   currentTheme: ColorTheme;
 }
 
+// Reusable Stepper Component
+interface StepperProps {
+  value: number;
+  onChange: (value: number) => void;
+  min: number;
+  max: number;
+  step?: number;
+  label: string;
+  currentTheme: ColorTheme;
+  isImageTheme: boolean;
+}
+
+function Stepper({
+  value,
+  onChange,
+  min,
+  max,
+  step = 1,
+  label,
+  currentTheme,
+  isImageTheme,
+}: StepperProps) {
+  const [displayValue, setDisplayValue] = React.useState(String(value));
+
+  React.useEffect(() => {
+    setDisplayValue(String(value));
+  }, [value]);
+
+  const handleDecrement = () => {
+    if (value > min) onChange(value - step);
+  };
+
+  const handleIncrement = () => {
+    if (value < max) onChange(value + step);
+  };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+
+    // When empty, set to 0
+    if (val === "" || val === "0") {
+      onChange(0);
+      return;
+    }
+
+    // Parse number
+    const numValue = parseInt(val, 10);
+
+    // Just enforce max
+    if (!isNaN(numValue)) {
+      onChange(Math.min(numValue, max));
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-between">
+      <Label
+        style={{
+          color: isImageTheme
+            ? "rgba(255, 255, 255, 0.9)"
+            : currentTheme.digitColor,
+        }}
+      >
+        {label}
+      </Label>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={handleDecrement}
+          disabled={value <= min}
+          className="w-8 h-8 rounded-lg flex items-center justify-center border transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
+          style={{
+            backgroundColor: isImageTheme
+              ? "rgba(255, 255, 255, 0.1)"
+              : currentTheme.background,
+            color: isImageTheme
+              ? "rgba(255, 255, 255, 0.9)"
+              : currentTheme.digitColor,
+            borderColor: isImageTheme
+              ? "rgba(255, 255, 255, 0.3)"
+              : currentTheme.cardBorder,
+            cursor: value <= min ? "not-allowed" : "pointer",
+          }}
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M20 12H4"
+            />
+          </svg>
+        </button>
+
+        <input
+          type="number"
+          min={min}
+          max={max}
+          step={step}
+          value={value === 0 ? "" : value} // Show empty when 0
+          onChange={handleInputChange}
+          onBlur={() => {
+            if (value === 0 || value < min) onChange(min); // Set to min when done
+          }}
+          onFocus={(e) => e.target.select()}
+          className="w-16 px-2 py-1.5 text-center text-sm font-semibold rounded-lg border"
+          style={{
+            backgroundColor: isImageTheme
+              ? "rgba(255, 255, 255, 0.1)"
+              : currentTheme.background,
+            color: isImageTheme
+              ? "rgba(255, 255, 255, 0.9)"
+              : currentTheme.digitColor,
+            borderColor: isImageTheme
+              ? "rgba(255, 255, 255, 0.3)"
+              : currentTheme.cardBorder,
+          }}
+        />
+
+        <button
+          onClick={handleIncrement}
+          disabled={value >= max}
+          className="w-8 h-8 rounded-lg flex items-center justify-center border transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
+          style={{
+            backgroundColor: isImageTheme
+              ? "rgba(255, 255, 255, 0.1)"
+              : currentTheme.background,
+            color: isImageTheme
+              ? "rgba(255, 255, 255, 0.9)"
+              : currentTheme.digitColor,
+            borderColor: isImageTheme
+              ? "rgba(255, 255, 255, 0.3)"
+              : currentTheme.cardBorder,
+            cursor: value >= max ? "not-allowed" : "pointer",
+          }}
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Preset Pills Component
+interface PresetPillsProps {
+  onSelect: (work: number, shortBreak: number, longBreak: number) => void;
+  currentTheme: ColorTheme;
+  isImageTheme: boolean;
+}
+
+function PresetPills({
+  onSelect,
+  currentTheme,
+  isImageTheme,
+}: PresetPillsProps) {
+  const presets = [
+    { name: "Classic", icon: "⏱️", work: 25, short: 5, long: 15 },
+    { name: "Deep Work", icon: "🎯", work: 120, short: 15, long: 30 },
+    { name: "Quick", icon: "⚡", work: 15, short: 3, long: 10 },
+  ];
+
+  return (
+    <div className="space-y-3">
+      <Label
+        className="text-sm font-medium"
+        style={{
+          color: isImageTheme
+            ? "rgba(255, 255, 255, 0.8)"
+            : currentTheme.separatorColor,
+        }}
+      >
+        Quick Presets
+      </Label>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        {presets.map((preset) => (
+          <button
+            key={preset.name}
+            onClick={() => onSelect(preset.work, preset.short, preset.long)}
+            className="p-3 rounded-xl border transition-all hover:scale-105 active:scale-95 text-left"
+            style={{
+              backgroundColor: isImageTheme
+                ? "rgba(255, 255, 255, 0.08)"
+                : `${currentTheme.background}40`,
+              borderColor: isImageTheme
+                ? "rgba(255, 255, 255, 0.2)"
+                : currentTheme.cardBorder,
+              cursor: "pointer",
+            }}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-lg">{preset.icon}</span>
+              <span
+                className="text-sm font-semibold"
+                style={{
+                  color: isImageTheme
+                    ? "rgba(255, 255, 255, 0.95)"
+                    : currentTheme.digitColor,
+                }}
+              >
+                {preset.name}
+              </span>
+            </div>
+            <p
+              className="text-xs"
+              style={{
+                color: isImageTheme
+                  ? "rgba(255, 255, 255, 0.7)"
+                  : currentTheme.separatorColor,
+              }}
+            >
+              {preset.work}m / {preset.short}m / {preset.long}m
+            </p>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function SettingsSheet({
   open,
   onOpenChange,
@@ -34,7 +268,6 @@ export function SettingsSheet({
     setNotifications,
   } = usePomodoro();
 
-  // Use consistent number types with proper initialization
   const [work, setWork] = React.useState<number>(
     Math.round(durations.work / 60)
   );
@@ -56,68 +289,22 @@ export function SettingsSheet({
     setLongInt(longInterval);
   }, [longInterval]);
 
-  // Handle input changes with proper validation
-  const handleWorkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === "") {
-      setWork(1); // Set to minimum valid value instead of empty string
-      return;
-    }
-    // Remove leading zeros and validate
-    const cleanValue = value.replace(/^0+(?=\d)/, "") || "1";
-    const numValue = parseInt(cleanValue, 10);
-    if (!isNaN(numValue) && numValue >= 1 && numValue <= 90) {
-      setWork(numValue);
-    }
-  };
-
-  const handleShortChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === "") {
-      setShortB(1);
-      return;
-    }
-    const cleanValue = value.replace(/^0+(?=\d)/, "") || "1";
-    const numValue = parseInt(cleanValue, 10);
-    if (!isNaN(numValue) && numValue >= 1 && numValue <= 60) {
-      setShortB(numValue);
-    }
-  };
-
-  const handleLongChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === "") {
-      setLongB(1);
-      return;
-    }
-    const cleanValue = value.replace(/^0+(?=\d)/, "") || "1";
-    const numValue = parseInt(cleanValue, 10);
-    if (!isNaN(numValue) && numValue >= 1 && numValue <= 90) {
-      setLongB(numValue);
-    }
-  };
-
-  const handleLongIntChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === "") {
-      setLongInt(2);
-      return;
-    }
-    const cleanValue = value.replace(/^0+(?=\d)/, "") || "2";
-    const numValue = parseInt(cleanValue, 10);
-    if (!isNaN(numValue) && numValue >= 2 && numValue <= 12) {
-      setLongInt(numValue);
-    }
-  };
-
-  // Handle focus to select all text
-  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.select();
+  const handlePresetSelect = (
+    workMin: number,
+    shortMin: number,
+    longMin: number
+  ) => {
+    setWork(workMin);
+    setShortB(shortMin);
+    setLongB(longMin);
+    setTimeout(() => {
+      const saveButton = document.getElementById("save-settings-btn");
+      saveButton?.click();
+    }, 300);
   };
 
   const save = () => {
-    // Ensure all values are valid numbers before saving
-    const workValue = Math.max(1, Math.min(90, work));
+    const workValue = Math.max(1, Math.min(240, work));
     const shortValue = Math.max(1, Math.min(60, shortB));
     const longValue = Math.max(1, Math.min(90, longB));
     const longIntValue = Math.max(2, Math.min(12, longInt));
@@ -142,7 +329,7 @@ export function SettingsSheet({
     } else {
       setNotifications(false);
       alert(
-        "Notifications are blocked by the browser. Please enable them in  browser's site settings."
+        "Notifications are blocked by the browser. Please enable them in browser's site settings."
       );
     }
   };
@@ -165,8 +352,8 @@ export function SettingsSheet({
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          fill="none" // Keeps fill transparent
-          stroke={isImageTheme ? "currentColor" : color} // Dynamic stroke color
+          fill="none"
+          stroke={isImageTheme ? "currentColor" : color}
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -297,7 +484,26 @@ export function SettingsSheet({
                     : "transparent",
                 }}
               >
-                {/* Session Durations */}
+                {/* Preset Pills */}
+                <div
+                  className="p-4 rounded-2xl border"
+                  style={{
+                    backgroundColor: isImageTheme
+                      ? "rgba(255, 255, 255, 0.08)"
+                      : `${currentTheme.background}20`,
+                    borderColor: isImageTheme
+                      ? "rgba(255, 255, 255, 0.2)"
+                      : currentTheme.cardBorder,
+                  }}
+                >
+                  <PresetPills
+                    onSelect={handlePresetSelect}
+                    currentTheme={currentTheme}
+                    isImageTheme={isImageTheme}
+                  />
+                </div>
+
+                {/* Session Durations with Steppers */}
                 <div
                   className="p-4 rounded-2xl border"
                   style={{
@@ -310,7 +516,7 @@ export function SettingsSheet({
                   }}
                 >
                   <h3
-                    className="text-base font-semibold mb-4 underline"
+                    className="text-base font-semibold mb-4"
                     style={{
                       color: isImageTheme
                         ? "rgba(255, 255, 255, 0.95)"
@@ -320,142 +526,46 @@ export function SettingsSheet({
                     Session Durations
                   </h3>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <Label
-                        htmlFor="work"
-                        style={{
-                          color: isImageTheme
-                            ? "rgba(255, 255, 255, 0.9)"
-                            : currentTheme.digitColor,
-                        }}
-                      >
-                        Work (minutes)
-                      </Label>
-                      <input
-                        id="work"
-                        type="number"
-                        min={1}
-                        max={90}
-                        step={1}
-                        value={work}
-                        onChange={handleWorkChange}
-                        onFocus={handleFocus}
-                        className="w-20 px-2 py-1 text-sm rounded-lg border"
-                        style={{
-                          backgroundColor: isImageTheme
-                            ? "rgba(255, 255, 255, 0.1)"
-                            : currentTheme.background,
-                          color: isImageTheme
-                            ? "rgba(255, 255, 255, 0.9)"
-                            : currentTheme.digitColor,
-                          borderColor: isImageTheme
-                            ? "rgba(255, 255, 255, 0.3)"
-                            : currentTheme.cardBorder,
-                        }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label
-                        htmlFor="short"
-                        style={{
-                          color: isImageTheme
-                            ? "rgba(255, 255, 255, 0.9)"
-                            : currentTheme.digitColor,
-                        }}
-                      >
-                        Short break (minutes)
-                      </Label>
-                      <input
-                        id="short"
-                        type="number"
-                        min={1}
-                        max={60}
-                        step={1}
-                        value={shortB}
-                        onChange={handleShortChange}
-                        onFocus={handleFocus}
-                        className="w-20 px-2 py-1 text-sm rounded-lg border"
-                        style={{
-                          backgroundColor: isImageTheme
-                            ? "rgba(255, 255, 255, 0.1)"
-                            : currentTheme.background,
-                          color: isImageTheme
-                            ? "rgba(255, 255, 255, 0.9)"
-                            : currentTheme.digitColor,
-                          borderColor: isImageTheme
-                            ? "rgba(255, 255, 255, 0.3)"
-                            : currentTheme.cardBorder,
-                        }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label
-                        htmlFor="long"
-                        style={{
-                          color: isImageTheme
-                            ? "rgba(255, 255, 255, 0.9)"
-                            : currentTheme.digitColor,
-                        }}
-                      >
-                        Long break (minutes)
-                      </Label>
-                      <input
-                        id="long"
-                        type="number"
-                        min={1}
-                        max={90}
-                        step={1}
-                        value={longB}
-                        onChange={handleLongChange}
-                        onFocus={handleFocus}
-                        className="w-20 px-2 py-1 text-sm rounded-lg border"
-                        style={{
-                          backgroundColor: isImageTheme
-                            ? "rgba(255, 255, 255, 0.1)"
-                            : currentTheme.background,
-                          color: isImageTheme
-                            ? "rgba(255, 255, 255, 0.9)"
-                            : currentTheme.digitColor,
-                          borderColor: isImageTheme
-                            ? "rgba(255, 255, 255, 0.3)"
-                            : currentTheme.cardBorder,
-                        }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label
-                        htmlFor="interval"
-                        style={{
-                          color: isImageTheme
-                            ? "rgba(255, 255, 255, 0.9)"
-                            : currentTheme.digitColor,
-                        }}
-                      >
-                        Long break every
-                      </Label>
-                      <input
-                        id="interval"
-                        type="number"
-                        min={2}
-                        max={12}
-                        step={1}
-                        value={longInt}
-                        onChange={handleLongIntChange}
-                        onFocus={handleFocus}
-                        className="w-20 px-2 py-1 text-sm rounded-lg border"
-                        style={{
-                          backgroundColor: isImageTheme
-                            ? "rgba(255, 255, 255, 0.1)"
-                            : currentTheme.background,
-                          color: isImageTheme
-                            ? "rgba(255, 255, 255, 0.9)"
-                            : currentTheme.digitColor,
-                          borderColor: isImageTheme
-                            ? "rgba(255, 255, 255, 0.3)"
-                            : currentTheme.cardBorder,
-                        }}
-                      />
-                    </div>
+                    <Stepper
+                      value={work}
+                      onChange={setWork}
+                      min={1}
+                      max={240}
+                      step={5}
+                      label="Work (minutes)"
+                      currentTheme={currentTheme}
+                      isImageTheme={isImageTheme}
+                    />
+                    <Stepper
+                      value={shortB}
+                      onChange={setShortB}
+                      min={1}
+                      max={60}
+                      step={1}
+                      label="Short break (minutes)"
+                      currentTheme={currentTheme}
+                      isImageTheme={isImageTheme}
+                    />
+                    <Stepper
+                      value={longB}
+                      onChange={setLongB}
+                      min={1}
+                      max={90}
+                      step={5}
+                      label="Long break (minutes)"
+                      currentTheme={currentTheme}
+                      isImageTheme={isImageTheme}
+                    />
+                    <Stepper
+                      value={longInt}
+                      onChange={setLongInt}
+                      min={2}
+                      max={12}
+                      step={1}
+                      label="Long break every"
+                      currentTheme={currentTheme}
+                      isImageTheme={isImageTheme}
+                    />
                   </div>
                 </div>
 
@@ -472,7 +582,7 @@ export function SettingsSheet({
                   }}
                 >
                   <h3
-                    className="text-base font-semibold mb-4 underline"
+                    className="text-base font-semibold mb-4"
                     style={{
                       color: isImageTheme
                         ? "rgba(255, 255, 255, 0.95)"
@@ -482,7 +592,6 @@ export function SettingsSheet({
                     Preferences
                   </h3>
                   <div className="space-y-4">
-                    {/* Switches */}
                     <div className="flex items-center justify-between">
                       <div>
                         <Label
@@ -579,9 +688,10 @@ export function SettingsSheet({
                     </div>
                   </div>
                 </div>
+
                 {/* Keyboard Shortcuts Section */}
                 <div
-                  className=" hidden sm:block p-4 rounded-2xl border"
+                  className="hidden sm:block p-4 rounded-2xl border"
                   style={{
                     backgroundColor: isImageTheme
                       ? "rgba(255, 255, 255, 0.08)"
@@ -595,7 +705,7 @@ export function SettingsSheet({
                   }}
                 >
                   <h3
-                    className="text-base font-semibold mb-4 "
+                    className="text-base font-semibold mb-4"
                     style={{
                       color: isImageTheme
                         ? "rgba(255, 255, 255, 0.95)"
@@ -701,6 +811,7 @@ export function SettingsSheet({
                   Cancel
                 </button>
                 <button
+                  id="save-settings-btn"
                   onClick={save}
                   className="px-4 py-2 text-sm rounded-xl border hover:opacity-90 transition-opacity"
                   style={{
@@ -765,7 +876,6 @@ export function SettingsSheet({
               animation-duration: 300ms;
             }
 
-            /* Input focus styles */
             input:focus,
             select:focus {
               outline: none;
@@ -775,7 +885,6 @@ export function SettingsSheet({
                   : currentTheme.digitColor + "40"};
             }
 
-            /* Select dropdown styling */
             select option {
               background: ${currentTheme.background};
               color: ${currentTheme.digitColor};

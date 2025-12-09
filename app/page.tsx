@@ -591,7 +591,7 @@ function AppBody() {
                   boxShadow: "none",
                 }}
               >
-                <CardHeader className="pb-2 sm:pb-3 md:pb-4">
+                <CardHeader className="pt-2 pb-2 sm:pb-3 md:pb-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3">
                       {!focusMode && (
@@ -687,7 +687,7 @@ function AppBody() {
                       aria-label="Reset"
                       className="absolute p-1.5 sm:p-2 rounded-full focus:outline-none z-10 hover:opacity-80 transition-opacity"
                       style={{
-                        top: isTablet ? "60px" : isMobile ? "15px" : "25px",
+                        top: isTablet ? "60px" : isMobile ? "27px" : "25px",
                         right: isTablet ? "10px" : isMobile ? "1px" : "50px",
                         background: isImageTheme
                           ? "rgba(255,255,255,0.82)"
@@ -724,7 +724,7 @@ function AppBody() {
                   )}
 
                   {/* FLIP CLOCK  && Ripple effect*/}
-                  <div className="relative w-full flex items-center justify-center">
+                  <div className="relative w-full flex items-center justify-center pt-8 sm:pt-0">
                     {/* Ripple positioned relative to clock container */}
                     {(mode === "short" || mode === "long") && (
                       <div className="absolute inset-0 overflow-hidden rounded-xl">
