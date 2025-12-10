@@ -1,6 +1,5 @@
 "use client";
 
-
 import type React from "react";
 import {
   createContext,
@@ -16,10 +15,8 @@ import { useVisibility } from "@/hooks/use-visibility";
 import { addProgressEvent } from "@/lib/progress";
 import { useDailyFocus } from "@/hooks/use-daily-focus";
 
-
 type Mode = "work" | "short" | "long";
 type ViewMode = Mode;
-
 
 type Settings = {
   durations: { work: number; short: number; long: number };
@@ -30,7 +27,6 @@ type Settings = {
   notifications: boolean;
   timeFormat: "24h" | "12h";
 };
-
 
 type PersistedState = {
   mode: Mode;
@@ -43,7 +39,6 @@ type PersistedState = {
   workSessionStart: number;
 };
 
-
 const DEFAULT_SETTINGS: Settings = {
   durations: { work: 25 * 60, short: 5 * 60, long: 15 * 60 },
   longInterval: 4,
@@ -53,7 +48,6 @@ const DEFAULT_SETTINGS: Settings = {
   notifications: false,
   timeFormat: "24h",
 };
-
 
 const DEFAULT_STATE: PersistedState = {
   mode: "work",
@@ -65,7 +59,6 @@ const DEFAULT_STATE: PersistedState = {
   focusMode: false,
   workSessionStart: 0,
 };
-
 
 type Ctx = {
   mode: Mode;
@@ -100,16 +93,12 @@ type Ctx = {
   hasStartedToday: boolean;
 };
 
-
 const PomodoroContext = createContext<Ctx | null>(null);
-
 
 // flag to track if save already happened this session
 let sessionSaveCompleted = false;
 
-
 // ---- Notification helpers ----
-
 
 async function requestNotificationPermission(): Promise<boolean> {
   if (typeof window === "undefined" || !("Notification" in window)) {
@@ -123,7 +112,6 @@ async function requestNotificationPermission(): Promise<boolean> {
   }
 }
 
-
 async function sendSwNotification(
   title: string,
   options: NotificationOptions
@@ -132,7 +120,6 @@ async function sendSwNotification(
   if (!("serviceWorker" in navigator)) return false;
   if (!("Notification" in window)) return false;
   if (Notification.permission !== "granted") return false;
-
 
   try {
     const reg = await navigator.serviceWorker.ready;
@@ -152,14 +139,12 @@ async function sendSwNotification(
   return false;
 }
 
-
 function showPageNotificationFallback(
   title: string,
   options: NotificationOptions
 ): void {
   if (typeof window === "undefined" || !("Notification" in window)) return;
   if (Notification.permission !== "granted") return;
-
 
   try {
     // Works well on desktop and localhost; mobile may ignore it,
@@ -170,7 +155,6 @@ function showPageNotificationFallback(
     // ignore
   }
 }
-
 
 export function PomodoroProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useLocalStorage<Settings>(
@@ -186,28 +170,25 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
   const visibility = useVisibility();
   const intervalRef = useRef<number | null>(null);
   const savedSecondsRef = useRef<number>(0); // Track already saved seconds
-
-
+const didInitDurationsRef = useRef(false);
   const durationFor = useCallback(
     (mode: Mode) => settings.durations[mode],
     [settings.durations]
   );
-
+  
+  
 
   // Counter daily focus minutes
   const { dailyMinutes, hasStarted } = useDailyFocus();
 
-
   // Notify sound
   const notificationSound = useRef<HTMLAudioElement | null>(null);
-
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       notificationSound.current = new Audio("/sounds/notify.mp3");
     }
   }, []);
-
 
   const safeNotify = useCallback(
     async (
@@ -218,13 +199,11 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     ) => {
       if (!settings.notifications) return;
 
-
       try {
         if (Notification.permission !== "granted") {
           const granted = await requestNotificationPermission();
           if (!granted) return;
         }
-
 
         const baseOptions: NotificationOptions = {
           requireInteraction: true,
@@ -234,12 +213,10 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
           icon: "/favicon.ico",
         };
 
-
         const sentViaSw = await sendSwNotification(title, baseOptions);
         if (!sentViaSw) {
           showPageNotificationFallback(title, baseOptions);
         }
-
 
         // Only play custom sound if the page is currently visible
         if (
@@ -258,7 +235,6 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     [settings.notifications]
   );
 
-
   const saveWorkProgress = useCallback((workedSeconds: number) => {
     if (workedSeconds <= 0) return;
 
@@ -268,7 +244,6 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-
   const onComplete = useCallback(
     (finishedMode: Mode, workedSeconds: number = 0) => {
       // Block duplicate saves for same session
@@ -277,10 +252,8 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       }
       sessionSaveCompleted = true;
 
-
       if (finishedMode === "work" && workedSeconds > 0) {
         saveWorkProgress(workedSeconds);
-
 
         safeNotify(
           "Work session complete 🍃",
@@ -297,11 +270,9 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
         );
       }
 
-
       setState((prev) => {
         let cycleCount = prev.cycleCount;
         let nextMode: Mode = prev.mode;
-
 
         if (finishedMode === "work") {
           cycleCount += 1;
@@ -311,10 +282,8 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
           nextMode = "work";
         }
 
-
         const nextRemaining = durationFor(nextMode);
         const willAutoStart = settings.autoStartNext;
-
 
         return {
           ...prev,
@@ -342,14 +311,12 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     ]
   );
 
-
   const tick = useCallback(() => {
     setState((prev) => {
       if (!prev.isRunning || prev.epochMs == null) return prev;
       const elapsed = Math.floor((Date.now() - prev.epochMs) / 1000);
       const total = durationFor(prev.mode);
       const nextRemaining = Math.max(0, total - elapsed);
-
 
       if (nextRemaining === 0) {
         if (intervalRef.current) {
@@ -365,36 +332,46 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     });
   }, [setState, durationFor, onComplete]);
 
+  // 🔁 Sync durations without overwriting paused/loaded state
+// 🔁 Sync durations without killing persisted remaining on first load
+useEffect(() => {
+  // First time (initial hydration from localStorage) → do not touch `remaining`.
+  if (!didInitDurationsRef.current) {
+    didInitDurationsRef.current = true;
+    return;
+  }
 
-  useEffect(() => {
-    setState((prev) => {
-      if (prev.isRunning) {
-        return prev;
-      }
-      const newDuration = durationFor(prev.mode);
-      return { ...prev, remaining: newDuration };
-    });
-  }, [settings.durations, durationFor, setState]);
-
-
-  // Restore after browser reopen
-  useEffect(() => {
-    setState((prev) => {
-      if (prev.epochMs && prev.isRunning) {
-        const elapsed = Math.floor((Date.now() - prev.epochMs) / 1000);
-        const total = durationFor(prev.mode);
-        const left = Math.max(0, total - elapsed);
-        if (left === 0) {
-          queueMicrotask(() => onComplete(prev.mode));
-          return { ...prev, isRunning: false, epochMs: null, remaining: 0 };
-        }
-        return { ...prev, remaining: left, isRunning: false, epochMs: null };
-      }
+  setState((prev) => {
+    // Don't touch active timers
+    if (prev.isRunning) {
       return prev;
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    }
 
+    // User changed durations (Save or preset) while timer is stopped:
+    // reset remaining to the new full duration for the current mode.
+    const newDuration = durationFor(prev.mode);
+    return { ...prev, remaining: newDuration };
+  });
+}, [settings.durations, durationFor, setState]);
+
+
+  // 🔁 Restore after browser reopen — freeze at last persisted value
+  // Restore after browser reopen — treat reopen as a pause, keep remaining
+useEffect(() => {
+  setState((prev) => {
+    if (prev.epochMs && prev.isRunning) {
+      // Do NOT recompute remaining using Date.now().
+      // Just stop the timer and keep the persisted `remaining`.
+      return {
+        ...prev,
+        isRunning: false,
+        epochMs: null,
+      };
+    }
+    return prev;
+  });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
   useEffect(() => {
     if (state.isRunning && intervalRef.current == null) {
@@ -408,17 +385,14 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     };
   }, [state.isRunning, tick]);
 
-
   // Visibility-based auto pause/resume
   const wasPausedByBlur = useRef(false);
-
 
   useEffect(() => {
     if (isInitialLoad) {
       setIsInitialLoad(false);
       return;
     }
-
 
     if (
       visibility === "hidden" &&
@@ -462,7 +436,6 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     durationFor,
   ]);
 
-
   const start = useCallback(() => {
     setState((prev) => {
       const fullDuration = durationFor(prev.mode);
@@ -487,7 +460,6 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       };
     });
   }, [durationFor, setState]);
-
 
   const pause = useCallback(() => {
     setState((prev) => {
@@ -514,7 +486,6 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     });
   }, [setState, durationFor, saveWorkProgress]);
 
-
   const reset = useCallback(() => {
     // Reset save flag and tracking on reset
     sessionSaveCompleted = false;
@@ -528,7 +499,6 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
       workSessionStart: 0,
     }));
   }, [durationFor, setState]);
-
 
   const skip = useCallback(() => {
     setState((prev) => {
@@ -559,7 +529,6 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     onComplete(state.mode, workedSeconds);
   }, [setState, state.mode, onComplete, durationFor, saveWorkProgress]);
 
-
   const switchMode = useCallback(
     (mode: Mode) => {
       // Reset save flag and tracking on mode switch
@@ -579,36 +548,43 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     [durationFor, setState]
   );
 
-
-  const setDurations = useCallback(
-    (d: Settings["durations"]) => setSettings((s) => ({ ...s, durations: d })),
-    [setSettings]
-  );
+  // 🔒 Prevent changing durations while timer is running
+const setDurations = useCallback(
+  (d: Settings["durations"]) =>
+    setSettings((s) => ({
+      ...s,
+      durations: d,
+    })),
+  [setSettings]
+);
 
 
   const setLongInterval = useCallback(
-    (n: number) => setSettings((s) => ({ ...s, longInterval: n })),
-    [setSettings]
+    (n: number) =>
+      setSettings((s) => {
+        if (state.isRunning) {
+          // ignore changes while running
+          return s;
+        }
+        return { ...s, longInterval: n };
+      }),
+    [setSettings, state.isRunning]
   );
-
 
   const setAutoStartNext = useCallback(
     (b: boolean) => setSettings((s) => ({ ...s, autoStartNext: b })),
     [setSettings]
   );
 
-
   const setAutoPauseOnBlur = useCallback(
     (b: boolean) => setSettings((s) => ({ ...s, autoPauseOnBlur: b })),
     [setSettings]
   );
 
-
   const setAutoResumeOnFocus = useCallback(
     (b: boolean) => setSettings((s) => ({ ...s, autoResumeOnFocus: b })),
     [setSettings]
   );
-
 
   const setNotifications = useCallback(
     async (b: boolean) => {
@@ -625,25 +601,21 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     [setSettings]
   );
 
-
   const setViewMode = useCallback(
     (v: ViewMode) => setState((prev) => ({ ...prev, viewMode: v })),
     [setState]
   );
-
 
   const setFocusMode = useCallback(
     (b: boolean) => setState((prev) => ({ ...prev, focusMode: b })),
     [setState]
   );
 
-
   const setTimeFormat = useCallback(
     (f: Settings["timeFormat"]) =>
       setSettings((s) => ({ ...s, timeFormat: f })),
     [setSettings]
   );
-
 
   const ctx: Ctx = useMemo(
     () => ({
@@ -712,14 +684,12 @@ export function PomodoroProvider({ children }: { children: React.ReactNode }) {
     ]
   );
 
-
   return (
     <PomodoroContext.Provider value={ctx}>
       {children}
     </PomodoroContext.Provider>
   );
 }
-
 
 export function usePomodoro() {
   const ctx = useContext(PomodoroContext);

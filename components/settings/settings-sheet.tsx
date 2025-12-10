@@ -26,6 +26,7 @@ interface StepperProps {
   label: string;
   currentTheme: ColorTheme;
   isImageTheme: boolean;
+  disabled?: boolean;
 }
 
 function Stepper({
@@ -37,6 +38,7 @@ function Stepper({
   label,
   currentTheme,
   isImageTheme,
+  disabled = false,
 }: StepperProps) {
   const [displayValue, setDisplayValue] = React.useState(String(value));
 
@@ -45,13 +47,18 @@ function Stepper({
   }, [value]);
 
   const handleDecrement = () => {
+    if (disabled) return;
     if (value > min) onChange(value - step);
   };
 
   const handleIncrement = () => {
+    if (disabled) return;
     if (value < max) onChange(value + step);
   };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
+
     const val = e.target.value;
 
     // When empty, set to 0
@@ -70,7 +77,7 @@ function Stepper({
   };
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between opacity-100">
       <Label
         style={{
           color: isImageTheme
@@ -83,7 +90,7 @@ function Stepper({
       <div className="flex items-center gap-2">
         <button
           onClick={handleDecrement}
-          disabled={value <= min}
+          disabled={disabled || value <= min}
           className="w-8 h-8 rounded-lg flex items-center justify-center border transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
           style={{
             backgroundColor: isImageTheme
@@ -95,7 +102,7 @@ function Stepper({
             borderColor: isImageTheme
               ? "rgba(255, 255, 255, 0.3)"
               : currentTheme.cardBorder,
-            cursor: value <= min ? "not-allowed" : "pointer",
+            cursor: disabled || value <= min ? "not-allowed" : "pointer",
           }}
         >
           <svg
@@ -121,10 +128,18 @@ function Stepper({
           value={value === 0 ? "" : value} // Show empty when 0
           onChange={handleInputChange}
           onBlur={() => {
+            if (disabled) return;
             if (value === 0 || value < min) onChange(min); // Set to min when done
           }}
-          onFocus={(e) => e.target.select()}
-          className="w-16 px-2 py-1.5 text-center text-sm font-semibold rounded-lg border"
+          onFocus={(e) => {
+            if (disabled) {
+              e.target.blur();
+              return;
+            }
+            e.target.select();
+          }}
+          disabled={disabled}
+          className="w-16 px-2 py-1.5 text-center text-sm font-semibold rounded-lg border disabled:opacity-40"
           style={{
             backgroundColor: isImageTheme
               ? "rgba(255, 255, 255, 0.1)"
@@ -135,12 +150,13 @@ function Stepper({
             borderColor: isImageTheme
               ? "rgba(255, 255, 255, 0.3)"
               : currentTheme.cardBorder,
+            cursor: disabled ? "not-allowed" : "text",
           }}
         />
 
         <button
           onClick={handleIncrement}
-          disabled={value >= max}
+          disabled={disabled || value >= max}
           className="w-8 h-8 rounded-lg flex items-center justify-center border transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
           style={{
             backgroundColor: isImageTheme
@@ -152,7 +168,7 @@ function Stepper({
             borderColor: isImageTheme
               ? "rgba(255, 255, 255, 0.3)"
               : currentTheme.cardBorder,
-            cursor: value >= max ? "not-allowed" : "pointer",
+            cursor: disabled || value >= max ? "not-allowed" : "pointer",
           }}
         >
           <svg
@@ -179,18 +195,26 @@ interface PresetPillsProps {
   onSelect: (work: number, shortBreak: number, longBreak: number) => void;
   currentTheme: ColorTheme;
   isImageTheme: boolean;
+  disabled?: boolean;
 }
 
 function PresetPills({
   onSelect,
   currentTheme,
   isImageTheme,
+  disabled = false,
 }: PresetPillsProps) {
   const presets = [
     { name: "Classic", icon: "⏱️", work: 25, short: 5, long: 15 },
     { name: "Deep Work", icon: "🎯", work: 120, short: 15, long: 30 },
     { name: "Quick", icon: "⚡", work: 15, short: 3, long: 10 },
   ];
+
+  const handleClick = (preset: (typeof presets)[number]) => {
+    if (disabled) return;
+    onSelect(preset.work, preset.short, preset.long);
+    
+  };
 
   return (
     <div className="space-y-3">
@@ -208,8 +232,9 @@ function PresetPills({
         {presets.map((preset) => (
           <button
             key={preset.name}
-            onClick={() => onSelect(preset.work, preset.short, preset.long)}
-            className="p-3 rounded-xl border transition-all hover:scale-105 active:scale-95 text-left"
+            onClick={() => handleClick(preset)}
+            disabled={disabled}
+            className="p-3 rounded-xl border transition-all hover:scale-105 active:scale-95 text-left disabled:opacity-40 disabled:hover:scale-100 disabled:cursor-not-allowed"
             style={{
               backgroundColor: isImageTheme
                 ? "rgba(255, 255, 255, 0.08)"
@@ -217,7 +242,7 @@ function PresetPills({
               borderColor: isImageTheme
                 ? "rgba(255, 255, 255, 0.2)"
                 : currentTheme.cardBorder,
-              cursor: "pointer",
+              cursor: disabled ? "not-allowed" : "pointer",
             }}
           >
             <div className="flex items-center gap-2 mb-1">
@@ -266,6 +291,8 @@ export function SettingsSheet({
     setAutoPauseOnBlur,
     notifications,
     setNotifications,
+    isRunning,
+    reset,
   } = usePomodoro();
 
   const [work, setWork] = React.useState<number>(
@@ -290,20 +317,34 @@ export function SettingsSheet({
   }, [longInterval]);
 
   const handlePresetSelect = (
-    workMin: number,
-    shortMin: number,
-    longMin: number
-  ) => {
-    setWork(workMin);
-    setShortB(shortMin);
-    setLongB(longMin);
-    setTimeout(() => {
-      const saveButton = document.getElementById("save-settings-btn");
-      saveButton?.click();
-    }, 300);
-  };
+  workMin: number,
+  shortMin: number,
+  longMin: number
+) => {
+
+  setWork(workMin);
+  setShortB(shortMin);
+  setLongB(longMin);
+
+  const workValue = Math.max(1, Math.min(240, workMin));
+  const shortValue = Math.max(1, Math.min(60, shortMin));
+  const longValue = Math.max(1, Math.min(90, longMin));
+  const longIntValue = Math.max(2, Math.min(12, longInt));
+
+
+  setDurations({
+    work: workValue * 60,
+    short: shortValue * 60,
+    long: longValue * 60,
+  });
+  setLongInterval(longIntValue);
+
+
+  onOpenChange?.(false);
+};
 
   const save = () => {
+
     const workValue = Math.max(1, Math.min(240, work));
     const shortValue = Math.max(1, Math.min(60, shortB));
     const longValue = Math.max(1, Math.min(90, longB));
@@ -314,7 +355,9 @@ export function SettingsSheet({
       short: shortValue * 60,
       long: longValue * 60,
     });
+
     setLongInterval(longIntValue);
+    reset();
     onOpenChange?.(false);
   };
 
@@ -500,7 +543,48 @@ export function SettingsSheet({
                     onSelect={handlePresetSelect}
                     currentTheme={currentTheme}
                     isImageTheme={isImageTheme}
+                    disabled={isRunning}
                   />
+                  {isRunning && (
+                    <div
+                      className="mb-4 mt-4 flex items-start gap-3 rounded-2xl px-4 py-3 border"
+                      style={{
+                        backgroundColor: isImageTheme
+                          ? "rgba(255, 193, 7, 0.18)" // warm amber on dark
+                          : "rgba(245, 158, 11, 0.12)", // amber-500/12 on light
+                        borderColor: isImageTheme
+                          ? "rgba(255, 193, 7, 0.6)"
+                          : "rgba(245, 158, 11, 0.6)",
+                      }}
+                    >
+                      <span className="text-xl" aria-hidden="true">
+                        ⚠️
+                      </span>
+                      <div>
+                        <p
+                          className="text-sm font-semibold"
+                          style={{
+                            color: isImageTheme
+                              ? "rgba(255, 230, 180, 0.95)"
+                              : "#92400e", // dark amber
+                          }}
+                        >
+                          Timer is running
+                        </p>
+                        <p
+                          className="text-xs mt-1"
+                          style={{
+                            color: isImageTheme
+                              ? "rgba(255, 230, 180, 0.9)"
+                              : "#92400e",
+                          }}
+                        >
+                          Pause or reset the timer to edit session durations and
+                          presets.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Session Durations with Steppers */}
@@ -516,7 +600,7 @@ export function SettingsSheet({
                   }}
                 >
                   <h3
-                    className="text-base font-semibold mb-4"
+                    className="text-base font-semibold mb-1"
                     style={{
                       color: isImageTheme
                         ? "rgba(255, 255, 255, 0.95)"
@@ -525,6 +609,18 @@ export function SettingsSheet({
                   >
                     Session Durations
                   </h3>
+                  {isRunning && (
+                    <p
+                      className="text-xs mb-3"
+                      style={{
+                        color: isImageTheme
+                          ? "rgba(255, 255, 255, 0.75)"
+                          : currentTheme.separatorColor,
+                      }}
+                    >
+                      Pause or reset the timer to edit session lengths.
+                    </p>
+                  )}
                   <div className="space-y-3">
                     <Stepper
                       value={work}
@@ -535,6 +631,7 @@ export function SettingsSheet({
                       label="Work (minutes)"
                       currentTheme={currentTheme}
                       isImageTheme={isImageTheme}
+                      disabled={isRunning}
                     />
                     <Stepper
                       value={shortB}
@@ -545,6 +642,7 @@ export function SettingsSheet({
                       label="Short break (minutes)"
                       currentTheme={currentTheme}
                       isImageTheme={isImageTheme}
+                      disabled={isRunning}
                     />
                     <Stepper
                       value={longB}
@@ -555,6 +653,7 @@ export function SettingsSheet({
                       label="Long break (minutes)"
                       currentTheme={currentTheme}
                       isImageTheme={isImageTheme}
+                      disabled={isRunning}
                     />
                     <Stepper
                       value={longInt}
@@ -565,6 +664,7 @@ export function SettingsSheet({
                       label="Long break every"
                       currentTheme={currentTheme}
                       isImageTheme={isImageTheme}
+                      disabled={isRunning}
                     />
                   </div>
                 </div>
@@ -813,7 +913,8 @@ export function SettingsSheet({
                 <button
                   id="save-settings-btn"
                   onClick={save}
-                  className="px-4 py-2 text-sm rounded-xl border hover:opacity-90 transition-opacity"
+                  disabled={isRunning}
+                  className="px-4 py-2 text-sm rounded-xl border hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     backgroundColor: isImageTheme
                       ? "rgba(255, 255, 255, 0.2)"
@@ -825,10 +926,10 @@ export function SettingsSheet({
                       ? "rgba(255, 255, 255, 0.4)"
                       : "transparent",
                     border: isImageTheme ? "1px solid" : "none",
-                    cursor: "pointer",
+                    cursor: isRunning ? "not-allowed" : "pointer",
                   }}
                 >
-                  Save Changes
+                  {isRunning ? "Pause timer to save" : "Save Changes"}
                 </button>
               </div>
             </div>
