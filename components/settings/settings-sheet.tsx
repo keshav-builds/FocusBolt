@@ -16,7 +16,7 @@ interface SettingsSheetProps {
   currentTheme: ColorTheme;
 }
 
-// Reusable Stepper Component
+//  Stepper Component
 interface StepperProps {
   value: number;
   onChange: (value: number) => void;
@@ -70,7 +70,7 @@ function Stepper({
     // Parse number
     const numValue = parseInt(val, 10);
 
-    // Just enforce max
+    // enforce max
     if (!isNaN(numValue)) {
       onChange(Math.min(numValue, max));
     }
@@ -551,7 +551,7 @@ export function SettingsSheet({
                       style={{
                         backgroundColor: isImageTheme
                           ? "rgba(255, 193, 7, 0.18)" // warm amber on dark
-                          : "rgba(245, 158, 11, 0.12)", // amber-500/12 on light
+                          : "rgba(245, 158, 11, 0.12)", // amber-500 on light
                         borderColor: isImageTheme
                           ? "rgba(255, 193, 7, 0.6)"
                           : "rgba(245, 158, 11, 0.6)",

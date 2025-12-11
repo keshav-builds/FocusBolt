@@ -169,7 +169,7 @@ if (variant === "mobile") {
               ))}
             </div>
 
-            {/* Theme Grid - Fixed cropping issue */}
+            {/* Theme Grid*/}
             <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1">
               {filteredThemes.map((theme) => (
                 <motion.button
@@ -185,7 +185,7 @@ if (variant === "mobile") {
                     onThemeChange(theme);
                   }}
                   style={{
-                    // FIX: Separate background properties to avoid conflict
+                    // Separate background properties to avoid conflict
                     ...(theme.category === "image" && theme.backgroundImage
                       ? {
                           backgroundImage: `url('${theme.backgroundImage}')`,
@@ -233,7 +233,7 @@ if (variant === "mobile") {
                     </div>
                   )}
 
-                  {/* Image theme - name overlay with better visibility */}
+                  {/* Image theme */}
                   {theme.category === "image" && (
                     <div className="absolute inset-0 flex items-end justify-center pb-1.5 bg-gradient-to-t from-black/60 via-transparent to-transparent">
                       <span className="text-[10px] font-semibold text-white drop-shadow-lg px-1 text-center leading-tight">

@@ -321,7 +321,7 @@ export function MusicBar({
             </div>
           </div>
 
-          {/* Time Display - Mobile (Below controls) */}
+          {/* Time Display */}
           {currentTrack && (
             <div 
               className="flex items-center justify-between mt-1.5 text-[10px]"

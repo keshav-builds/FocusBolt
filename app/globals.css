@@ -105,21 +105,18 @@ main:fullscreen {
   min-height: 100vh;
   border: none !important;
   border-radius: 0 !important;
-  padding: 2rem 3rem; /* Reduced top/bottom padding */
+  padding: 2rem 3rem;
   background: inherit !important;
-  overflow: auto; /* Allow scroll if content is too tall */
+  overflow: auto; 
 }
 
-/* .fullscreen-mode:fullscreen .flip-clock {
-  transform: scale(1.2);
-} */
 
 .fullscreen-mode:fullscreen .card-header {
   width: 100%;
   max-width: 800px;
   align-self: center;
-  margin-bottom: 1.5rem; /* Reduced from 2rem */
-  flex-shrink: 0; /* Prevent shrinking */
+  margin-bottom: 1.5rem;
+  flex-shrink: 0; 
 }
 
 .fullscreen-mode:fullscreen .card-header > div {
@@ -164,7 +161,7 @@ main:fullscreen {
     margin: 0;
     padding: 0;
   }
-  /* Custom Scrollbar Styling - Bold & Beautiful */
+  /* Custom Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
@@ -196,7 +193,7 @@ main:fullscreen {
   scrollbar-color: var(--color-muted-foreground) rgba(0, 0, 0, 0.05);
 }
 
-/* Fullscreen mode - Contrast with background */
+/* Fullscreen mode  */
 .fullscreen-mode:fullscreen::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.08);
 }
@@ -226,7 +223,7 @@ body {
   }
 }
 
-/* Tablet-specific fixes */
+/* Tablet-specific  */
 @media (min-width: 768px) and (max-width: 1023px) {
   .fullscreen-mode:fullscreen {
     padding: 1.5rem 2rem;
@@ -237,7 +234,7 @@ body {
   }
 }
 
-/* Mobile-specific fixes */
+/* Mobile-specific  */
 @media (max-width: 767px) {
   body {
     overflow-x: hidden;

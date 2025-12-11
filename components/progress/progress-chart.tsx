@@ -36,7 +36,7 @@ const formatMinutesToTime = (minutes: number): string => {
   return `${hours}h ${mins}m`;
 };
 
-// Get color based on work time (gradient from low to high)
+// Get color based on work time 
 const getBarColor = (
   minutes: number,
   maxMinutes: number,

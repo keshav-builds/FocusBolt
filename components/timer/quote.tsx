@@ -1,32 +1,99 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getRandomQuote } from "@/lib/quotes";
+import { useEffect, useRef, useState } from "react";
+
+type Quote = {
+  text: string;
+};
+
+const STORAGE_KEY = "focusbolt_custom_quote";
+const DEFAULT_QUOTE: Quote = {
+  text: "Believe you can and you're halfway there",
+};
+
+const MAX_CHARS = 80;
 
 export function SessionQuote({ currentTheme }: { currentTheme: any }) {
-  const [quote, setQuote] = useState(getRandomQuote());
+  const [quote, setQuote] = useState<Quote>(DEFAULT_QUOTE);
+  const [isEditing, setIsEditing] = useState(false);
+  const [draft, setDraft] = useState(DEFAULT_QUOTE.text);
+  const [error, setError] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(true);
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const isImageTheme = currentTheme.backgroundImage;
 
+  // load saved quote (if any)
   useEffect(() => {
-    const interval = setInterval(() => {
-      // Fade out
-      setIsVisible(false);
-
-      // Change quote after fade out completes
-      setTimeout(() => {
-        setQuote(getRandomQuote());
-        // Fade in
-        setIsVisible(true);
-      }, 500);
-    }, 16000);
-
-    return () => clearInterval(interval);
+    if (typeof window === "undefined") return;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (typeof parsed.text === "string") {
+        setQuote(parsed);
+        setDraft(parsed.text);
+      }
+    } catch {
+      // ignore
+    }
   }, []);
+
+  // auto-focus when editing
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
+
+  function handleStartEdit() {
+    setDraft(quote.text);
+    setError(null);
+    setIsEditing(true);
+  }
+
+  function saveDraft() {
+    const text = draft.trim();
+
+    if (!text) {
+      setError("Quote cannot be empty.");
+      return;
+    }
+
+    const newQuote: Quote = { text };
+
+    setIsVisible(false);
+    setTimeout(() => {
+      setQuote(newQuote);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newQuote));
+      }
+      setIsVisible(true);
+      setIsEditing(false);
+      setError(null);
+    }, 150);
+  }
+
+  function handleBlur() {
+    if (!isEditing) return;
+    saveDraft();
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      saveDraft();
+    } else if (e.key === "Escape") {
+      setIsEditing(false);
+      setDraft(quote.text);
+      setError(null);
+    }
+  }
 
   return (
     <div
-      className="mt-0 w-full max-w-lg mx-auto rounded-lg py-3 px-4 sm:py-3.5 sm:px-5 text-center transition-all duration-500 relative min-h-[90px] sm:min-h-[100px] flex items-center justify-center"
+      className="mt-0 mb-2 w-full max-w-lg mx-auto rounded-lg py-4 px-10  text-center transition-all duration-500 relative max-h-[60px] flex items-center justify-center"
       style={{
         color: currentTheme.digitColor,
         background: isImageTheme
@@ -35,30 +102,64 @@ export function SessionQuote({ currentTheme }: { currentTheme: any }) {
         backdropFilter: isImageTheme ? "blur(8px)" : "none",
       }}
     >
-      {/* Decorative Quote SVG - Left aligned */}
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 105 78"
-        className="absolute left-1  top-3 w-10 h-10 sm:w-12 sm:h-9 opacity-15 sm:opacity-20"
-        style={{
-          fill: currentTheme.digitColor,
-        }}
+      <button
+        type="button"
+        onClick={handleStartEdit}
+        className="absolute top-2 right-2 z-20 text-md flex items-center cursor-pointer"
+        aria-label="Edit quote"
       >
-        <path d="M25.086 77.292c-4.821 0-9.115-1.205-12.882-3.616-3.767-2.561-6.78-6.102-9.04-10.622C1.054 58.534 0 53.411 0 47.686c0-5.273.904-10.396 2.712-15.368 1.959-4.972 4.746-9.567 8.362-13.786a59.042 59.042 0 0 1 12.43-11.3C28.325 3.917 33.599 1.507 39.324 0l11.074 13.786c-6.479 2.561-11.677 5.951-15.594 10.17-3.767 4.219-5.65 7.835-5.65 10.848 0 1.356.377 2.863 1.13 4.52.904 1.507 2.637 3.089 5.198 4.746 3.767 2.41 6.328 4.972 7.684 7.684 1.507 2.561 2.26 5.5 2.26 8.814 0 5.123-1.959 9.19-5.876 12.204-3.767 3.013-8.588 4.52-14.464 4.52Zm54.24 0c-4.821 0-9.115-1.205-12.882-3.616-3.767-2.561-6.78-6.102-9.04-10.622-2.11-4.52-3.164-9.643-3.164-15.368 0-5.273.904-10.396 2.712-15.368 1.959-4.972 4.746-9.567 8.362-13.786a59.042 59.042 0 0 1 12.43-11.3C82.565 3.917 87.839 1.507 93.564 0l11.074 13.786c-6.479 2.561-11.677 5.951-15.594 10.17-3.767 4.219-5.65 7.835-5.65 10.848 0 1.356.377 2.863 1.13 4.52.904 1.507 2.637 3.089 5.198 4.746 3.767 2.41 6.328 4.972 7.684 7.684 1.507 2.561 2.26 5.5 2.26 8.814 0 5.123-1.959 9.19-5.876 12.204-3.767 3.013-8.588 4.52-14.464 4.52Z"></path>
-      </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="icon icon-tabler-edit"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+          <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+          <path d="M16 5l3 3" />
+        </svg>
+      </button>
 
-      {/* Fade transition */}
       <div
-        className={`transition-opacity duration-500 ease-in-out relative z-10 w-full ${
+        className={`transition-opacity duration-300 ease-in-out relative z-10 w-full ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}
       >
-        <p className=" text-lg md:text-xl font-medium italic leading-relaxed px-5 ">
-          &ldquo;{quote.text}&rdquo;
-        </p>
-        <p className=" text-lg mt-1.5 sm:mt-2  sm:text-base opacity-75 font-normal">
-          — {quote.author}
-        </p>
+        <div className="mx-auto w-full min-w-md flex flex-col items-center gap-1">
+          {isEditing ? (
+            <>
+              <input
+                ref={inputRef}
+                className="w-full bg-transparent border-b border-gray-400/70 text-lg md:text-xl font-medium italic leading-relaxed px-2 pb-0.5 text-center outline-none focus:border-blue-400"
+                value={draft}
+                maxLength={MAX_CHARS}
+                onChange={(e) => {
+                  setDraft(e.target.value);
+                  setError(null);
+                }}
+                onBlur={handleBlur}
+                onKeyDown={handleKeyDown}
+              />
+              <div className=" text-[11px] text-gray-400">
+                {draft.length}/{MAX_CHARS} characters
+              </div>
+              {error && (
+                <div className="mt-0.5 text-[11px] text-red-400">{error}</div>
+              )}
+            </>
+          ) : (
+            <p className="text-lg md:text-xl font-medium italic leading-relaxed px-5">
+              &ldquo;{quote.text}&rdquo;
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

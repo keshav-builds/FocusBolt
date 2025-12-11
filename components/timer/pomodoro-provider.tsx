@@ -332,8 +332,7 @@ const didInitDurationsRef = useRef(false);
     });
   }, [setState, durationFor, onComplete]);
 
-  // 🔁 Sync durations without overwriting paused/loaded state
-// 🔁 Sync durations without killing persisted remaining on first load
+//  Sync durations without killing persisted remaining on first load
 useEffect(() => {
   // First time (initial hydration from localStorage) → do not touch `remaining`.
   if (!didInitDurationsRef.current) {
@@ -355,7 +354,7 @@ useEffect(() => {
 }, [settings.durations, durationFor, setState]);
 
 
-  // 🔁 Restore after browser reopen — freeze at last persisted value
+  
   // Restore after browser reopen — treat reopen as a pause, keep remaining
 useEffect(() => {
   setState((prev) => {
@@ -370,7 +369,7 @@ useEffect(() => {
     }
     return prev;
   });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks
 }, []);
 
   useEffect(() => {
@@ -548,7 +547,7 @@ useEffect(() => {
     [durationFor, setState]
   );
 
-  // 🔒 Prevent changing durations while timer is running
+  //  Prevent changing durations while timer is running
 const setDurations = useCallback(
   (d: Settings["durations"]) =>
     setSettings((s) => ({

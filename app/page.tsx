@@ -237,7 +237,7 @@ function AppBody() {
 
     const granted = await ensurePermission();
     if (granted) {
-      setNotifications(true); // ✅ This turns ON the toggle in settings
+      setNotifications(true); // This turns ON the toggle in settings
     } else {
       alert(
         "Notifications are blocked. Please enable them in browser settings."
@@ -748,7 +748,7 @@ function AppBody() {
 
                   {/* QUOTE */}
                   <div
-                    className=" hidden sm:block transition-colors duration-300 text-center px-2 sm:px-4 mt-2"
+                    className=" hidden sm:block transition-colors duration-300 text-center px-2 sm:px-4 mt-0"
                     style={{ color: currentTheme.separatorColor, opacity: 0.8 }}
                   >
                     <SessionQuote currentTheme={currentTheme} />

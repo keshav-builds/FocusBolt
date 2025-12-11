@@ -40,13 +40,13 @@ export function ExpandedPlayer({
 
   return (
     <>
-      {/* Very Subtle Backdrop - keeps background visible */}
+      {/* Subtle Backdrop */}
       <div 
         className="fixed inset-0 z-40 backdrop-blur-[2px]"
         style={{
           backgroundColor: isImageTheme 
-            ? 'rgba(0, 0, 0, 0.15)' // Very light overlay for image themes
-            : 'rgba(0, 0, 0, 0.25)'  // Slightly darker for solid themes
+            ? 'rgba(0, 0, 0, 0.15)' 
+            : 'rgba(0, 0, 0, 0.25)'  
         }}
         onClick={onClose}
       />
@@ -137,7 +137,7 @@ export function ExpandedPlayer({
             className="p-6 overflow-y-auto max-h-[60vh] custom-scrollbar"
             style={{
               background: isImageTheme 
-                ? 'rgba(0, 0, 0, 0.1)' // Very light background for content area
+                ? 'rgba(0, 0, 0, 0.1)' // Very light background 
                 : 'transparent',
             }}
           >
