@@ -766,7 +766,7 @@ function AppBody() {
                         size="xl"
                         onClick={pause}
                         className="relative px-6 transition-all duration-200 hover:opacity-80"
-                        title="Press Space to start/pause timer"
+                        title="Press Space to pause timer"
                         style={{
                           background: `${currentTheme.background}`,
                           color: currentTheme.digitColor,
@@ -776,9 +776,17 @@ function AppBody() {
                           boxShadow: isImageTheme
                             ? "4px 4px 0 0 rgba(255,255,255,0.78)"
                             : `4px 4px 0 0 ${color}`,
-                          cursor: "pointer",
                         }}
                       >
+                        <svg
+                          className="inline"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                          style={{ width: '18px', height: '18px' }}
+                        >
+                          <rect x="6" y="4" width="4" height="16" rx="1" />
+                          <rect x="14" y="4" width="4" height="16" rx="1" />
+                        </svg>
                         Pause
                       </Button>
                     ) : (
@@ -786,7 +794,7 @@ function AppBody() {
                         size="xl"
                         onClick={start}
                         className="relative px-6 transition-all duration-200 hover:opacity-80"
-                        title="Press Space to start/pause timer"
+                        title="Press Space to start timer"
                         style={{
                           background: `${currentTheme.background}`,
                           color: currentTheme.digitColor,
@@ -796,9 +804,16 @@ function AppBody() {
                           boxShadow: isImageTheme
                             ? "4px 4px 0 0 rgba(255,255,255,0.78)"
                             : `4px 4px 0 0 ${color}`,
-                          cursor: "pointer",
                         }}
                       >
+                        <svg
+                          className=" inline"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                           style={{ width: '20px', height: '20px' }}
+                        >
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
                         Start
                       </Button>
                     )}
