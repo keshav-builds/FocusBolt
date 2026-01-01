@@ -2,7 +2,7 @@
 
 A beautiful Pomodoro timer that helps you stay focused and productive. Built with React and Tailwind CSS, Focus Bolt combines elegant design with powerful features to make time management effortless.
 
-**Live Demo:** [focusbolt.vercel.app](https://focusbolt.vercel.app/)
+**Live Demo:** [focusbolt.vercel.app](https://focusbolt.keshavcodes.in/)
 
 ![Focus Bolt Demo](./public/og-image.png)
 
