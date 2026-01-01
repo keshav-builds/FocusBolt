@@ -297,7 +297,7 @@ function AppBody() {
                   strokeWidth="2"
                   fill="none"
                   stroke={color}
-                  className="w-8 h-8  flex-shrink-0"
+                  className="w-8 h-8  shrink-0"
                   aria-hidden="true"
                 >
                   <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -321,7 +321,7 @@ function AppBody() {
 
                   {/* Vertical line separator */}
                   <span
-                    className="hidden sm:inline-block w-[2px] h-6"
+                    className="hidden sm:inline-block w-0.5 h-6"
                     style={{
                       backgroundColor: color,
                     }}
@@ -452,7 +452,7 @@ function AppBody() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[35] md:hidden"
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-35 md:hidden"
                   />
 
                   <motion.div
@@ -460,7 +460,7 @@ function AppBody() {
                     animate={{ x: 0 }}
                     exit={{ x: "100%" }}
                     transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                    className="fixed right-0 top-0 h-full w-64 z-[36] md:hidden shadow-2xl overflow-y-auto"
+                    className="fixed right-0 top-0 h-full w-64 z-36 md:hidden shadow-2xl overflow-y-auto"
                     style={{
                       background: currentTheme.background,
                       borderLeft: `1px solid ${currentTheme.cardBorder}`,
@@ -685,7 +685,7 @@ function AppBody() {
                     <button
                       onClick={reset}
                       aria-label="Reset"
-                      className="absolute p-1.5 sm:p-2 rounded-full focus:outline-none z-60 hover:opacity-80 transition-opacity"
+                      className="absolute p-1.5 sm:p-2 rounded-full focus:outline-none z-10 hover:opacity-80 transition-opacity"
                       style={{
                         top: isTablet ? "60px" : isMobile ? "27px" : "25px",
                         right: isTablet ? "10px" : isMobile ? "1px" : "50px",
