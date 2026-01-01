@@ -14,12 +14,14 @@ const dancingScript = Dancing_Script({
 
 
 export const metadata: Metadata = {
+   metadataBase: new URL('https://focusbolt.keshavcodes.in/'),
   title: "Focus Bolt - Pomodoro Timer",
   description: "A beautiful Pomodoro timer with customizable sessions, themes, and music integration to boost your productivity.",
   generator: "keshavcodes",
   openGraph: {
     title: "Focus Bolt - Pomodoro Timer",
     description: "A beautiful Pomodoro timer with customizable sessions, themes, and music integration to boost your productivity.",
+     url: 'https://focusbolt.keshavcodes.in/',
     images: [
       {
         url: "/og-image.png",
@@ -35,6 +37,7 @@ export const metadata: Metadata = {
     title: "Focus Bolt - Pomodoro Timer",
     description: "A beautiful Pomodoro timer with customizable sessions, themes, and music integration.",
     images: ["/og-image.png"],
+    creator: "@keshav_inTech",
   },
 }
 
